@@ -24,8 +24,7 @@ import {
   Switch,
   message,
 } from "antd";
-import ImgCrop from "antd-img-crop";
-import Resizer from "react-image-file-resizer";
+
 import {
   UploadOutlined,
   DeleteOutlined,
