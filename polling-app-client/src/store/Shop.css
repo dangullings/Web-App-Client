@@ -1,0 +1,13 @@
+.ant-btn-round.ant-btn-lg {
+  height: 60px;
+  width: 60px;
+}
+
+.ant-card-actions {
+  border-radius: 0px 0px 10px 10px;
+}
+
+.ant-card-cover img {
+  border-radius: 10px 10px 0px 0px;
+  margin-left: 1px;
+}

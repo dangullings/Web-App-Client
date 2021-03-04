@@ -1,0 +1,67 @@
+@import "~antd/dist/antd.css";
+
+.ant-typography {
+  font-size: 18px;
+}
+
+.ant-card-head-title {
+  padding: 0;
+}
+
+.card-content-image {
+  position: absolute;
+  left: 0px;
+  width: 100px;
+  height: 100px;
+}
+
+.card-content-date {
+  position: absolute;
+  top: 0px;
+  left: 42%;
+  width: 60%;
+  height: 10%;
+  font-size: 20px;
+  text-shadow: 0px 1px #f5f5f5;
+  background-color: yellow;
+}
+
+.card-content-title {
+  position: absolute;
+  left: 42%;
+  width: 60%;
+  height: 20%;
+  top: 20%;
+  font-size: 20px;
+  background-color: orange;
+}
+
+.card-content-description {
+  position: absolute;
+  top: 30%;
+  left: 42%;
+  width: 60%;
+  height: 50%;
+  top: 40%;
+  background-color: purple;
+}
+
+.card-content-location {
+  position: absolute;
+  left: 42%;
+  width: 60%;
+  height: 20%;
+  top: 15%;
+  font-size: 20px;
+  background-color: blue;
+}
+
+.card-content-price {
+  position: absolute;
+  left: 40%;
+  width: 30px;
+  height: 30px;
+  top: 80%;
+  font-size: 15px;
+  background-color: red;
+}

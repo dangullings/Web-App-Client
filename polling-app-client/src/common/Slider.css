@@ -1,0 +1,6 @@
+.ant-menu.ant-menu-dark,
+.ant-menu-dark .ant-menu-sub,
+.ant-menu.ant-menu-dark .ant-menu-sub {
+  color: #808080;
+  background: #fefefa;
+}

@@ -1,0 +1,15 @@
+@import "~antd/dist/antd.css";
+
+.logo {
+  height: 0px;
+  background: rgba(231, 0, 0, 0.9);
+  margin: 0px;
+}
+
+.site-layout .site-layout-background {
+  background: rgb(24, 132, 255);
+  padding: 0;
+}
+[data-theme="dark"] .site-layout .site-layout-background {
+  background: #141414;
+}
