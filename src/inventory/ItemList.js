@@ -25,16 +25,7 @@ import {
   message,
 } from "antd";
 
-import {
-  UploadOutlined,
-  DeleteOutlined,
-  PlusOutlined,
-  LoadingOutlined,
-  SaveOutlined,
-  ReloadOutlined,
-  CarryOutOutlined,
-  PlusCircleOutlined,
-} from "@ant-design/icons";
+import { DeleteOutlined, PlusOutlined, SaveOutlined } from "@ant-design/icons";
 
 const { Title, Text } = Typography;
 const Compress = require("compress.js");
@@ -67,7 +58,6 @@ const colorsAvailable = [
   <Option key={"Orange"}>Orange</Option>,
   <Option key={"Pink"}>Pink</Option>,
 ];
-const FormItem = Form.Item;
 const { TextArea } = Input;
 
 const layout = {
