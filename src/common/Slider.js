@@ -2,29 +2,11 @@ import React, { Component } from "react";
 import { Link, withRouter } from "react-router-dom";
 import "./AppHeader.css";
 import "./Slider.css";
-import pollIcon from "../poll.svg";
-import studentsIcon from "../students.svg";
-import {
-  Layout,
-  Menu,
-  Dropdown,
-  Icon,
-  Breadcrumb,
-  Divider,
-  Drawer,
-  Button,
-  Affix,
-  Typography,
-} from "antd";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCoffee } from "@fortawesome/free-solid-svg-icons";
+import { Layout, Menu, Divider, Drawer, Button, Affix, Typography } from "antd";
 
 import "antd/dist/antd.css";
 
 import {
-  DesktopOutlined,
-  PieChartOutlined,
-  FileOutlined,
   AppstoreOutlined,
   ProfileOutlined,
   EnvironmentOutlined,
@@ -34,10 +16,8 @@ import {
   MenuOutlined,
 } from "@ant-design/icons";
 
-const element = <FontAwesomeIcon icon={faCoffee} />;
-const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 class Slider extends Component {
   constructor(props) {

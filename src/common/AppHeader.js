@@ -1,11 +1,8 @@
 import React, { Component } from "react";
 import { Link, withRouter } from "react-router-dom";
 import "./AppHeader.css";
-import { Layout, Menu, Dropdown, Icon } from "antd";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCoffee } from "@fortawesome/free-solid-svg-icons";
+import { Layout, Menu } from "antd";
 
-const element = <FontAwesomeIcon icon={faCoffee} />;
 const Header = Layout.Header;
 
 class AppHeader extends Component {
