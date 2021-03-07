@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import "./App.css";
+import "../styles/style.less";
 import { Route, Link, withRouter, Switch } from "react-router-dom";
 
 import { Image } from "antd";
@@ -12,6 +12,7 @@ import Sessions from "../user_role/Sessions";
 import Events from "../user_role/Events";
 import EventCalendar from "../schedule/EventCalendar";
 import LocationList from "../location/LocationList";
+import Location from "../location/Location";
 import SessionList from "../schedule/SessionList";
 import NewSession from "../schedule/NewSession";
 import Session from "../schedule/Session";
@@ -35,7 +36,6 @@ import LoadingIndicator from "../common/LoadingIndicator";
 import PrivateRoute from "../common/PrivateRoute";
 import Footer from "../common/Footer";
 
-import "antd/dist/antd.css";
 import { Layout, notification, Menu } from "antd";
 
 const { Header, Content, Sider } = Layout;
@@ -148,7 +148,7 @@ class App extends Component {
             isAuthenticated={this.state.isAuthenticated}
             currentUser={this.state.currentUser}
             onLogout={this.handleLogout}
-            style={{ marginTop: 0, width: "100%" }}
+            style={{ marginTop: 0, width: "100%", backgroundColor: "green" }}
           />
         )}
 

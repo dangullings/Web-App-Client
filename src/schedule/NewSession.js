@@ -26,7 +26,7 @@ import {
   Col,
   InputNumber,
 } from "antd";
-import "./Attendance.css";
+import "../styles/style.less";
 
 import {
   SaveOutlined,

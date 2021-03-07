@@ -30,7 +30,7 @@ import {
   getAllLocations,
   createEvent,
 } from "../util/APIUtils";
-import "./EventCalendar.css";
+import "../styles/style.less";
 import { getRanks } from "../util/Helpers.js";
 
 import {

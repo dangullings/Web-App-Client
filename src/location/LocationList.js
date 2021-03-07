@@ -15,29 +15,22 @@ import {
 } from "antd";
 import {
   getAllLocations,
+  getLocation,
   createLocation,
   removeLocation,
 } from "../util/APIUtils";
 import { STUDENT_LIST_SIZE } from "../constants";
 import { withRouter } from "react-router-dom";
-import "./LocationList.css";
+import "../styles/style.less";
 
 import {
   PlusOutlined,
   DeleteOutlined,
   EnvironmentOutlined,
+  SaveOutlined,
 } from "@ant-design/icons";
 
 const { Title, Text } = Typography;
-
-const layout = {
-  labelCol: {
-    span: 6,
-  },
-  wrapperCol: {
-    span: 12,
-  },
-};
 
 class LocationList extends Component {
   formRef = React.createRef();
@@ -46,6 +39,7 @@ class LocationList extends Component {
     super(props);
 
     this.state = {
+      isSavedLocation: false,
       locations: [],
       size: STUDENT_LIST_SIZE,
       search: "",
@@ -62,12 +56,9 @@ class LocationList extends Component {
       loading: false,
       visible: false,
       count: 0,
-      name: {
-        text: "",
-      },
-      address: {
-        text: "",
-      },
+      name: "",
+      address: "",
+      location: "",
 
       columns: [
         {
@@ -101,6 +92,24 @@ class LocationList extends Component {
     this.getLocationList = this.getLocationList.bind(this);
   }
 
+  onReset() {
+    this.formRef.current.resetFields();
+  }
+
+  onFill() {
+    if (this.formRef.current) {
+      this.formRef.current.setFieldsValue({
+        name: this.state.name,
+        address: this.state.address,
+      });
+    }
+
+    this.setState({
+      isSavedLocation: true,
+      visible: true,
+    });
+  }
+
   showModal = () => {
     this.setState({
       visible: true,
@@ -108,13 +117,16 @@ class LocationList extends Component {
   };
 
   handleCancel = () => {
-    this.setState({ visible: false });
     this.onReset();
   };
 
   onReset() {
-    console.log("reset forms");
     this.formRef.current.resetFields();
+    this.setState({
+      name: "",
+      address: "",
+      visible: false,
+    });
   }
 
   getLocationList(page) {
@@ -160,6 +172,7 @@ class LocationList extends Component {
           description: "Location removed.",
           duration: 2,
         });
+        this.onReset;
         this.getLocationList(this.state.page);
       })
       .catch((error) => {
@@ -184,7 +197,7 @@ class LocationList extends Component {
     createLocation(location)
       .then((response) => {
         this.getLocationList(this.state.page);
-        this.resetFields();
+        this.onReset;
         this.setState({ loading: false, visible: false });
       })
       .catch((error) => {
@@ -202,18 +215,6 @@ class LocationList extends Component {
           });
         }
       });
-  }
-
-  resetFields() {
-    this.formRef.current.resetFields();
-    this.setState({
-      name: {
-        text: "",
-      },
-      address: {
-        text: "",
-      },
-    });
   }
 
   handleNameChange(event) {
@@ -236,49 +237,93 @@ class LocationList extends Component {
   }
 
   render() {
-    const { locations, visible, loading, pagination, columns } = this.state;
+    const {
+      locations,
+      visible,
+      loading,
+      pagination,
+      columns,
+      isSavedLocation,
+      name,
+      address,
+    } = this.state;
 
-    const ModalTitle = <Title level={2}>New Location</Title>;
+    //this.formRef.current.getFieldDecorator("name", { initialValue: {} });
+
+    var ModalTitle;
+    if (isSavedLocation) {
+      ModalTitle = <Title level={2}>Edit Location</Title>;
+    } else {
+      ModalTitle = <Title level={2}>New Location</Title>;
+    }
+
+    const renderButton = () => {
+      if (isSavedLocation) {
+        return (
+          <Button
+            type="primary"
+            danger
+            icon={<DeleteOutlined />}
+            loading={loading}
+            onClick={this.removeLocation}
+          >
+            Delete
+          </Button>
+        );
+      } else {
+        return [];
+      }
+    };
 
     const contentList = [
       <Button
         type="primary"
         icon={<PlusOutlined />}
         onClick={this.showModal}
-        size={"default"}
         style={{
           marginBottom: 10,
           marginTop: 10,
-          marginLeft: 2,
+          marginLeft: 4,
           marginRight: 10,
         }}
       >
         New Location
       </Button>,
 
-      <Form {...layout} onFinish={this.handleSubmit} ref={this.formRef}>
-        <Modal
-          visible={visible}
-          title={ModalTitle}
-          onOk={this.handleOk}
-          onCancel={this.handleCancel}
-          footer={[
-            <Button key="back" onClick={this.handleCancel}>
-              Cancel
-            </Button>,
-            <Button
-              key="submit"
-              type="primary"
-              loading={loading}
-              onClick={this.handleSubmit}
-            >
-              Submit
-            </Button>,
-          ]}
+      <Modal
+        className="location-list"
+        visible={visible}
+        title={ModalTitle}
+        onCancel={this.handleCancel}
+        footer={[
+          <Button key="back" type="secondary" onClick={this.handleCancel}>
+            Cancel
+          </Button>,
+          renderButton(),
+          <Button
+            key="submit"
+            type="primary"
+            icon={<SaveOutlined />}
+            loading={loading}
+            onClick={this.handleSubmit}
+          >
+            Save
+          </Button>,
+        ]}
+      >
+        <Form
+          initialValues={{ name: name, address: address }}
+          layout="vertical"
+          onFinish={this.handleSubmit}
+          ref={this.formRef}
         >
           <Form.Item
             name="name"
-            label={<Title level={5}>{"Name"}</Title>}
+            label={
+              <Title style={{ marginBottom: 0 }} level={5}>
+                {"Name"}
+              </Title>
+            }
             hasFeedback
             rules={[
               {
@@ -298,7 +343,11 @@ class LocationList extends Component {
 
           <Form.Item
             name="address"
-            label={<Title level={5}>{"Address"}</Title>}
+            label={
+              <Title style={{ marginBottom: 0 }} level={5}>
+                {"Address"}
+              </Title>
+            }
             hasFeedback
             rules={[
               {
@@ -308,15 +357,15 @@ class LocationList extends Component {
             ]}
           >
             <Input
-              placeholder="1234 Grand Ave Buffalo Mn"
+              placeholder="1234 Street City State"
               style={{ fontSize: "16px" }}
-              autosize={{ minRows: 1, maxRows: 1 }}
+              autosize={{ minRows: 1, maxRows: 2 }}
               value={this.state.address.text}
               onChange={this.handleAddressChange}
             />
           </Form.Item>
-        </Modal>
-      </Form>,
+        </Form>
+      </Modal>,
 
       <Table
         style={{ padding: 2 }}
@@ -327,6 +376,17 @@ class LocationList extends Component {
         dataSource={locations}
         size="small"
         scroll={{ y: 300 }}
+        onRow={(record, rowIndex) => {
+          return {
+            onClick: (event) => {
+              this.handleRowClick(record);
+            }, // click row
+            //onDoubleClick: event => { this.handleRowClick(record) }, // double click row
+            //onContextMenu: event => { }, // right button click row
+            //onMouseEnter: event => { }, // mouse enter row
+            //onMouseLeave: event => { }, // mouse leave row
+          };
+        }}
       />,
     ];
 
@@ -340,19 +400,67 @@ class LocationList extends Component {
 
     return (
       <Card
+        className="location-list"
+        bordered={false}
         bodyStyle={{ padding: 0 }}
         style={{
           width: "100%",
           textShadow: "1px 1px 1px rgba(0,0,0,0.1)",
           borderRadius: 6,
-          boxShadow:
-            "0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)",
         }}
         title={title}
       >
         {contentList}
       </Card>
     );
+  }
+
+  handleRowClick(location) {
+    this.showLocation(location);
+  }
+
+  showLocation(location) {
+    this.setState(
+      {
+        location: location,
+        name: location.name,
+        address: location.address,
+        loading: false,
+      },
+      () => this.onFill()
+    );
+  }
+
+  loadLocation(location) {
+    let promise;
+
+    promise = getLocation(location.id);
+
+    if (!promise) {
+      return;
+    }
+
+    this.setState({
+      loading: true,
+    });
+
+    promise
+      .then((response) => {
+        this.setState(
+          {
+            location: response,
+            name: response.name,
+            address: response.address,
+            loading: false,
+          },
+          () => this.onFill()
+        );
+      })
+      .catch((error) => {
+        this.setState({
+          loading: false,
+        });
+      });
   }
 }
 

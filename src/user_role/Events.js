@@ -37,7 +37,7 @@ import {
 
 import bg from "../img/Session.png";
 //import bg from "../img/MainBackground.jpg";
-import "./Events.css";
+import "../styles/style.less";
 
 import {
   Elements,
@@ -496,7 +496,8 @@ class Events extends Component {
               width: "100%",
               textShadow: "1px 1px 1px rgba(0,0,0,0.1)",
               borderRadius: "20px",
-              boxShadow: "0px 2px 10px 0px rgba(208, 216, 243, 0.6)",
+              boxShadow:
+                "0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)",
               padding: 8,
             }}
           >
@@ -526,7 +527,7 @@ class Events extends Component {
         ];
 
         eventCards.push(
-          <div style={{ marginLeft: 3, marginRight: 3, marginBottom: 15 }}>
+          <div style={{ marginLeft: 2, marginRight: 2, marginBottom: 20 }}>
             {eventCard}
           </div>
         );
@@ -542,12 +543,13 @@ class Events extends Component {
     ];
 
     const stripeView = <StripeContainer />;
-    const eventModalTitle = [<Title level={4}>{selectedEvent.title}</Title>];
+    const eventModalTitle = [<Title level={2}>{selectedEvent.title}</Title>];
 
     return (
       <div>
         {stripeView}
         <Card
+          className="event"
           bordered={false}
           bodyStyle={{ padding: 0 }}
           style={{
@@ -560,6 +562,7 @@ class Events extends Component {
           {content}
         </Card>
         <Modal
+          className="event"
           visible={eventSignupVisible}
           title={eventModalTitle}
           style={{ top: 0 }}
@@ -567,6 +570,7 @@ class Events extends Component {
           footer={[
             <Button
               key="back"
+              type="secondary"
               onClick={this.handleCancel}
               style={{
                 boxShadow: "0px 0px 5px rgba(0,0,0,0.2)",

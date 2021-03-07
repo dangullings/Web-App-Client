@@ -28,7 +28,7 @@ import {
 import { STUDENT_LIST_SIZE } from "../constants";
 import { withRouter } from "react-router-dom";
 
-import "./Shop.css";
+import "../styles/style.less";
 
 import Highlighter from "react-highlight-words";
 import {
@@ -485,7 +485,8 @@ class Shop extends Component {
             style={{
               width: "100%",
               borderRadius: "10px",
-              boxShadow: "0px 2px 10px 0px rgba(208, 216, 243, 0.6)",
+              boxShadow:
+                "0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)",
             }}
             headStyle={{ backgroundColor: "#fafafa" }}
             bodyStyle={{ backgroundColor: "#fafafa" }}
@@ -590,6 +591,7 @@ class Shop extends Component {
     const ModalTitle = <Title level={2}>Cart</Title>;
     const cartView = [
       <Modal
+        className="shop"
         visible={cartVisible}
         title={ModalTitle}
         style={{ top: 0 }}
@@ -599,6 +601,7 @@ class Shop extends Component {
         footer={[
           <Button
             key="back"
+            type="secondary"
             onClick={this.handleCancel}
             style={{
               boxShadow: "0px 0px 5px rgba(0,0,0,0.2)",
@@ -659,6 +662,7 @@ class Shop extends Component {
     ];
     return (
       <Card
+        className="shop"
         bordered={false}
         headStyle={{ padding: 6, marginBottom: 0 }}
         bodyStyle={{ padding: 6 }}
@@ -672,14 +676,14 @@ class Shop extends Component {
           >
             <Badge count={cartItems.length} offset={[-10, 15]}>
               <Button
-                style={{ boxShadow: "1px 1px 1px rgba(0,0,0,0.5)" }}
+                style={{ boxShadow: "2px 2px 4px rgba(0,0,0,0.6)" }}
                 shape="round"
                 size={"large"}
                 onClick={this.showModal}
                 icon={
                   <ShoppingCartOutlined
                     offset={[-30, -10]}
-                    style={{ fontSize: "30px" }}
+                    style={{ fontSize: "50px", marginLeft: -16 }}
                   />
                 }
               ></Button>

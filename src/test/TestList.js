@@ -38,7 +38,7 @@ import {
 import moment from "moment";
 import { STUDENT_LIST_SIZE } from "../constants";
 import { withRouter } from "react-router-dom";
-import "./TestList.css";
+import "../styles/style.less";
 
 import {
   SearchOutlined,
@@ -50,15 +50,6 @@ import {
 
 const Option = Select.Option;
 const { Title, Text } = Typography;
-
-const layout = {
-  labelCol: {
-    span: 7,
-  },
-  wrapperCol: {
-    span: 16,
-  },
-};
 
 class TestList extends Component {
   formRef = React.createRef();
@@ -167,15 +158,17 @@ class TestList extends Component {
   }
 
   onFill() {
-    this.formRef.current.setFieldsValue({
-      title: this.state.title,
-      startTime: moment(this.state.test.startTime, "HH:mm:ss"),
-      endTime: moment(this.state.test.endTime, "HH:mm:ss"),
-      date: moment(this.state.date),
-      location: this.state.selectedLocation,
-      type: this.state.selectedType,
-      testStudentIds: [],
-    });
+    if (this.formRef.current) {
+      this.formRef.current.setFieldsValue({
+        title: this.state.title,
+        startTime: moment(this.state.test.startTime, "HH:mm:ss"),
+        endTime: moment(this.state.test.endTime, "HH:mm:ss"),
+        date: moment(this.state.date),
+        location: this.state.selectedLocation,
+        type: this.state.selectedType,
+        testStudentIds: [],
+      });
+    }
 
     this.setState({
       isSavedTest: true,
@@ -745,6 +738,7 @@ class TestList extends Component {
       testStudents,
       sessions,
       sessionStudents,
+      title,
     } = this.state;
     const filteredOptions = students.filter((o) => !selectedItems.includes(o));
 
@@ -1023,13 +1017,11 @@ class TestList extends Component {
         type="primary"
         icon={<PlusOutlined />}
         onClick={this.showModal}
-        shape="round"
         style={{
           marginBottom: 10,
           marginTop: 10,
-          marginLeft: 10,
+          marginLeft: 4,
           marginRight: 10,
-          boxShadow: "0px 0px 5px rgba(0,0,0,0.2)",
         }}
       >
         New Test
@@ -1037,13 +1029,14 @@ class TestList extends Component {
 
       <Modal
         visible={visible}
+        className="test-list"
         title={ModalTitle}
         style={{ top: 0 }}
         onCancel={this.handleCancel}
         footer={[
           <Button
             key="back"
-            shape="round"
+            type="secondary"
             onClick={this.handleCancel}
             style={{
               boxShadow: "0px 0px 5px rgba(0,0,0,0.2)",
@@ -1055,7 +1048,6 @@ class TestList extends Component {
             key="submit"
             htmlType="submit"
             type="primary"
-            shape="round"
             icon={<SaveOutlined />}
             disabled={this.isFormInvalid()}
             loading={loading}
@@ -1068,7 +1060,20 @@ class TestList extends Component {
           </Button>,
         ]}
       >
-        <Form layout="vertical" ref={this.formRef} onFinish={this.handleSubmit}>
+        <Form
+          initialValues={{
+            title: this.state.title,
+            startTime: moment(this.state.test.startTime, "HH:mm:ss"),
+            endTime: moment(this.state.test.endTime, "HH:mm:ss"),
+            date: moment(this.state.date),
+            location: this.state.selectedLocation,
+            type: this.state.selectedType,
+            testStudentIds: [],
+          }}
+          layout="vertical"
+          ref={this.formRef}
+          onFinish={this.handleSubmit}
+        >
           <Divider orientation="left">
             {<Title level={4}>{"Test Info"}</Title>}
           </Divider>
@@ -1317,7 +1322,12 @@ class TestList extends Component {
     ];
 
     return (
-      <Card bodyStyle={{ padding: 0 }} bordered={false} title={TableTitle}>
+      <Card
+        bodyStyle={{ padding: 0 }}
+        className="test-list"
+        bordered={false}
+        title={TableTitle}
+      >
         {contentList}
       </Card>
     );
@@ -1493,8 +1503,6 @@ class TestList extends Component {
   }
 
   handleRowClick(test) {
-    //console.log("handlerowlick");
-    //this.props.history.push(`/tests/${test.id}`);
     this.showTest(test);
   }
 

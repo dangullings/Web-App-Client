@@ -1,10 +1,7 @@
 import React, { Component } from "react";
 import { Link, withRouter } from "react-router-dom";
-import "./AppHeader.css";
-import "./Slider.css";
+import "../styles/style.less";
 import { Layout, Menu, Divider, Drawer, Button, Affix, Typography } from "antd";
-
-import "antd/dist/antd.css";
 
 import {
   AppstoreOutlined,

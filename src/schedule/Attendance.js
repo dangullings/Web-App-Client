@@ -25,7 +25,7 @@ import {
   getSessionStudents,
   getAllClassDatesBySessionId,
 } from "../util/APIUtils";
-import "./Attendance.css";
+import "../styles/style.less";
 
 import {
   SaveOutlined,

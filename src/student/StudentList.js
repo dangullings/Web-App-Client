@@ -27,11 +27,10 @@ import {
 import { getRanks } from "../util/Helpers.js";
 import { STUDENT_LIST_SIZE } from "../constants";
 import { withRouter } from "react-router-dom";
-import "./StudentList.css";
+import "../styles/style.less";
 
-import Highlighter from "react-highlight-words";
 import {
-  SearchOutlined,
+  SaveOutlined,
   PlusOutlined,
   DeleteOutlined,
   EnvironmentOutlined,
@@ -56,27 +55,6 @@ const children = [
 ];
 
 const { Search } = Input;
-
-const layout = {
-  labelCol: {
-    span: 6,
-  },
-  wrapperCol: {
-    span: 12,
-  },
-};
-
-/*   {
-    title: <DeleteOutlined />,
-    dataIndex: 'operation',
-    width: '10%',
-    render: (text, record) =>
-      this.state.students.length >= 1 ? ( 
-        <Popconfirm title={"Sure to delete "+record.firstName+"?"} onConfirm={() => this.removeStudent(record.id)}>
-          <a>{<DeleteOutlined />}</a>
-        </Popconfirm>
-      ) : null,
-  }, */
 
 class StudentList extends Component {
   formRef = React.createRef();
@@ -583,34 +561,25 @@ class StudentList extends Component {
         New Student
       </Button>,
       <Modal
+        className="student-list"
         visible={visible}
         title={newStudentTitle}
         style={{ top: 0 }}
         onOk={this.handleOk}
         onCancel={this.handleCancel}
         footer={[
-          <Button
-            key="back"
-            shape="round"
-            onClick={this.handleCancel}
-            style={{
-              boxShadow: "0px 0px 5px rgba(0,0,0,0.2)",
-            }}
-          >
+          <Button key="back" type="secondary" onClick={this.handleCancel}>
             Cancel
           </Button>,
           <Button
             key="submit"
             type="primary"
-            shape="round"
+            icon={<SaveOutlined />}
             disabled={this.isFormInvalid()}
             loading={loading}
             onClick={this.handleSubmit}
-            style={{
-              boxShadow: "0px 0px 5px rgba(0,0,0,0.2)",
-            }}
           >
-            Submit
+            Save
           </Button>,
         ]}
       >
@@ -826,6 +795,7 @@ class StudentList extends Component {
 
     return (
       <Card
+        className="student-list"
         bordered={false}
         headStyle={{ padding: 6, marginBottom: 0 }}
         bodyStyle={{ padding: 6 }}

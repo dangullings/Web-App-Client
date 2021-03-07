@@ -36,13 +36,13 @@ import { STUDENT_LIST_SIZE } from "../constants";
 import { withRouter } from "react-router-dom";
 
 import {
-  PlusOutlined,
+  SaveOutlined,
   TeamOutlined,
   UserAddOutlined,
   ItalicOutlined,
 } from "@ant-design/icons";
 
-import "./MyGroup.css";
+import "../styles/style.less";
 import testImage from "../img/TestImage.png";
 import eventImage from "../img/EventImage.png";
 import sessionImage from "../img/Session.png";
@@ -1335,32 +1335,30 @@ class MyGroup extends Component {
             width: "100%",
             textShadow: "1px 1px 1px rgba(0,0,0,0.1)",
             borderRadius: "20px",
-            boxShadow: "0px 2px 10px 0px rgba(208, 216, 243, 0.6)",
-            padding: 0,
+            boxShadow:
+              "0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)",
+            padding: 2,
           }}
           title={peepTitle}
           actions={[
             <Button
               type="secondary"
               onClick={this.showPeepSchedule(peep)}
-              size={"default"}
-              style={{ borderRadius: "20px", width: "90%" }}
+              style={{ borderRadius: "10px", width: "90%" }}
             >
               Schedule
             </Button>,
             <Button
               type="secondary"
               onClick={this.showPeepTests(peep)}
-              size={"default"}
-              style={{ borderRadius: "20px", width: "90%" }}
+              style={{ borderRadius: "10px", width: "90%" }}
             >
               Tests
             </Button>,
             <Button
               type="secondary"
               onClick={this.showPeepAttendance(peep)}
-              size={"default"}
-              style={{ borderRadius: "20px", width: "90%" }}
+              style={{ borderRadius: "10px", width: "90%" }}
             >
               Attendance
             </Button>,
@@ -1381,22 +1379,24 @@ class MyGroup extends Component {
 
     const content = [
       <Modal
+        className="my-group"
         visible={visible}
         title={newStudentTitle}
         style={{ top: 0 }}
         onOk={this.handleOk}
         onCancel={this.handleCancel}
         footer={[
-          <Button key="back" onClick={this.handleCancel}>
+          <Button key="back" type="secondary" onClick={this.handleCancel}>
             Cancel
           </Button>,
           <Button
             key="submit"
             type="primary"
+            icon={<SaveOutlined />}
             loading={loading}
             onClick={this.handleSubmit}
           >
-            Submit
+            Save
           </Button>,
         ]}
       >
@@ -1551,7 +1551,7 @@ class MyGroup extends Component {
     ];
 
     const title = [
-      <Row>
+      <Row style={{ marginTop: 5 }}>
         <Title level={3}>
           My Group <TeamOutlined />
         </Title>
@@ -1559,20 +1559,14 @@ class MyGroup extends Component {
           style={{ height: 35, marginLeft: 15, marginRight: 15 }}
           type="vertical"
         />
-        <Button
-          type="primary"
-          shape="round"
-          icon={<UserAddOutlined />}
-          onClick={this.showModal}
-          size={"default"}
-        >
+        <Button icon={<UserAddOutlined />} onClick={this.showModal}>
           Add
         </Button>
       </Row>,
     ];
 
     return (
-      <div>
+      <div className="my-group">
         <Card
           bordered={false}
           bodyStyle={{ padding: 0 }}

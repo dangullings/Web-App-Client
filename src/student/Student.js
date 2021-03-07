@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import "./Student.css";
+import "../styles/style.less";
 import moment from "moment";
 import { Link, withRouter } from "react-router-dom";
 import { getRanks } from "../util/Helpers.js";

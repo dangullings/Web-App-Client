@@ -42,7 +42,7 @@ import {
   PlusCircleOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
-import "./SessionList.css";
+import "../styles/style.less";
 
 const ranks = getRanks();
 const { Title, Text } = Typography;

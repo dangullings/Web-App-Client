@@ -36,7 +36,7 @@ import {
 
 import bg from "../img/Session.png";
 //import bg from "../img/MainBackground.jpg";
-import "./Sessions.css";
+import "../styles/style.less";
 
 const layout = {
   labelCol: {
@@ -454,16 +454,17 @@ class Sessions extends Component {
             headStyle={{
               padding: 8,
               backgroundColor: "#4694b4",
-              borderRadius: "20px 20px 0px 0px",
+              borderRadius: "10px 10px 0px 0px",
             }}
             bodyStyle={{ backgroundColor: "white", padding: 8 }}
             style={{
               backgroundColor: "white",
               width: "100%",
               textShadow: "1px 1px 1px rgba(0,0,0,0.1)",
-              borderRadius: "20px",
-              boxShadow: "0px 2px 10px 0px rgba(208, 216, 243, 0.6)",
-              padding: 0,
+              borderRadius: "10px",
+              boxShadow:
+                "0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)",
+              padding: 4,
             }}
           >
             <Space size="small" direction="vertical">
@@ -491,7 +492,18 @@ class Sessions extends Component {
           </Card>,
         ];
 
-        sessionCards.push(<div style={{ padding: 10 }}>{sessionCard}</div>);
+        sessionCards.push(
+          <div
+            style={{
+              marginLeft: 2,
+              marginRight: 2,
+              marginBottom: 20,
+              marginTop: 0,
+            }}
+          >
+            {sessionCard}
+          </div>
+        );
       }
     }
 
@@ -504,12 +516,13 @@ class Sessions extends Component {
     ];
 
     const sessionModalTitle = [
-      <Title level={4}>{selectedSession.title}</Title>,
+      <Title level={2}>{selectedSession.title}</Title>,
     ];
 
     return (
       <div>
         <Card
+          className="session"
           bordered={false}
           bodyStyle={{ padding: 0 }}
           style={{
@@ -522,6 +535,7 @@ class Sessions extends Component {
           {content}
         </Card>
         <Modal
+          className="session"
           visible={sessionSignupVisible}
           title={sessionModalTitle}
           style={{ top: 0 }}
@@ -529,6 +543,7 @@ class Sessions extends Component {
           footer={[
             <Button
               key="back"
+              type="secondary"
               onClick={this.handleCancel}
               style={{
                 boxShadow: "0px 0px 5px rgba(0,0,0,0.2)",
