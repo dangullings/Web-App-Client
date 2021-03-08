@@ -7,12 +7,12 @@ export default class Footer extends Component {
     return (
       <div
         style={{
-          textShadow: "1px 1px 0px rgba(0,0,0,0.2)",
           marginTop: 40,
           marginLeft: 0,
           width: "100%",
           backgroundColor: "white",
           textAlign: "center",
+          color: "darkgray",
         }}
       >
         {fullYear}-{fullYear + 1}, All Rights Reserved by Dan Gullings

@@ -21,7 +21,7 @@ class Slider extends Component {
     super(props);
     this.handleMenuClick = this.handleMenuClick.bind(this);
     this.state = {
-      currentUser: this.props.currentUser,
+      currentUser: this.props.currentUser || "visitor",
       isAuthenticated: false,
       isLoading: false,
       collapsed: false,
@@ -68,9 +68,13 @@ class Slider extends Component {
     const { visible, currentUser } = this.state;
     let menuItems, authorizedMenuItems, userMenuItems, adminMenuItems;
 
-    console.log("current user role " + currentUser.username);
+    var welcome;
+    if (currentUser == "visitor") {
+      welcome = [<div>Welcome, visitor!</div>];
+    }
     //if (currentUser.role == "user") {
     userMenuItems = [
+      welcome,
       <Menu.Item
         key="/user/group"
         icon={<TeamOutlined />}

@@ -26,6 +26,7 @@ import {
 } from "antd";
 
 import { DeleteOutlined, PlusOutlined, SaveOutlined } from "@ant-design/icons";
+import "../styles/style.less";
 
 const { Title, Text } = Typography;
 const Compress = require("compress.js");
@@ -60,30 +61,15 @@ const colorsAvailable = [
 ];
 const { TextArea } = Input;
 
-const layout = {
-  labelCol: {
-    span: 10,
-  },
-  wrapperCol: {
-    span: 12,
-  },
-};
-
 class NewItem extends Component {
   constructor(props) {
     super(props);
     this.state = {
       items: [],
 
-      name: {
-        text: "",
-      },
-      saleCost: {
-        text: "",
-      },
-      description: {
-        text: "",
-      },
+      name: "",
+      description: "",
+      saleCost: 0,
       selectedType: "",
       selectedSizes: "",
       selectedColors: "",
@@ -93,6 +79,7 @@ class NewItem extends Component {
       fileList: [],
       photo: "",
       imageId: "",
+      isSavedItem: false,
 
       columns: [
         {
@@ -102,20 +89,6 @@ class NewItem extends Component {
         {
           title: "Description",
           dataIndex: "description",
-        },
-        {
-          title: <DeleteOutlined />,
-          dataIndex: "operation",
-          width: "10%",
-          render: (text, record) =>
-            this.state.items.length >= 1 ? (
-              <Popconfirm
-                title={"Sure to delete " + record.name + "?"}
-                onConfirm={() => this.removeItem(record)}
-              >
-                <a>{<DeleteOutlined />}</a>
-              </Popconfirm>
-            ) : null,
         },
       ],
     };
@@ -200,19 +173,11 @@ class NewItem extends Component {
 
     removeItem(item.id)
       .then((response) => {
-        notification.success({
-          message: "Removal Successful",
-          description: "Item removed.",
-          duration: 2,
-        });
+        message.success("Item deleted.");
         this.getItemList(this.state.page, this.state.pageSize);
       })
       .catch((error) => {
-        notification.error({
-          message: "Unsuccessful",
-          description:
-            error.message || "Something went wrong. Please try again!",
-        });
+        message.error("Error [" + error.message + "]");
       });
   }
 
@@ -263,14 +228,38 @@ class NewItem extends Component {
   }
 
   saveItem() {
+    let name = this.formRef.current.getFieldValue("name");
+    let description = this.formRef.current.getFieldValue("description");
+    let type = this.formRef.current.getFieldValue("type");
+    let colors = this.formRef.current.getFieldValue("colors");
+    let sizes = this.formRef.current.getFieldValue("sizes");
+    let saleCost = this.formRef.current.getFieldValue("saleCost");
+    let active = this.formRef.current.getFieldValue("active");
+
+    console.log(
+      "name " +
+        name +
+        " desc " +
+        description +
+        " type " +
+        type +
+        " colors " +
+        colors +
+        " sizes " +
+        sizes +
+        " saleCost " +
+        saleCost,
+      " active " + active
+    );
+
     const itemData = {
-      name: this.state.name.text,
-      type: this.state.selectedType,
-      sizes: this.state.selectedSizes.toString(),
-      colors: this.state.selectedColors.toString(),
-      saleCost: this.state.saleCost.text,
-      description: this.state.description.text,
-      active: this.state.active,
+      name: name,
+      type: type,
+      sizes: sizes.toString(),
+      colors: colors.toString(),
+      saleCost: saleCost,
+      description: description,
+      active: active,
       imageId: this.state.imageId,
     };
 
@@ -282,11 +271,7 @@ class NewItem extends Component {
         });
         this.getItemList(this.state.page, this.state.pageSize);
         this.resetFields();
-        notification.success({
-          message: "Save Successful!",
-          description: itemData.name + " was saved.",
-          duration: 2,
-        });
+        message.success("Item saved.");
       })
       .catch((error) => {
         this.setState({
@@ -446,6 +431,76 @@ class NewItem extends Component {
     return false;
   }
 
+  onReset() {
+    this.formRef.current.resetFields();
+    this.setState({
+      name: "",
+      address: "",
+      location: "",
+      visible: false,
+      loading: false,
+      isSavedItem: false,
+    });
+  }
+
+  onFill() {
+    if (this.formRef.current) {
+      this.formRef.current.setFieldsValue({
+        name: this.state.item.name,
+        description: this.state.item.description,
+        type: this.state.item.type,
+        saleCost: this.state.item.saleCost,
+        sizes: this.state.item.sizes,
+        colors: this.state.item.colors,
+        active: this.state.item.active,
+      });
+    }
+
+    this.setState({
+      isSavedItem: true,
+      visible: true,
+    });
+  }
+
+  showModal = () => {
+    this.setState({
+      visible: true,
+    });
+  };
+
+  handleCancel = () => {
+    this.onReset();
+  };
+
+  onReset() {
+    this.formRef.current.resetFields();
+    this.setState({
+      name: "",
+      type: "",
+      description: "",
+      saleCost: "",
+      colors: "",
+      sizes: "",
+      visible: false,
+      loading: false,
+      isSavedItem: false,
+    });
+  }
+
+  removeItem() {
+    const { item } = this.state;
+    removeItem(item.id)
+      .then((response) => {
+        message.success("Item deleted.");
+        this.onReset;
+        this.getItemList(this.state.page);
+        this.setState({ loading: false, visible: false });
+      })
+      .catch((error) => {
+        message.error("Error [" + error.message + "]");
+      });
+  }
+
   render() {
     const {
       name,
@@ -462,17 +517,47 @@ class NewItem extends Component {
       visible,
       items,
       isClothingSelected,
+      isSavedItem,
     } = this.state;
 
-    const ModalTitle = <Title level={2}>New Item</Title>;
+    var ModalTitle;
+    if (isSavedItem) {
+      ModalTitle = <Title level={2}>Edit Item</Title>;
+    } else {
+      ModalTitle = <Title level={2}>New Item</Title>;
+    }
     const TableTitle = <Title level={3}>Item List</Title>;
+
+    const renderButton = () => {
+      if (isSavedItem) {
+        return (
+          <Popconfirm
+            title="Delete item?"
+            onConfirm={this.removeItem}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Button
+              type="primary"
+              danger
+              icon={<DeleteOutlined />}
+              loading={loading}
+              onClick={this.confirmRemoveItem}
+            >
+              Delete
+            </Button>
+          </Popconfirm>
+        );
+      } else {
+        return [];
+      }
+    };
 
     const contentList = [
       <Button
         type="primary"
         icon={<PlusOutlined />}
         onClick={this.showModal}
-        size={"default"}
         style={{
           marginBottom: 10,
           marginTop: 10,
@@ -483,40 +568,50 @@ class NewItem extends Component {
         New Item
       </Button>,
 
-      <Form {...layout} onFinish={this.handleSubmit} ref={this.formRef}>
-        <Modal
-          visible={visible}
-          title={ModalTitle}
-          style={{ top: 0 }}
-          bodyStyle={{ padding: 20, marginBottom: 20 }}
-          onOk={this.handleOk}
-          onCancel={this.handleCancel}
-          footer={[
-            <Button
-              key="back"
-              onClick={this.handleCancel}
-              style={{
-                boxShadow: "0px 0px 5px rgba(0,0,0,0.2)",
-              }}
-            >
-              Cancel
-            </Button>,
-            <Button
-              key="submit"
-              type="primary"
-              icon={<SaveOutlined />}
-              disabled={this.isFormInvalid()}
-              loading={loading}
-              onClick={this.handleSubmit}
-              style={{
-                boxShadow: "0px 0px 5px rgba(0,0,0,0.2)",
-              }}
-            >
-              Submit
-            </Button>,
-          ]}
+      <Modal
+        className="location-list"
+        style={{ top: 0 }}
+        visible={visible}
+        title={ModalTitle}
+        onCancel={this.handleCancel}
+        footer={[
+          <Button key="back" type="secondary" onClick={this.handleCancel}>
+            Cancel
+          </Button>,
+          renderButton(),
+          <Button
+            key="submit"
+            type="primary"
+            icon={<SaveOutlined />}
+            loading={loading}
+            onClick={this.handleSubmit}
+          >
+            Save
+          </Button>,
+        ]}
+      >
+        <Form
+          initialValues={{
+            name: name,
+            description: description,
+            saleCost: saleCost,
+            active: active,
+            sizes: this.state.sizes,
+            colors: this.state.colors,
+            type: this.state.selectedType,
+          }}
+          layout="vertical"
+          onFinish={this.handleSubmit}
+          ref={this.formRef}
         >
-          <Form.Item label={<Title level={5}>Type</Title>}>
+          <Form.Item
+            name="type"
+            label={
+              <Title style={{ marginBottom: 0 }} level={5}>
+                Type
+              </Title>
+            }
+          >
             <Select
               align="center"
               style={{ marginLeft: 0, width: "100%" }}
@@ -527,7 +622,14 @@ class NewItem extends Component {
             </Select>
           </Form.Item>
 
-          <Form.Item label={<Title level={5}>Sizes Available</Title>}>
+          <Form.Item
+            name="sizes"
+            label={
+              <Title style={{ marginBottom: 0 }} level={5}>
+                Sizes Available
+              </Title>
+            }
+          >
             <Select
               disabled={!isClothingSelected}
               mode="multiple"
@@ -541,7 +643,14 @@ class NewItem extends Component {
             </Select>
           </Form.Item>
 
-          <Form.Item label={<Title level={5}>Colors Available</Title>}>
+          <Form.Item
+            name="colors"
+            label={
+              <Title style={{ marginBottom: 0 }} level={5}>
+                Colors Available
+              </Title>
+            }
+          >
             <Select
               //disabled={!isClothingSelected}
               mode="multiple"
@@ -556,29 +665,29 @@ class NewItem extends Component {
           </Form.Item>
 
           <Form.Item
-            label={<Title level={5}>Name</Title>}
+            name="name"
+            label={
+              <Title style={{ marginBottom: 0 }} level={5}>
+                Name
+              </Title>
+            }
             validateStatus={this.state.name.validateStatus}
             help={this.state.name.errorMsg}
-            className="student-form-row"
           >
             <Input
-              placeholder="T-Shirt"
+              placeholder="Name"
               style={{ fontSize: "16px" }}
-              rules={[
-                {
-                  required: true,
-                  message: "Please enter item name.",
-                },
-              ]}
               autosize={{ minRows: 1, maxRows: 1 }}
-              name="name"
-              value={this.state.name.text}
-              onChange={this.handleNameChange}
             />
           </Form.Item>
 
           <Form.Item
-            label={<Title level={5}>Sale Cost</Title>}
+            name="saleCost"
+            label={
+              <Title style={{ marginBottom: 0 }} level={5}>
+                Sale Cost
+              </Title>
+            }
             validateStatus={this.state.saleCost.validateStatus}
             help={this.state.saleCost.errorMsg}
             className="student-form-row"
@@ -594,7 +703,12 @@ class NewItem extends Component {
           </Form.Item>
 
           <Form.Item
-            label={<Title level={5}>Description</Title>}
+            name="description"
+            label={
+              <Title style={{ marginBottom: 0 }} level={5}>
+                Description
+              </Title>
+            }
             validateStatus={this.state.description.validateStatus}
             help={this.state.description.errorMsg}
             className="student-form-row"
@@ -610,7 +724,11 @@ class NewItem extends Component {
           </Form.Item>
 
           <Form.Item
-            label={<Title level={5}>Image</Title>}
+            label={
+              <Title style={{ marginBottom: 0 }} level={5}>
+                Image
+              </Title>
+            }
             className="student-form-row"
           >
             <Upload
@@ -622,26 +740,20 @@ class NewItem extends Component {
             </Upload>
           </Form.Item>
 
-          {/* <ImgCrop rotate>
-          <Upload
-            action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-            listType="picture-card"
-            fileList={fileList}
-            onChange={this.handleUpload}
-            onPreview={this.onPreview}
-          >
-            {fileList.length < 1 && "+ Upload"}
-          </Upload>
-        </ImgCrop> */}
-
           <Divider></Divider>
 
-          <Form.Item label={<Title level={5}>Product On Store</Title>}>
+          <Form.Item
+            name="active"
+            label={
+              <Title style={{ marginBottom: 0 }} level={5}>
+                Product On Store
+              </Title>
+            }
+          >
             <Switch value={active} onChange={this.toggle} />
           </Form.Item>
-        </Modal>
-      </Form>,
-
+        </Form>
+      </Modal>,
       <Table
         loading={loading}
         rowKey={items.id}
@@ -652,24 +764,50 @@ class NewItem extends Component {
         size="small"
         scroll={{ y: 350 }}
         onChange={this.handleTableChange}
+        onRow={(record, rowIndex) => {
+          return {
+            onClick: (event) => {
+              this.handleRowClick(record);
+            }, // click row
+            //onDoubleClick: event => { this.handleRowClick(record) }, // double click row
+            //onContextMenu: event => { }, // right button click row
+            //onMouseEnter: event => { }, // mouse enter row
+            //onMouseLeave: event => { }, // mouse leave row
+          };
+        }}
       />,
     ];
 
     return (
       <Card
-        bodyStyle={{ padding: 10 }}
-        style={{
-          width: "100%",
-          textShadow: "1px 1px 2px rgba(0,0,0,0.3)",
-          borderRadius: 6,
-          marginRight: 0,
-          boxShadow:
-            "0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)",
-        }}
-        title="New Item"
+        className="item-list"
+        bordered={false}
+        bodyStyle={{ padding: 0 }}
+        title="Items"
       >
         {contentList}
       </Card>
+    );
+  }
+
+  handleRowClick(item) {
+    this.showItem(item);
+  }
+
+  showItem(item) {
+    this.setState(
+      {
+        item: item,
+        name: item.name,
+        description: item.description,
+        type: item.type,
+        saleCost: item.saleCost,
+        sizes: item.sizes,
+        colors: item.colors,
+        active: item.active,
+        loading: false,
+      },
+      () => this.onFill()
     );
   }
 

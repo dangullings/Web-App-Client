@@ -3,7 +3,7 @@ import {
   Table,
   Popconfirm,
   Typography,
-  Tag,
+  message,
   Space,
   Icon,
   notification,
@@ -69,20 +69,6 @@ class LocationList extends Component {
           title: "Address",
           dataIndex: "address",
         },
-        {
-          title: <DeleteOutlined />,
-          dataIndex: "operation",
-          width: "10%",
-          render: (text, record) =>
-            this.state.locations.length >= 1 ? (
-              <Popconfirm
-                title={"Sure to delete " + record.name + "?"}
-                onConfirm={() => this.removeLocation(record.id)}
-              >
-                <a>{<DeleteOutlined />}</a>
-              </Popconfirm>
-            ) : null,
-        },
       ],
     };
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -94,6 +80,14 @@ class LocationList extends Component {
 
   onReset() {
     this.formRef.current.resetFields();
+    this.setState({
+      name: "",
+      address: "",
+      location: "",
+      visible: false,
+      loading: false,
+      isSavedLocation: false,
+    });
   }
 
   onFill() {
@@ -125,7 +119,10 @@ class LocationList extends Component {
     this.setState({
       name: "",
       address: "",
+      location: "",
       visible: false,
+      loading: false,
+      isSavedLocation: false,
     });
   }
 
@@ -164,23 +161,17 @@ class LocationList extends Component {
     this.getLocationList(this.state.page);
   }
 
-  removeLocation(id) {
-    removeLocation(id)
+  removeLocation() {
+    const { location } = this.state;
+    removeLocation(location.id)
       .then((response) => {
-        notification.success({
-          message: "Removal Successful",
-          description: "Location removed.",
-          duration: 2,
-        });
+        message.success("Location deleted.");
         this.onReset;
         this.getLocationList(this.state.page);
+        this.setState({ loading: false, visible: false });
       })
       .catch((error) => {
-        notification.error({
-          message: "Unsuccessful",
-          description:
-            error.message || "Something went wrong. Please try again!",
-        });
+        message.error("Error [" + error.message + "]");
       });
   }
 
@@ -196,24 +187,13 @@ class LocationList extends Component {
     };
     createLocation(location)
       .then((response) => {
+        message.success("Location saved.");
         this.getLocationList(this.state.page);
         this.onReset;
         this.setState({ loading: false, visible: false });
       })
       .catch((error) => {
-        if (error.status === 401) {
-          this.props.handleLogout(
-            "/login",
-            "error",
-            "You have been logged out. Please login create poll."
-          );
-        } else {
-          notification.error({
-            message: "Dans App",
-            description:
-              error.message || "Sorry! Something went wrong. Please try again!",
-          });
-        }
+        message.error("Error [" + error.message + "]");
       });
   }
 
@@ -246,6 +226,7 @@ class LocationList extends Component {
       isSavedLocation,
       name,
       address,
+      location,
     } = this.state;
 
     //this.formRef.current.getFieldDecorator("name", { initialValue: {} });
@@ -260,15 +241,22 @@ class LocationList extends Component {
     const renderButton = () => {
       if (isSavedLocation) {
         return (
-          <Button
-            type="primary"
-            danger
-            icon={<DeleteOutlined />}
-            loading={loading}
-            onClick={this.removeLocation}
+          <Popconfirm
+            title="Delete location?"
+            onConfirm={this.removeLocation}
+            okText="Yes"
+            cancelText="No"
           >
-            Delete
-          </Button>
+            <Button
+              type="primary"
+              danger
+              icon={<DeleteOutlined />}
+              loading={loading}
+              onClick={this.confirmRemoveLocation}
+            >
+              Delete
+            </Button>
+          </Popconfirm>
         );
       } else {
         return [];
@@ -403,11 +391,6 @@ class LocationList extends Component {
         className="location-list"
         bordered={false}
         bodyStyle={{ padding: 0 }}
-        style={{
-          width: "100%",
-          textShadow: "1px 1px 1px rgba(0,0,0,0.1)",
-          borderRadius: 6,
-        }}
         title={title}
       >
         {contentList}
@@ -429,38 +412,6 @@ class LocationList extends Component {
       },
       () => this.onFill()
     );
-  }
-
-  loadLocation(location) {
-    let promise;
-
-    promise = getLocation(location.id);
-
-    if (!promise) {
-      return;
-    }
-
-    this.setState({
-      loading: true,
-    });
-
-    promise
-      .then((response) => {
-        this.setState(
-          {
-            location: response,
-            name: response.name,
-            address: response.address,
-            loading: false,
-          },
-          () => this.onFill()
-        );
-      })
-      .catch((error) => {
-        this.setState({
-          loading: false,
-        });
-      });
   }
 }
 

@@ -82,7 +82,7 @@ class LoginForm extends Component {
 
   render() {
     return (
-      <Form onFinish={this.handleSubmit} className="login-form">
+      <Form onFinish={this.handleSubmit} className="login-container">
         <FormItem
           name="usernameOrEmail"
           rules={[
@@ -120,7 +120,6 @@ class LoginForm extends Component {
           >
             Login
           </Button>
-          Or <Link to="/signup">register now!</Link>
         </FormItem>
       </Form>
     );

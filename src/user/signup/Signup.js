@@ -197,7 +197,6 @@ class Signup extends Component {
               >
                 Sign up
               </Button>
-              Already registed? <Link to="/login">Login now!</Link>
             </Form.Item>
           </Form>
         </div>
