@@ -715,7 +715,7 @@ class Attendance extends Component {
     ];
 
     return (
-      <Content>
+      <Content className="attendance">
         <Row>{renderButton()}</Row>
         <Row style={{ marginTop: 20 }}>
           {month_year}

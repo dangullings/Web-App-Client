@@ -1,40 +1,94 @@
-.no-student-found {
+.studentList {
+  .ant-btn {
+    color: #fff;
+    background: @primary-blue;
+    border-color: @border-blue;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39);
+    &:hover {
+      background-color: @highlight-blue !important;
+      border-color: @border-blue !important;
+      color: white;
+    }
+  }
+
+  .ant-btn-secondary {
+    color: @primary-blue;
+    background: white;
+    border-color: @border-blue;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39);
+  }
+
+  .ant-btn:focus {
+    color: #fff;
+    background: @primary-blue;
+    border-color: white;
+  }
+
+  .ant-modal-header {
+    padding: 16px 24px;
+    color: #fff;
+    background: #4694b4;
+    border-bottom: #4694b4;
+    box-shadow: 0px 4px 6px #525252;
+  }
+
+  h2.ant-typography,
+  .ant-typography h2 {
+    margin-bottom: 0.5em;
+    color: #fff;
+    font-weight: 600;
+    font-size: 24px;
+    line-height: 1.35;
+  }
+
+  .ant-typography strong {
+    font-weight: 600;
+    font-size: 18px;
+  }
+
+  .ant-switch-checked {
+    background-color: @highlight-blue;
+  }
+
+  .no-student-found {
     font-size: 20px;
     text-align: center;
-    padding: 20px;    
-}
+    padding: 20px;
+  }
 
-.load-more-students {
+  .load-more-students {
     text-align: center;
-    margin-bottom: 40px;    
-}
+    margin-bottom: 40px;
+  }
 
-.info-border {
-    border: 1px solid #17A2B8;
-}
+  .info-border {
+    border: 1px solid #17a2b8;
+  }
 
-.page-num {
+  .page-num {
     width: 45px !important;
-    border: 1px solid #17A2B8;
-    color: #17A2B8;
+    border: 1px solid #17a2b8;
+    color: #17a2b8;
     text-align: center;
     font-weight: bold;
-}
+  }
 
-.arrow {
-    width : 0;
-    height : 0;
-    float : right;
-    margin-top : 5px;
-    border-left : 5px solid transparent;
-    border-right : 5px solid transparent;
-    display : inline-block;
-}
+  .arrow {
+    width: 0;
+    height: 0;
+    float: right;
+    margin-top: 5px;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    display: inline-block;
+  }
 
-.arrow-up {
-    border-bottom : 10px solid white;
-}
+  .arrow-up {
+    border-bottom: 10px solid white;
+  }
 
-.arrow-down {
-    border-top : 10px solid white;
+  .arrow-down {
+    border-top: 10px solid white;
+  }
 }

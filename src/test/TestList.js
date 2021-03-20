@@ -1084,14 +1084,7 @@ class TestList extends Component {
         style={{ top: 0 }}
         onCancel={this.handleCancel}
         footer={[
-          <Button
-            key="back"
-            type="secondary"
-            onClick={this.handleCancel}
-            style={{
-              boxShadow: "0px 0px 5px rgba(0,0,0,0.2)",
-            }}
-          >
+          <Button key="back" type="secondary" onClick={this.handleCancel}>
             Cancel
           </Button>,
           renderButton(),
@@ -1103,9 +1096,6 @@ class TestList extends Component {
             disabled={this.isFormInvalid()}
             loading={loading}
             onClick={this.handleSubmit}
-            style={{
-              boxShadow: "0px 0px 5px rgba(0,0,0,0.2)",
-            }}
           >
             Save
           </Button>,

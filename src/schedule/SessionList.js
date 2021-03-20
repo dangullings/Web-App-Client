@@ -1358,7 +1358,8 @@ class SessionList extends Component {
             icon={<CarryOutOutlined />}
             disabled
             style={{
-              boxShadow: "0px 0px 5px rgba(0,0,0,0.2)",
+              boxShadow:
+                "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
               marginLeft: 10,
               width: "60%",
             }}
@@ -1374,7 +1375,8 @@ class SessionList extends Component {
           <Button
             icon={<CarryOutOutlined />}
             style={{
-              boxShadow: "0px 0px 5px rgba(0,0,0,0.2)",
+              boxShadow:
+                "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
               marginLeft: 10,
               width: "60%",
             }}
@@ -1787,7 +1789,8 @@ class SessionList extends Component {
           marginTop: 10,
           marginLeft: 8,
           marginRight: 10,
-          boxShadow: "0px 0px 5px rgba(0,0,0,0.2)",
+          boxShadow:
+            "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
         }}
       >
         New Session
@@ -1800,6 +1803,7 @@ class SessionList extends Component {
         style={{ top: 0, padding: 0, marginLeft: 0 }}
       >
         <Modal
+          className="sessionList"
           visible={visible}
           title={ModalTitle}
           style={{ top: 0 }}
@@ -1809,9 +1813,11 @@ class SessionList extends Component {
           footer={[
             <Button
               key="back"
+              type="secondary"
               onClick={this.handleCancel}
               style={{
-                boxShadow: "0px 0px 5px rgba(0,0,0,0.2)",
+                boxShadow:
+                  "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
               }}
             >
               Cancel
@@ -1824,7 +1830,8 @@ class SessionList extends Component {
               loading={loading}
               onClick={this.handleSubmit}
               style={{
-                boxShadow: "0px 0px 5px rgba(0,0,0,0.2)",
+                boxShadow:
+                  "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
               }}
             >
               Submit
@@ -2034,7 +2041,8 @@ class SessionList extends Component {
           <Button
             icon={<ReloadOutlined />}
             style={{
-              boxShadow: "0px 0px 5px rgba(0,0,0,0.2)",
+              boxShadow:
+                "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
               marginTop: 10,
               marginLeft: 10,
               width: "30%",
@@ -2067,7 +2075,8 @@ class SessionList extends Component {
             <Button
               icon={<DeleteOutlined />}
               style={{
-                boxShadow: "0px 0px 5px rgba(0,0,0,0.2)",
+                boxShadow:
+                  "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
                 marginLeft: 10,
               }}
               onClick={this.removeSelectedDate.bind(this, selectedDate)}
@@ -2081,7 +2090,11 @@ class SessionList extends Component {
           {addSpecificDate}
           <Button
             icon={<PlusCircleOutlined />}
-            style={{ boxShadow: "0px 0px 5px rgba(0,0,0,0.2)", marginLeft: 10 }}
+            style={{
+              boxShadow:
+                "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
+              marginLeft: 10,
+            }}
             onClick={this.addSpecificDate}
             shape="round"
             type="primary"
@@ -2119,13 +2132,14 @@ class SessionList extends Component {
 
     return (
       <Card
+        className="sessionList"
         bodyStyle={{ padding: 0 }}
         style={{
           width: "100%",
           //textShadow: '1px 1px 1px rgba(0,0,0,0.1)',
           borderRadius: 6,
           boxShadow:
-            "0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)",
+            "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
         }}
         title={TableTitle}
       >

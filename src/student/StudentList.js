@@ -555,13 +555,12 @@ class StudentList extends Component {
           marginTop: 5,
           marginLeft: 0,
           marginRight: 10,
-          boxShadow: "0px 0px 5px rgba(0,0,0,0.2)",
         }}
       >
         New Student
       </Button>,
       <Modal
-        className="student-list"
+        className="studentList"
         visible={visible}
         title={newStudentTitle}
         style={{ top: 0 }}
@@ -795,7 +794,7 @@ class StudentList extends Component {
 
     return (
       <Card
-        className="student-list"
+        className="studentList"
         bordered={false}
         headStyle={{ padding: 6, marginBottom: 0 }}
         bodyStyle={{ padding: 6 }}

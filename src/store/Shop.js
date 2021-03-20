@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import {
   Table,
   Switch,
-  Tag,
+  message,
   Space,
   Icon,
   notification,
@@ -235,6 +235,8 @@ class Shop extends Component {
       cartItemsQty: [...this.state.cartItemsQty, newCartItemQty],
       cartItems: [...this.state.cartItems, newCartItem],
     });
+
+    message.success("Item added to cart.");
   }
 
   isFormInvalid() {
@@ -424,6 +426,8 @@ class Shop extends Component {
     });
 
     this.setState({ cartItems: newCartItems });
+
+    message.success("Item removed from cart.");
   }
 
   cartItemCard(product) {
@@ -445,7 +449,7 @@ class Shop extends Component {
     let totalItemCost = (Math.round(num * 100) / 100).toFixed(2);
     const saleCostLabel = [
       <Space size="small">
-        <Text type="secondary">Total:</Text>
+        <Text type="secondary"></Text>
         <Text strong>${totalItemCost}</Text>
       </Space>,
     ];
@@ -473,6 +477,7 @@ class Shop extends Component {
             <Image
               width={"100%"}
               height={"100%"}
+              style={{ left: -1 }}
               src={`data:image/jpeg;base64,${this.getProductImage(
                 item.imageId
               )}`}
@@ -484,13 +489,20 @@ class Shop extends Component {
               {sizeLabel}
             </Row>,
 
-            <Row justify="center" style={{ width: "100%", marginTop: -14 }}>
+            <Row
+              justify="space-around"
+              style={{ width: "100%", marginTop: -14 }}
+            >
               <Col style={{ width: "100%" }}>{itemQty}</Col>
               <Col>
                 <Button
-                  style={{ marginRight: 15 }}
+                  style={{ marginRight: 35 }}
                   size="small"
                   onClick={() => this.reduceItemQty(itemId)}
+                  style={{
+                    boxShadow:
+                      "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 3px 6px 0 rgba(0, 0, 0, 0.39)",
+                  }}
                 >
                   <MinusOutlined />
                 </Button>
@@ -499,6 +511,10 @@ class Shop extends Component {
                 <Button
                   size="small"
                   onClick={() => this.increaseItemQty(itemId)}
+                  style={{
+                    boxShadow:
+                      "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 3px 6px 0 rgba(0, 0, 0, 0.39)",
+                  }}
                 >
                   <PlusOutlined />
                 </Button>
@@ -510,6 +526,10 @@ class Shop extends Component {
                   danger
                   icon={<DeleteOutlined />}
                   onClick={() => this.removeCartItem(itemId)}
+                  style={{
+                    boxShadow:
+                      "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 3px 6px 0 rgba(0, 0, 0, 0.39)",
+                  }}
                 >
                   Remove
                 </Button>
@@ -519,8 +539,7 @@ class Shop extends Component {
             <Row
               align="bottom"
               style={{
-                align: "33%",
-                marginLeft: 8,
+                marginLeft: 16,
                 marginTop: 10,
               }}
             >
@@ -535,9 +554,11 @@ class Shop extends Component {
   }
 
   productCard(product) {
+    let saleCost = (Math.round(product.saleCost * 100) / 100).toFixed(2);
+
     const saleCostLabel = [
       <Title style={{ marginLeft: 50 }} level={3}>
-        ${product.saleCost}
+        ${saleCost}
       </Title>,
     ];
 
@@ -575,7 +596,8 @@ class Shop extends Component {
                   style={{
                     width: "100%",
                     marginLeft: 0,
-                    boxShadow: "0px 1px 4px rgba(0,0,0,0.2)",
+                    boxShadow:
+                      "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
                   }}
                   placeholder="Colors"
                   onChange={this.changeSelectedColor(product)}
@@ -592,7 +614,8 @@ class Shop extends Component {
                   style={{
                     width: "100%",
                     marginLeft: 0,
-                    boxShadow: "0px 1px 4px rgba(0,0,0,0.2)",
+                    boxShadow:
+                      "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
                   }}
                   placeholder="Sizes"
                   onChange={this.changeSelectedSize(product)}
@@ -616,7 +639,9 @@ class Shop extends Component {
                     marginLeft: 10,
                     marginRight: 10,
                     width: "100%",
-                    boxShadow: "0px 1px 5px rgba(0,0,0,0.2)",
+                    borderRadius: "10px",
+                    boxShadow:
+                      "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
                   }}
                 >
                   Add to Cart
@@ -640,7 +665,6 @@ class Shop extends Component {
       for (itemQty of cartItemsQty) {
         if (itemQty.id == item.id) {
           totalCost += itemQty.quantity * item.product.saleCost;
-          console.log("totalcart cost " + totalCost);
           break;
         }
       }
@@ -681,7 +705,7 @@ class Shop extends Component {
     const totals = [
       <Row align="end" style={{ marginTop: 35, marginRight: 20 }}>
         <Space size="small">
-          <Title level={4}>Total:</Title>
+          <Title level={4}>Cart Total:</Title>
           <Title type="success" level={3}>
             {totalCartCost}
           </Title>
@@ -778,7 +802,10 @@ class Shop extends Component {
           >
             <Badge count={cartItems.length} offset={[-10, 15]}>
               <Button
-                style={{ boxShadow: "2px 2px 4px rgba(0,0,0,0.6)" }}
+                style={{
+                  boxShadow:
+                    "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
+                }}
                 shape="round"
                 size={"large"}
                 onClick={this.showModal}

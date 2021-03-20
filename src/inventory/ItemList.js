@@ -296,7 +296,7 @@ class NewItem extends Component {
           visible: false,
         });
         this.getItemList(this.state.page, this.state.pageSize);
-        this.handleCancel;
+        this.resetForm();
         message.success("Item saved.");
       })
       .catch((error) => {
@@ -304,6 +304,28 @@ class NewItem extends Component {
           loading: false,
         });
       });
+  }
+
+  resetForm() {
+    this.formRef.current.resetFields();
+    this.setState({
+      name: "",
+      type: "",
+      description: "",
+      saleCost: "",
+      colors: "",
+      sizes: "",
+      selectedColors: "",
+      selectedSizes: "",
+      photo: "",
+      itemImage: "",
+      active: false,
+      visible: false,
+      loading: false,
+      isSavedItem: false,
+    });
+
+    console.log("handle Cancel called");
   }
 
   handleUpload(info) {
@@ -439,12 +461,11 @@ class NewItem extends Component {
       selectedSizes: "",
       photo: "",
       itemImage: "",
+      active: false,
       visible: false,
       loading: false,
       isSavedItem: false,
     });
-
-    console.log("handle Cancel called");
   }
 
   render() {

@@ -772,7 +772,8 @@ class EventCalendar extends Component {
           style={{
             width: "100%",
             marginLeft: 0,
-            boxShadow: "0px 0px 5px rgba(0,0,0,0.2)",
+            boxShadow:
+              "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
           }}
           placeholder="Events / Classes"
           optionFilterProp="children"
@@ -795,7 +796,8 @@ class EventCalendar extends Component {
           value={datepickerValue}
           style={{
             marginLeft: 0,
-            boxShadow: "0px 0px 5px rgba(0,0,0,0.2)",
+            boxShadow:
+              "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
           }}
         />
         {renderButton()}
@@ -814,6 +816,7 @@ class EventCalendar extends Component {
         }}
       >
         <Modal
+          className="eventCalendar"
           visible={eventModalVisible}
           title={ModalTitle}
           onCancel={this.handleCancel}
@@ -821,9 +824,11 @@ class EventCalendar extends Component {
           footer={[
             <Button
               key="back"
+              type="secondary"
               onClick={this.handleCancel}
               style={{
-                boxShadow: "0px 0px 5px rgba(0,0,0,0.2)",
+                boxShadow:
+                  "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
               }}
             >
               Cancel
@@ -835,7 +840,8 @@ class EventCalendar extends Component {
               loading={loading}
               onClick={this.handleEventSubmit}
               style={{
-                boxShadow: "0px 0px 5px rgba(0,0,0,0.2)",
+                boxShadow:
+                  "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
               }}
             >
               Submit
@@ -1119,7 +1125,7 @@ class EventCalendar extends Component {
       "Event Calendar " + shortName + " '" + String(year).slice(-2);
 
     return (
-      <Content>
+      <Content className="eventCalendar">
         <Card
           bodyStyle={{ padding: 0 }}
           bordered={false}

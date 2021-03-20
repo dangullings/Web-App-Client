@@ -1327,16 +1327,16 @@ class MyGroup extends Component {
           headStyle={{
             padding: 0,
             backgroundColor: "#4694b4",
-            borderRadius: "20px 20px 0px 0px",
+            borderRadius: "10px 10px 0px 0px",
           }}
           bodyStyle={{ backgroundColor: "white", padding: 0 }}
           style={{
             backgroundColor: "white",
             width: "100%",
             textShadow: "1px 1px 1px rgba(0,0,0,0.1)",
-            borderRadius: "20px",
+            borderRadius: "10px",
             boxShadow:
-              "0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)",
+              "0 4px 8px 0 rgba(0, 0, 0, 0.4), 0 6px 20px 0 rgba(0, 0, 0, 0.39)",
             padding: 6,
           }}
           title={peepTitle}
