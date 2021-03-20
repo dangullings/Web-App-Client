@@ -12,17 +12,14 @@ import Sessions from "../user_role/Sessions";
 import Events from "../user_role/Events";
 import EventCalendar from "../schedule/EventCalendar";
 import LocationList from "../location/LocationList";
-import Location from "../location/Location";
 import SessionList from "../schedule/SessionList";
 import NewSession from "../schedule/NewSession";
 import Session from "../schedule/Session";
 import Attendance from "../schedule/Attendance";
 import TestList from "../test/TestList";
 import Products from "../store/Products";
-import Cart from "../store/Cart";
 import Shop from "../store/Shop";
 import ItemList from "../inventory/ItemList";
-import Item from "../inventory/Item";
 import StudentList from "../student/StudentList";
 import Student from "../student/Student";
 import Login from "../user/login/Login";
@@ -369,17 +366,6 @@ class App extends Component {
                   />
                 )}
               ></Route>
-              <Route
-                path="/items/:id"
-                render={(props) => (
-                  <Item
-                    isAuthenticated={this.state.isAuthenticated}
-                    currentUser={this.state.currentUser}
-                    {...props}
-                  />
-                )}
-              ></Route>
-              <Route component={NotFound}></Route>
             </Switch>
           </div>
         </Content>

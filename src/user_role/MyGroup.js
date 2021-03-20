@@ -268,7 +268,7 @@ class MyGroup extends Component {
 
   getMyPeepsList() {
     let promise;
-    promise = getMyPeeps(1); // this.state.currentUser.id
+    promise = getMyPeeps(this.state.currentUser.id);
     if (!promise) {
       return;
     }

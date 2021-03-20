@@ -6,6 +6,7 @@ import {
   Space,
   Icon,
   notification,
+  Badge,
   Typography,
   Input,
   Button,
@@ -16,7 +17,6 @@ import {
   Divider,
   Affix,
   Spin,
-  Badge,
   Modal,
   Image,
 } from "antd";
@@ -35,7 +35,7 @@ import {
   SearchOutlined,
   EditOutlined,
   EllipsisOutlined,
-  SettingOutlined,
+  DeleteOutlined,
   ShoppingCartOutlined,
   DollarCircleOutlined,
   MinusOutlined,
@@ -208,14 +208,32 @@ class Shop extends Component {
   };
 
   addToCart(product) {
+    const { cartItems } = this.state;
+
+    let item;
+    let cartItemIds = [];
+    for (item of cartItems) {
+      cartItemIds.push(item.id);
+    }
+
+    var newId = Math.floor(Math.random() * 1000);
+    while (cartItemIds.includes(newId)) {
+      newId = Math.floor(Math.random() * 1000);
+    }
+
     const newCartItemQty = {
-      id: product.id,
+      id: newId,
       quantity: 1,
+    };
+
+    const newCartItem = {
+      id: newId,
+      product: product,
     };
 
     this.setState({
       cartItemsQty: [...this.state.cartItemsQty, newCartItemQty],
-      cartItems: [...this.state.cartItems, product],
+      cartItems: [...this.state.cartItems, newCartItem],
     });
   }
 
@@ -397,7 +415,20 @@ class Shop extends Component {
     this.setState({ products });
   };
 
-  cartItemCard(item) {
+  removeCartItem(itemId) {
+    const { cartItems } = this.state;
+
+    let newCartItems = cartItems;
+    newCartItems = newCartItems.filter(function (obj) {
+      return obj.id !== itemId;
+    });
+
+    this.setState({ cartItems: newCartItems });
+  }
+
+  cartItemCard(product) {
+    const item = product.product;
+    const itemId = product.id;
     const colorLabel = [
       <Space size="small">
         <Text type="secondary">Color:</Text>
@@ -410,58 +441,95 @@ class Shop extends Component {
         <Text strong>{item.size}</Text>
       </Space>,
     ];
+    let num = item.saleCost * this.getItemQty(itemId);
+    let totalItemCost = (Math.round(num * 100) / 100).toFixed(2);
     const saleCostLabel = [
       <Space size="small">
         <Text type="secondary">Total:</Text>
-        <Text strong>${item.saleCost}</Text>
+        <Text strong>${totalItemCost}</Text>
+      </Space>,
+    ];
+    const itemQty = [
+      <Space size="small">
+        <Text type="secondary">Qty:</Text>
+        <Text strong>{this.getItemQty(itemId)}</Text>
       </Space>,
     ];
 
-    const itemQty = this.getItemQty(item.id);
     return (
-      <Row style={{ marginBottom: 15 }}>
-        <Col>
-          <Card
-            hoverable
-            key={item.id}
-            style={{
-              width: "100%",
-              borderRadius: "10px",
-              boxShadow: "0px 2px 10px 0px rgba(208, 216, 243, 0.6)",
-            }}
-            headStyle={{ backgroundColor: "#fafafa" }}
-            bodyStyle={{ backgroundColor: "#fafafa" }}
-            cover={
-              <Image
-                width={"100%"}
-                height={"100%"}
-                src={`data:image/jpeg;base64,${this.getProductImage(
-                  item.imageId
-                )}`}
-              />
-            }
-            actions={[
-              <Row style={{ marginLeft: 10, marginRight: 0 }}>
-                {colorLabel}
-                {sizeLabel}
-              </Row>,
-              <Row style={{ marginLeft: 5, marginRight: 5 }}>
-                <Button onClick={() => this.reduceItemQty(item.id)}>
+      <Row style={{ marginTop: 15, width: "100%" }}>
+        <Card
+          hoverable
+          key={itemId}
+          style={{
+            width: "100%",
+            borderRadius: "10px",
+            boxShadow:
+              "0 4px 8px 0 rgba(0, 0, 0, 0.4), 0 6px 20px 0 rgba(0, 0, 0, 0.39)",
+          }}
+          headStyle={{ backgroundColor: "#fafafa" }}
+          bodyStyle={{ backgroundColor: "#fafafa" }}
+          cover={
+            <Image
+              width={"100%"}
+              height={"100%"}
+              src={`data:image/jpeg;base64,${this.getProductImage(
+                item.imageId
+              )}`}
+            />
+          }
+          actions={[
+            <Row style={{ width: "33%", marginLeft: 8, marginTop: -8 }}>
+              {colorLabel}
+              {sizeLabel}
+            </Row>,
+
+            <Row justify="center" style={{ width: "100%", marginTop: -14 }}>
+              <Col style={{ width: "100%" }}>{itemQty}</Col>
+              <Col>
+                <Button
+                  style={{ marginRight: 15 }}
+                  size="small"
+                  onClick={() => this.reduceItemQty(itemId)}
+                >
                   <MinusOutlined />
                 </Button>
-                Qty: {itemQty},
-                <Button onClick={() => this.increaseItemQty(item.id)}>
+              </Col>
+              <Col>
+                <Button
+                  size="small"
+                  onClick={() => this.increaseItemQty(itemId)}
+                >
                   <PlusOutlined />
                 </Button>
-              </Row>,
-              <Row style={{ marginLeft: 10, marginRight: 10 }}>
-                {saleCostLabel}
-              </Row>,
-            ]}
-          >
-            <Meta title={item.name} description={item.description} />
-          </Card>
-        </Col>
+              </Col>
+              <Col style={{ width: "100%", marginTop: 5 }}>
+                <Button
+                  size="small"
+                  type="primary"
+                  danger
+                  icon={<DeleteOutlined />}
+                  onClick={() => this.removeCartItem(itemId)}
+                >
+                  Remove
+                </Button>
+              </Col>
+            </Row>,
+
+            <Row
+              align="bottom"
+              style={{
+                align: "33%",
+                marginLeft: 8,
+                marginTop: 10,
+              }}
+            >
+              {saleCostLabel}
+            </Row>,
+          ]}
+        >
+          <Meta title={item.name} description={item.description} />
+        </Card>
       </Row>
     );
   }
@@ -486,13 +554,14 @@ class Shop extends Component {
               width: "100%",
               borderRadius: "10px",
               boxShadow:
-                "0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)",
+                "0 4px 8px 0 rgba(0, 0, 0, 0.4), 0 6px 20px 0 rgba(0, 0, 0, 0.39)",
             }}
             headStyle={{ backgroundColor: "#fafafa" }}
             bodyStyle={{ backgroundColor: "#fafafa" }}
             cover={
               <Image
-                width={"99.5%"}
+                style={{ left: -1 }}
+                width={"100%"}
                 height={"100%"}
                 src={`data:image/jpeg;base64,${this.getProductImage(
                   product.imageId
@@ -562,6 +631,24 @@ class Shop extends Component {
     );
   }
 
+  getTotalCartCost() {
+    const { cartItems, cartItemsQty } = this.state;
+
+    var item, itemQty;
+    var totalCost = 0;
+    for (item of cartItems) {
+      for (itemQty of cartItemsQty) {
+        if (itemQty.id == item.id) {
+          totalCost += itemQty.quantity * item.product.saleCost;
+          console.log("totalcart cost " + totalCost);
+          break;
+        }
+      }
+    }
+
+    return "$" + (Math.round(totalCost * 100) / 100).toFixed(2);
+  }
+
   render() {
     const {
       products,
@@ -570,6 +657,7 @@ class Shop extends Component {
       search,
       windowWidth,
       cartItems,
+      cartItemsQty,
       loading,
       cartVisible,
     } = this.state;
@@ -587,6 +675,19 @@ class Shop extends Component {
         cartCards.push(this.cartItemCard(item));
       });
     }
+
+    let totalCartCost = this.getTotalCartCost();
+
+    const totals = [
+      <Row align="end" style={{ marginTop: 35, marginRight: 20 }}>
+        <Space size="small">
+          <Title level={4}>Total:</Title>
+          <Title type="success" level={3}>
+            {totalCartCost}
+          </Title>
+        </Space>
+      </Row>,
+    ];
 
     const ModalTitle = <Title level={2}>Cart</Title>;
     const cartView = [
@@ -625,6 +726,7 @@ class Shop extends Component {
         ]}
       >
         {cartCards}
+        {totals}
       </Modal>,
     ];
 

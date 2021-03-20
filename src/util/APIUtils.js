@@ -93,6 +93,13 @@ export function chargePayment(payment) {
   });
 }
 
+export function getItemImage(id) {
+  return request({
+    url: API_BASE_URL + "/items/image/" + id,
+    method: "GET",
+  });
+}
+
 export function getLocation(id) {
   return request({
     url: API_BASE_URL + "/locations/" + id,
@@ -576,9 +583,9 @@ export function getAllItemsByActive() {
   });
 }
 
-export function createItemImage(file) {
+export function createItemImage(file, id) {
   return requestImage({
-    url: API_BASE_URL + "/items/saveItemImage",
+    url: API_BASE_URL + "/items/saveItemImage/" + id,
     method: "POST",
     body: file,
   });
@@ -592,7 +599,7 @@ export function createItem(itemData) {
   });
 }
 
-export function removeItem(id) {
+export function removeItemById(id) {
   return request({
     url: API_BASE_URL + "/items/" + id,
     method: "DELETE",

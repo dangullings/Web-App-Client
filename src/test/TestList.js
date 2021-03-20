@@ -149,32 +149,17 @@ class TestList extends Component {
     this.getSessionList();
   }
 
-  onReset() {
-    this.setState({
-      testStudents: [],
-      selectedTestStudent: "",
+  onFill = () => {
+    this.formRef.current.setFieldsValue({
+      title: this.state.title,
+      startTime: moment(this.state.test.startTime, "HH:mm:ss"),
+      endTime: moment(this.state.test.endTime, "HH:mm:ss"),
+      date: moment(this.state.date),
+      location: this.state.selectedLocation,
+      type: this.state.selectedType,
+      testStudentIds: [],
     });
-    this.formRef.current.resetFields();
-  }
-
-  onFill() {
-    if (this.formRef.current) {
-      this.formRef.current.setFieldsValue({
-        title: this.state.title,
-        startTime: moment(this.state.test.startTime, "HH:mm:ss"),
-        endTime: moment(this.state.test.endTime, "HH:mm:ss"),
-        date: moment(this.state.date),
-        location: this.state.selectedLocation,
-        type: this.state.selectedType,
-        testStudentIds: [],
-      });
-    }
-
-    this.setState({
-      isSavedTest: true,
-      visible: true,
-    });
-  }
+  };
 
   validateTest() {}
 
@@ -671,13 +656,16 @@ class TestList extends Component {
   };
 
   showModal = () => {
-    this.setState({
-      visible: true,
-      isSavedTest: false,
-      testStudents: [],
-      selectedItems: [],
-      selectedTestStudent: "",
-    });
+    this.setState(
+      {
+        visible: true,
+        isSavedTest: false,
+        testStudents: [],
+        selectedItems: [],
+        selectedTestStudent: "",
+      },
+      this.setFormValues
+    );
 
     this.getAllStudentsList(0);
     this.getAllLocationsList(0);
@@ -686,17 +674,47 @@ class TestList extends Component {
       selectedLocation: this.state.locationItems[0],
     });
 
-    var today = new Date();
-    var dd = String(today.getDate()).padStart(2, "0");
-    var mm = String(today.getMonth() + 1).padStart(2, "0");
-    var yyyy = today.getFullYear();
-    today = yyyy + "-" + mm + "-" + dd;
+    //var today = new Date();
+    //var dd = String(today.getDate()).padStart(2, "0");
+    //var mm = String(today.getMonth() + 1).padStart(2, "0");
+    //var yyyy = today.getFullYear();
+    //today = yyyy + "-" + mm + "-" + dd;
   };
 
-  handleCancel() {
-    this.onReset();
-    this.setState({ visible: false, isSavedTest: false });
-  }
+  setFormValues = () => {
+    var startTime = moment();
+    var endTime = moment().add(2, "hours");
+    this.formRef.current.setFieldsValue({
+      title: "",
+      startTime: startTime,
+      endTime: endTime,
+      date: moment(),
+      location: "",
+      type: "Color",
+      testStudentIds: [],
+    });
+  };
+
+  handleCancel = () => {
+    //this.formRef.current.resetFields();
+
+    var startTime = moment();
+    var endTime = moment().add(2, "hours");
+
+    this.setState({
+      title: "",
+      location: "",
+      type: "",
+      date: moment(),
+      startTime: startTime,
+      endTime: endTime,
+      testStudents: [],
+      selectedTestStudent: "",
+      visible: false,
+      loading: false,
+      isSavedTest: false,
+    });
+  };
 
   handleTitleChange(event) {
     const value = event.target.value;
@@ -705,15 +723,23 @@ class TestList extends Component {
     });
   }
 
-  removeTest(id) {
+  removeTest = () => {
+    const id = this.state.testId;
     removeTest(id)
-      .then((response) => {})
-      .catch((error) => {});
+      .then((response) => {
+        message.success("Test deleted.");
+        this.handleCancel;
+        this.getTestList(this.state.page);
+        this.setState({ loading: false, visible: false });
+      })
+      .catch((error) => {
+        message.error("Error [" + error.message + "]");
+      });
 
     removeStudentTestScores(id)
       .then((response) => {})
       .catch((error) => {});
-  }
+  };
 
   render() {
     const { pagination, visible, loading, size } = this.state;
@@ -1012,6 +1038,30 @@ class TestList extends Component {
       scoreStudentsView = [warningText];
     }
 
+    const renderButton = () => {
+      if (isSavedTest) {
+        return (
+          <Popconfirm
+            title="Delete test?"
+            onConfirm={this.removeTest}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Button
+              type="primary"
+              danger
+              icon={<DeleteOutlined />}
+              loading={loading}
+            >
+              Delete
+            </Button>
+          </Popconfirm>
+        );
+      } else {
+        return [];
+      }
+    };
+
     const contentList = [
       <Button
         type="primary"
@@ -1044,6 +1094,7 @@ class TestList extends Component {
           >
             Cancel
           </Button>,
+          renderButton(),
           <Button
             key="submit"
             htmlType="submit"
@@ -1541,8 +1592,10 @@ class TestList extends Component {
             endTime: test.endTime,
             selectedType: test.type,
             loading: false,
+            visible: true,
+            isSavedTest: true,
           },
-          () => this.onFill()
+          this.onFill
         );
       })
       .catch((error) => {

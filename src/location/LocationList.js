@@ -78,31 +78,17 @@ class LocationList extends Component {
     this.getLocationList = this.getLocationList.bind(this);
   }
 
-  onReset() {
-    this.formRef.current.resetFields();
-    this.setState({
-      name: "",
-      address: "",
-      location: "",
-      visible: false,
-      loading: false,
-      isSavedLocation: false,
+  onFill = () => {
+    this.formRef.current.setFieldsValue({
+      name: this.state.name,
+      address: this.state.address,
     });
-  }
-
-  onFill() {
-    if (this.formRef.current) {
-      this.formRef.current.setFieldsValue({
-        name: this.state.name,
-        address: this.state.address,
-      });
-    }
 
     this.setState({
       isSavedLocation: true,
       visible: true,
     });
-  }
+  };
 
   showModal = () => {
     this.setState({
@@ -111,11 +97,8 @@ class LocationList extends Component {
   };
 
   handleCancel = () => {
-    this.onReset();
-  };
-
-  onReset() {
     this.formRef.current.resetFields();
+
     this.setState({
       name: "",
       address: "",
@@ -124,7 +107,7 @@ class LocationList extends Component {
       loading: false,
       isSavedLocation: false,
     });
-  }
+  };
 
   getLocationList(page) {
     let promise;
@@ -166,7 +149,7 @@ class LocationList extends Component {
     removeLocation(location.id)
       .then((response) => {
         message.success("Location deleted.");
-        this.onReset;
+        this.handleCancel;
         this.getLocationList(this.state.page);
         this.setState({ loading: false, visible: false });
       })
@@ -182,6 +165,7 @@ class LocationList extends Component {
     this.setState({ loading: true });
 
     const location = {
+      id: this.state.location.id,
       name: name,
       address: address,
     };
@@ -189,7 +173,7 @@ class LocationList extends Component {
       .then((response) => {
         message.success("Location saved.");
         this.getLocationList(this.state.page);
-        this.onReset;
+        this.handleCancel;
         this.setState({ loading: false, visible: false });
       })
       .catch((error) => {
@@ -229,8 +213,6 @@ class LocationList extends Component {
       location,
     } = this.state;
 
-    //this.formRef.current.getFieldDecorator("name", { initialValue: {} });
-
     var ModalTitle;
     if (isSavedLocation) {
       ModalTitle = <Title level={2}>Edit Location</Title>;
@@ -252,7 +234,6 @@ class LocationList extends Component {
               danger
               icon={<DeleteOutlined />}
               loading={loading}
-              onClick={this.confirmRemoveLocation}
             >
               Delete
             </Button>
@@ -300,10 +281,10 @@ class LocationList extends Component {
         ]}
       >
         <Form
-          initialValues={{ name: name, address: address }}
           layout="vertical"
           onFinish={this.handleSubmit}
           ref={this.formRef}
+          name="control-ref"
         >
           <Form.Item
             name="name"
@@ -324,7 +305,6 @@ class LocationList extends Component {
               placeholder="East View Elementary"
               style={{ fontSize: "16px" }}
               autosize={{ minRows: 1, maxRows: 1 }}
-              value={this.state.name.text}
               onChange={this.handleNameChange}
             />
           </Form.Item>
@@ -348,7 +328,6 @@ class LocationList extends Component {
               placeholder="1234 Street City State"
               style={{ fontSize: "16px" }}
               autosize={{ minRows: 1, maxRows: 2 }}
-              value={this.state.address.text}
               onChange={this.handleAddressChange}
             />
           </Form.Item>
@@ -368,11 +347,7 @@ class LocationList extends Component {
           return {
             onClick: (event) => {
               this.handleRowClick(record);
-            }, // click row
-            //onDoubleClick: event => { this.handleRowClick(record) }, // double click row
-            //onContextMenu: event => { }, // right button click row
-            //onMouseEnter: event => { }, // mouse enter row
-            //onMouseLeave: event => { }, // mouse leave row
+            },
           };
         }}
       />,
@@ -409,8 +384,10 @@ class LocationList extends Component {
         name: location.name,
         address: location.address,
         loading: false,
+        isSavedLocation: true,
+        visible: true,
       },
-      () => this.onFill()
+      this.onFill
     );
   }
 }
