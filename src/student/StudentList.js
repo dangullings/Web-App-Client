@@ -542,15 +542,22 @@ class StudentList extends Component {
             marginLeft: 5,
             width: 120,
             height: 32,
-            boxShadow: "0px 1px 4px rgba(0,0,0,0.2)",
+            boxShadow:
+              "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
           }}
         />
         <Text type="secondary" style={{ marginTop: 5, marginLeft: 8 }}>
           Active
         </Text>
         <Switch
+          className="studentList"
           defaultChecked
-          style={{ marginTop: 5, marginLeft: 5 }}
+          style={{
+            marginTop: 5,
+            marginLeft: 5,
+            boxShadow:
+              "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
+          }}
           onChange={this.toggleActive}
         ></Switch>
       </Row>,
@@ -575,6 +582,7 @@ class StudentList extends Component {
         className="studentList"
         visible={visible}
         title={newStudentTitle}
+        closable={false}
         style={{ top: 0 }}
         onOk={this.handleOk}
         onCancel={this.handleCancel}
@@ -808,7 +816,6 @@ class StudentList extends Component {
       <Card
         className="studentList"
         bordered={false}
-        headStyle={{ padding: 6, marginBottom: 0 }}
         bodyStyle={{ padding: 6 }}
         title={newHeader}
       >

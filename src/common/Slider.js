@@ -11,6 +11,7 @@ import {
   TeamOutlined,
   UserOutlined,
   MenuOutlined,
+  IdcardOutlined,
 } from "@ant-design/icons";
 
 const { SubMenu } = Menu;
@@ -66,7 +67,11 @@ class Slider extends Component {
 
   render() {
     const { visible, currentUser } = this.state;
-    let menuItems, authorizedMenuItems, userMenuItems, adminMenuItems;
+    let menuItems,
+      authorizedMenuItems,
+      userMenuItems,
+      adminMenuItems,
+      adminMenu;
 
     var welcome;
     if (currentUser == "visitor") {
@@ -112,7 +117,6 @@ class Slider extends Component {
       >
         <Link to={"/items"}>Items</Link>
       </Menu.Item>,
-
       <SubMenu key="schedule" icon={<CalendarOutlined />} title="Schedule">
         <Menu.Item key="/schedule/calendar" onClick={this.onClose}>
           <Link to={"/schedule/calendar"}>Event Calendar</Link>
@@ -132,6 +136,12 @@ class Slider extends Component {
       >
         <Link to={"/locations"}>Locations</Link>
       </Menu.Item>,
+    ];
+
+    adminMenu = [
+      <SubMenu key="admin" icon={<IdcardOutlined />} title="Admin">
+        {adminMenuItems}
+      </SubMenu>,
     ];
     //}
 
@@ -166,7 +176,7 @@ class Slider extends Component {
     ];
 
     return (
-      <div style={{ height: "100%", backgroundColor: "#fefefa" }}>
+      <div style={{ backgroundColor: "#fefefa", height: 41 }}>
         <Affix offsetTop={0}>
           <Button
             style={{ marginBottom: 20, backgroundColor: "#fefefa" }}
@@ -180,6 +190,7 @@ class Slider extends Component {
         </Affix>
 
         <Drawer
+          className="slider"
           title={title}
           placement="left"
           closable={false}
@@ -193,7 +204,7 @@ class Slider extends Component {
             {menuItems}
             <Divider></Divider>
             {userMenuItems}
-            {adminMenuItems}
+            {adminMenu}
           </Menu>
         </Drawer>
       </div>

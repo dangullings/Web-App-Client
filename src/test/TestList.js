@@ -1081,6 +1081,7 @@ class TestList extends Component {
         visible={visible}
         className="test-list"
         title={ModalTitle}
+        closable={false}
         style={{ top: 0 }}
         onCancel={this.handleCancel}
         footer={[

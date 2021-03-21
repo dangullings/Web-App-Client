@@ -263,6 +263,7 @@ class LocationList extends Component {
         className="location-list"
         visible={visible}
         title={ModalTitle}
+        closable={false}
         onCancel={this.handleCancel}
         footer={[
           <Button key="back" type="secondary" onClick={this.handleCancel}>
@@ -354,7 +355,7 @@ class LocationList extends Component {
     ];
 
     const title = [
-      <Title level={5}>
+      <Title level={3}>
         <div>
           Locations <EnvironmentOutlined />
         </div>

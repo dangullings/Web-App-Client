@@ -34,13 +34,7 @@ class AppHeader extends Component {
     ];
 
     return (
-      <Header
-        style={{
-          width: "100%",
-          height: 30,
-          padding: 0,
-        }}
-      >
+      <Header>
         <Menu
           mode="horizontal"
           selectedKeys={[this.props.location.pathname]}

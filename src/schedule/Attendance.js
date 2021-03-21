@@ -629,11 +629,16 @@ class Attendance extends Component {
 
     const month_year = [
       <DatePicker
+        className="attendance"
         inputReadOnly="true"
         defaultValue={moment()}
         size={"default"}
         onChange={this.onChange}
         picker="month"
+        style={{
+          boxShadow:
+            "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
+        }}
       />,
     ];
 
@@ -716,13 +721,18 @@ class Attendance extends Component {
 
     return (
       <Content className="attendance">
-        <Row>{renderButton()}</Row>
-        <Row style={{ marginTop: 20 }}>
+        <Row style={{ marginTop: 10 }}>{renderButton()}</Row>
+        <Row style={{ marginTop: 10 }}>
           {month_year}
           <Select
             align="center"
             size="default"
-            style={{ width: 240 }}
+            style={{
+              width: 240,
+              marginLeft: 8,
+              boxShadow:
+                "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
+            }}
             Key={sessionList.id}
             onChange={this.handleSessionChange}
             placeholder={"session"}
@@ -737,7 +747,7 @@ class Attendance extends Component {
         </Row>
         <Card
           bodyStyle={{ padding: 0 }}
-          style={{ marginTop: 20, marginBottom: 0 }}
+          style={{ marginTop: 12, marginBottom: 0 }}
           bordered={false}
           title={newHeader}
           tabList={tabList}

@@ -145,7 +145,7 @@ class App extends Component {
             isAuthenticated={this.state.isAuthenticated}
             currentUser={this.state.currentUser}
             onLogout={this.handleLogout}
-            style={{ marginTop: 0, width: "100%" }}
+            style={{ marginTop: 0, width: "100%", height: 20 }}
           />
         )}
 

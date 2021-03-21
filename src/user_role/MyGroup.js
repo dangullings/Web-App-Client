@@ -1255,7 +1255,7 @@ class MyGroup extends Component {
 
     createUserStudent(userStudent)
       .then((response) => {
-        console.log("user student" + response);
+        this.getMyPeepsList();
       })
       .catch((error) => {});
   }

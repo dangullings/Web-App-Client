@@ -763,12 +763,18 @@ class NewItem extends Component {
       />,
     ];
 
+    const title = [
+      <Title level={3}>
+        <div>Items</div>
+      </Title>,
+    ];
+
     return (
       <Card
         className="item-list"
         bordered={false}
         bodyStyle={{ padding: 0 }}
-        title="Items"
+        title={title}
       >
         {contentList}
       </Card>

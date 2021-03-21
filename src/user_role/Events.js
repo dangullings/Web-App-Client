@@ -484,11 +484,12 @@ class Events extends Component {
 
         const eventCard = [
           <Card
+            className="event"
             title={title}
             headStyle={{
               padding: 8,
               backgroundColor: "#4694b4",
-              borderRadius: "20px 20px 0px 0px",
+              borderRadius: "10px 10px 0px 0px",
             }}
             bodyStyle={{ backgroundColor: "white", padding: 8 }}
             style={{
@@ -498,7 +499,7 @@ class Events extends Component {
               borderRadius: "10px",
               boxShadow:
                 "0 4px 8px 0 rgba(0, 0, 0, 0.4), 0 6px 20px 0 rgba(0, 0, 0, 0.39)",
-              padding: 8,
+              padding: 4,
             }}
           >
             <Space size="small" direction="vertical">

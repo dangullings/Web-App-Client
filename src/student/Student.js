@@ -16,6 +16,7 @@ import {
   Switch,
   Divider,
   Select,
+  Tabs,
 } from "antd";
 import {
   getStudent,
@@ -39,6 +40,7 @@ import {
   LeftOutlined,
 } from "@ant-design/icons";
 
+const { TabPane } = Tabs;
 const Option = Select.Option;
 const rankList = getRanks();
 const { Title, Text } = Typography;
@@ -136,9 +138,9 @@ class Student extends Component {
     window.addEventListener("resize", this.handleResize);
   }
 
-  onTabChange = (key, type) => {
-    console.log(key, type);
-    this.setState({ [type]: key });
+  onTabChange = (key) => {
+    console.log(key);
+    this.setState({ key: key });
   };
 
   loadStudent(id) {
@@ -439,21 +441,6 @@ class Student extends Component {
       loading,
     } = this.state;
 
-    const { windowWidth } = this.state;
-
-    const layout = {
-      labelCol: {
-        span: 6,
-      },
-      wrapperCol: {
-        span: 12,
-      },
-    };
-
-    const buttonItemLayout = {
-      wrapperCol: { span: 10, offset: 6 },
-    };
-
     var testCols = [
       {
         title: "Date",
@@ -539,235 +526,270 @@ class Student extends Component {
       },
     ];
 
-    const contentList = {
-      Bios: (
-        <div className="student-list">
-          <Form
-            initialValues={{
-              firstName: firstName,
-              lastName: lastName,
-              email: email,
-              ranks: ranks,
-              active: active,
-              birthDateDay: birthDateDay,
-              birthDateMonth: birthDateMonth,
-              birthDateYear: birthDateYear,
-            }}
+    const contentBios = [
+      <Form
+        layout="vertical"
+        initialValues={{
+          firstName: firstName,
+          lastName: lastName,
+          email: email,
+          ranks: ranks,
+          active: active,
+          birthDateDay: birthDateDay,
+          birthDateMonth: birthDateMonth,
+          birthDateYear: birthDateYear,
+        }}
+      >
+        <Form.Item
+          name="firstName"
+          label={
+            <Title style={{ marginBottom: 0 }} level={5}>
+              {"First"}
+            </Title>
+          }
+          hasFeedback
+          rules={[
+            {
+              required: true,
+              message: "Please enter students first name.",
+            },
+          ]}
+        >
+          <Input
+            placeholder="Bruce"
+            style={{ fontSize: "16px" }}
+            autosize={{ minRows: 1, maxRows: 1 }}
+            value={firstNameText}
+            onChange={this.handleFirstNameChange}
+          />
+        </Form.Item>
+
+        <Form.Item
+          name="lastName"
+          label={
+            <Title style={{ marginBottom: 0 }} level={5}>
+              {"Last"}
+            </Title>
+          }
+          hasFeedback
+          rules={[
+            {
+              required: true,
+              message: "Please enter students last name.",
+            },
+          ]}
+        >
+          <Input
+            placeholder="Wayne"
+            style={{ fontSize: "16px" }}
+            autosize={{ minRows: 1, maxRows: 1 }}
+            value={lastNameText}
+            onChange={this.handleLastNameChange}
+          />
+        </Form.Item>
+
+        <Form.Item
+          name="email"
+          label={
+            <Title style={{ marginBottom: 0 }} level={5}>
+              {"Email"}
+            </Title>
+          }
+          hasFeedback
+          rules={[
+            {
+              required: false,
+              type: "email",
+              message: "Please enter students email.",
+            },
+          ]}
+        >
+          <Input
+            placeholder="myemail@gmail.com"
+            style={{ fontSize: "16px" }}
+            autosize={{ minRows: 1, maxRows: 1 }}
+            value={emailText}
+            onChange={this.handleEmailChange}
+          />
+        </Form.Item>
+
+        <Divider orientation="left">Birth Date</Divider>
+
+        <Form.Item
+          name="birthDateMonth"
+          label={
+            <Title style={{ marginBottom: 0 }} level={5}>
+              {"Month"}
+            </Title>
+          }
+          hasFeedback
+          rules={[
+            {
+              required: true,
+              message: "Please select student birth month.",
+            },
+          ]}
+        >
+          <Select
+            size={size}
+            onChange={this.handleMonthChange}
+            style={{ width: 200 }}
           >
-            <Form.Item
-              name="firstName"
-              label={<Title level={5}>{"First"}</Title>}
-              hasFeedback
-              rules={[
-                {
-                  required: true,
-                  message: "Please enter students first name.",
-                },
-              ]}
+            {children}
+          </Select>
+        </Form.Item>
+
+        <Form.Item
+          className="student-form-row"
+          name="birthDateDay"
+          label={
+            <Title style={{ marginBottom: 0 }} level={5}>
+              {"Day"}
+            </Title>
+          }
+          hasFeedback
+          rules={[
+            {
+              required: true,
+              message: "Please select student birth day.",
+            },
+          ]}
+        >
+          <Input
+            placeholder="DD"
+            style={{ width: 100, fontSize: "16px" }}
+            autosize={{ minRows: 1, maxRows: 1 }}
+            value={birthDateDay}
+            onChange={this.handleDayChange}
+          />
+        </Form.Item>
+
+        <Form.Item
+          className="student-form-row"
+          name="birthDateYear"
+          label={
+            <Title style={{ marginBottom: 0 }} level={5}>
+              {"Year"}
+            </Title>
+          }
+          hasFeedback
+          rules={[
+            {
+              required: true,
+              message: "Please select student birth year.",
+            },
+          ]}
+        >
+          <Input
+            placeholder="YYYY"
+            style={{ width: 100, fontSize: "16px" }}
+            autosize={{ minRows: 1, maxRows: 1 }}
+            value={birthDateYear}
+            onChange={this.handleYearChange}
+          />
+        </Form.Item>
+        <Divider></Divider>
+
+        <Form.Item
+          name="ranks"
+          label={
+            <Title style={{ marginBottom: 0 }} level={5}>
+              {"Rank"}
+            </Title>
+          }
+          hasFeedback
+          rules={[
+            {
+              required: true,
+              message: "Please select student rank.",
+            },
+          ]}
+        >
+          <Select
+            size={size}
+            onChange={this.handleRankChange}
+            style={{ width: 200 }}
+          >
+            {rankList.map((rank) => (
+              <Select.Option key={rank} value={rank}>
+                {rank}
+              </Select.Option>
+            ))}
+          </Select>
+        </Form.Item>
+
+        <Form.Item
+          label={
+            <Title style={{ marginBottom: 0 }} level={5}>
+              {"Active"}
+            </Title>
+          }
+        >
+          <Switch checked={activeText} onChange={this.toggle} />
+        </Form.Item>
+
+        <Divider />
+
+        <Row>
+          <Form.Item>
+            <Button
+              shape="round"
+              type="primary"
+              icon={<SaveOutlined />}
+              disabled={this.isFormInvalid()}
+              loading={loading}
+              onClick={this.handleSubmit}
+              disabled={this.isFormInvalid()}
+              style={{
+                marginTop: 10,
+                marginLeft: 0,
+              }}
             >
-              <Input
-                placeholder="Bruce"
-                style={{ fontSize: "16px" }}
-                autosize={{ minRows: 1, maxRows: 1 }}
-                value={firstNameText}
-                onChange={this.handleFirstNameChange}
-              />
-            </Form.Item>
-
-            <Form.Item
-              name="lastName"
-              label={<Title level={5}>{"Last"}</Title>}
-              hasFeedback
-              rules={[
-                {
-                  required: true,
-                  message: "Please enter students last name.",
-                },
-              ]}
+              Update Student
+            </Button>
+          </Form.Item>
+          <Form.Item>
+            <Button
+              shape="round"
+              type="primary"
+              danger
+              icon={<DeleteOutlined />}
+              onClick={this.showConfirm}
+              style={{
+                marginTop: 10,
+                marginLeft: 10,
+                boxShadow:
+                  "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
+              }}
             >
-              <Input
-                placeholder="Wayne"
-                style={{ fontSize: "16px" }}
-                autosize={{ minRows: 1, maxRows: 1 }}
-                value={lastNameText}
-                onChange={this.handleLastNameChange}
-              />
-            </Form.Item>
+              Remove Student
+            </Button>
+          </Form.Item>
+        </Row>
+      </Form>,
+    ];
 
-            <Form.Item
-              name="email"
-              label={<Title level={5}>{"Email"}</Title>}
-              hasFeedback
-              rules={[
-                {
-                  required: false,
-                  type: "email",
-                  message: "Please enter students email.",
-                },
-              ]}
-            >
-              <Input
-                placeholder="myemail@gmail.com"
-                style={{ fontSize: "16px" }}
-                autosize={{ minRows: 1, maxRows: 1 }}
-                value={emailText}
-                onChange={this.handleEmailChange}
-              />
-            </Form.Item>
-
-            <Divider orientation="left">Birth Date</Divider>
-
-            <Form.Item
-              name="birthDateMonth"
-              label={<Title level={5}>{"Month"}</Title>}
-              hasFeedback
-              rules={[
-                {
-                  required: true,
-                  message: "Please select student birth month.",
-                },
-              ]}
-            >
-              <Select
-                size={size}
-                onChange={this.handleMonthChange}
-                style={{ width: 200 }}
-              >
-                {children}
-              </Select>
-            </Form.Item>
-
-            <Form.Item
-              className="student-form-row"
-              name="birthDateDay"
-              label={<Title level={5}>{"Day"}</Title>}
-              hasFeedback
-              rules={[
-                {
-                  required: true,
-                  message: "Please select student birth day.",
-                },
-              ]}
-            >
-              <Input
-                placeholder="DD"
-                style={{ width: 100, fontSize: "16px" }}
-                autosize={{ minRows: 1, maxRows: 1 }}
-                value={birthDateDay}
-                onChange={this.handleDayChange}
-              />
-            </Form.Item>
-
-            <Form.Item
-              className="student-form-row"
-              name="birthDateYear"
-              label={<Title level={5}>{"Year"}</Title>}
-              hasFeedback
-              rules={[
-                {
-                  required: true,
-                  message: "Please select student birth year.",
-                },
-              ]}
-            >
-              <Input
-                placeholder="YYYY"
-                style={{ width: 100, fontSize: "16px" }}
-                autosize={{ minRows: 1, maxRows: 1 }}
-                value={birthDateYear}
-                onChange={this.handleYearChange}
-              />
-            </Form.Item>
-            <Divider></Divider>
-
-            <Form.Item
-              name="ranks"
-              label={<Title level={5}>{"Rank"}</Title>}
-              hasFeedback
-              rules={[
-                {
-                  required: true,
-                  message: "Please select student rank.",
-                },
-              ]}
-            >
-              <Select
-                size={size}
-                onChange={this.handleRankChange}
-                style={{ width: 200 }}
-              >
-                {rankList.map((rank) => (
-                  <Select.Option key={rank} value={rank}>
-                    {rank}
-                  </Select.Option>
-                ))}
-              </Select>
-            </Form.Item>
-
-            <Form.Item label={<Title level={5}>{"Active"}</Title>}>
-              <Switch checked={activeText} onChange={this.toggle} />
-            </Form.Item>
-
-            <Divider />
-
-            <Row>
-              <Form.Item>
-                <Button
-                  shape="round"
-                  type="primary"
-                  icon={<SaveOutlined />}
-                  disabled={this.isFormInvalid()}
-                  loading={loading}
-                  onClick={this.handleSubmit}
-                  disabled={this.isFormInvalid()}
-                  style={{
-                    marginTop: 10,
-                    marginLeft: 0,
-                  }}
-                >
-                  Update Student
-                </Button>
-              </Form.Item>
-              <Form.Item>
-                <Button
-                  shape="round"
-                  type="primary"
-                  danger
-                  icon={<DeleteOutlined />}
-                  onClick={this.showConfirm}
-                  style={{
-                    marginTop: 10,
-                    marginLeft: 10,
-                    boxShadow:
-                      "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
-                  }}
-                >
-                  Remove Student
-                </Button>
-              </Form.Item>
-            </Row>
-          </Form>
-        </div>
-      ),
-
-      Tests: (
-        <Table
-          rowKey={key}
-          pagination={true}
-          bordered
-          columns={testCols}
-          dataSource={testData}
-          size="small"
-          style={{ marginTop: 2, width: "100%", height: "100%" }}
-          scroll={{ x: 800 }}
-        />
-      ),
-    };
+    const contentTests = [
+      <Table
+        rowKey={key}
+        pagination={true}
+        bordered
+        columns={testCols}
+        dataSource={testData}
+        size="small"
+        style={{ marginTop: 2, width: "100%", height: "100%" }}
+        scroll={{ x: 800 }}
+      />,
+    ];
 
     const back = [
       <Link to={"/students"}>
         {
-          <Button type="text" icon={<LeftOutlined />}>
+          <Button
+            style={{ marginTop: 10, marginBottom: 10 }}
+            type="text"
+            icon={<LeftOutlined />}
+          >
             student list
           </Button>
         }
@@ -780,19 +802,22 @@ class Student extends Component {
     ];
 
     return (
-      <div className="student-list">
+      <div className="student">
         {back}
         <Card
+          className="student"
           bordered={false}
-          bodyStyle={{ padding: 0 }}
+          bodyStyle={{ padding: 8 }}
           title={title}
-          tabList={tabList}
-          activeTabKey={this.state.key}
-          onTabChange={(key) => {
-            this.onTabChange(key, "key");
-          }}
         >
-          {contentList[this.state.key]}
+          <Tabs defaultActiveKey="Bios" onChange={this.onTabChange}>
+            <TabPane tab="Bios" key="Bios">
+              {contentBios}
+            </TabPane>
+            <TabPane tab="Tests" key="Tests">
+              {contentTests}
+            </TabPane>
+          </Tabs>
         </Card>
       </div>
     );

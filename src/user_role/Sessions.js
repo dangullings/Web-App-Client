@@ -441,6 +441,7 @@ class Sessions extends Component {
 
         const sessionCard = [
           <Card
+            className="session"
             title={title}
             headStyle={{
               padding: 8,
@@ -501,7 +502,7 @@ class Sessions extends Component {
     const content = [sessionCards];
 
     const mainTitle = [
-      <Title level={3}>
+      <Title style={{ marginBottom: 0 }} level={3}>
         <div>Sessions</div>
       </Title>,
     ];
@@ -515,6 +516,7 @@ class Sessions extends Component {
         <Card
           className="session"
           bordered={false}
+          headStyle={{ marginBottom: 8 }}
           bodyStyle={{ padding: 0 }}
           style={{
             width: "100%",

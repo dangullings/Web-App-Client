@@ -1735,26 +1735,26 @@ class SessionList extends Component {
         title: "Title",
         dataIndex: "title",
         key: "title",
-        ellipsis: true,
+        width: 50,
         render: (text, row) => <a>{text}</a>,
       },
       {
         title: "Location",
         dataIndex: "location",
         key: "location",
-        ellipsis: true,
+        width: 50,
       },
       {
         title: "Start Date",
         dataIndex: "startDate",
         key: "startDate",
-        ellipsis: true,
+        width: 50,
       },
       {
         title: "End Date",
         dataIndex: "endDate",
         key: "endDate",
-        ellipsis: true,
+        width: 50,
       },
     ];
 
@@ -1806,6 +1806,7 @@ class SessionList extends Component {
           className="sessionList"
           visible={visible}
           title={ModalTitle}
+          closable={false}
           style={{ top: 0 }}
           bodyStyle={{ padding: 8, marginBottom: 20 }}
           onOk={this.handleOk}
@@ -1834,7 +1835,7 @@ class SessionList extends Component {
                   "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
               }}
             >
-              Submit
+              Save
             </Button>,
           ]}
         >
@@ -2138,8 +2139,6 @@ class SessionList extends Component {
           width: "100%",
           //textShadow: '1px 1px 1px rgba(0,0,0,0.1)',
           borderRadius: 6,
-          boxShadow:
-            "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
         }}
         title={TableTitle}
       >

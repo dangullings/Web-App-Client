@@ -462,7 +462,7 @@ class Shop extends Component {
     ];
 
     return (
-      <Row style={{ marginTop: 15, width: "100%" }}>
+      <Row style={{ marginTop: 20, width: "100%" }}>
         <Card
           hoverable
           key={itemId}
@@ -730,7 +730,8 @@ class Shop extends Component {
             type="secondary"
             onClick={this.handleCancel}
             style={{
-              boxShadow: "0px 0px 5px rgba(0,0,0,0.2)",
+              boxShadow:
+                "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
             }}
           >
             Cancel
@@ -743,7 +744,8 @@ class Shop extends Component {
             loading={loading}
             onClick={this.handlePurchase}
             style={{
-              boxShadow: "0px 0px 5px rgba(0,0,0,0.2)",
+              boxShadow:
+                "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
             }}
           >
             Purchase
@@ -769,7 +771,8 @@ class Shop extends Component {
             marginLeft: 8,
             width: 120,
             height: 32,
-            boxShadow: "0px 1px 4px rgba(0,0,0,0.2)",
+            boxShadow:
+              "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
           }}
         />
         <Select
@@ -778,7 +781,8 @@ class Shop extends Component {
             marginLeft: 8,
             width: 120,
             height: 32,
-            boxShadow: "0px 1px 4px rgba(0,0,0,0.2)",
+            boxShadow:
+              "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
           }}
           placeholder={"type"}
           onChange={this.handleTypeDropdownChange}
@@ -791,7 +795,7 @@ class Shop extends Component {
       <Card
         className="shop"
         bordered={false}
-        headStyle={{ padding: 6, marginBottom: 0 }}
+        headStyle={{ padding: 6, marginBottom: 8 }}
         bodyStyle={{ padding: 6 }}
         title={newHeader}
       >
