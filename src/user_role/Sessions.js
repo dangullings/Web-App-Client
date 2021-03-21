@@ -104,7 +104,7 @@ class Sessions extends Component {
 
   getMyPeepsList() {
     let promise;
-    promise = getMyPeeps(1); // this.state.currentUser.id
+    promise = getMyPeeps(4); //this.state.currentUser.id
     if (!promise) {
       return;
     }
@@ -271,7 +271,6 @@ class Sessions extends Component {
 
   handleSubmit(event) {
     const { signedUpPeeps, selectedSession } = this.state;
-    var success = false;
     this.setState({
       loading: true,
     });
@@ -285,11 +284,11 @@ class Sessions extends Component {
 
       createStudentSession(data)
         .then((response) => {
-          success = true;
           this.setState({
             loading: false,
             sessionSignupVisible: false,
           });
+          message.success("Signed up selected students.");
         })
         .catch((error) => {
           this.setState({
@@ -299,14 +298,6 @@ class Sessions extends Component {
           } else {
           }
         });
-    }
-
-    if (success) {
-      notification.success({
-        message: "Signup Successful!",
-        description: "",
-        duration: 2,
-      });
     }
   }
 
@@ -509,8 +500,8 @@ class Sessions extends Component {
 
     const content = [sessionCards];
 
-    const title = [
-      <Title level={2}>
+    const mainTitle = [
+      <Title level={3}>
         <div>Sessions</div>
       </Title>,
     ];
@@ -530,7 +521,7 @@ class Sessions extends Component {
             borderRadius: "6px",
             padding: 0,
           }}
-          title={title}
+          title={mainTitle}
         >
           {content}
         </Card>
@@ -562,7 +553,7 @@ class Sessions extends Component {
                 boxShadow: "0px 0px 5px rgba(0,0,0,0.2)",
               }}
             >
-              Submit
+              Signup
             </Button>,
           ]}
         >

@@ -6,6 +6,7 @@ import {
   Space,
   Icon,
   notification,
+  List,
   Badge,
   Typography,
   Input,
@@ -795,7 +796,20 @@ class Shop extends Component {
         title={newHeader}
       >
         <Spin spinning={loading}>
-          {productCards}
+          <List
+            grid={{
+              gutter: 16,
+              xs: 1,
+              sm: 2,
+              md: 4,
+              lg: 4,
+              xl: 6,
+              xxl: 3,
+            }}
+            dataSource={productCards}
+            renderItem={(item) => <List.Item>{item}</List.Item>}
+          />
+          ,
           <Affix
             offsetTop={10}
             style={{ position: "absolute", top: 0, left: windowWidth - 80 }}

@@ -23,6 +23,11 @@ import {
   removeStudent,
   getTest,
   getAllTestScoresByStudentId,
+  removeUserPeepsByStudentId,
+  removeStudentTestsByStudentId,
+  removeAttendanceByStudentId,
+  removeStudentEventByStudentId,
+  removeStudentSessionByStudentId,
 } from "../util/APIUtils";
 import { STUDENT_LIST_SIZE } from "../constants";
 import { NAME_MIN_LENGTH, NAME_MAX_LENGTH } from "../constants";
@@ -536,10 +541,8 @@ class Student extends Component {
 
     const contentList = {
       Bios: (
-        <div className="student-content">
+        <div className="student-list">
           <Form
-            className="student-form"
-            {...layout}
             initialValues={{
               firstName: firstName,
               lastName: lastName,
@@ -718,7 +721,6 @@ class Student extends Component {
                   onClick={this.handleSubmit}
                   disabled={this.isFormInvalid()}
                   style={{
-                    boxShadow: "0px 0px 5px rgba(0,0,0,0.2)",
                     marginTop: 10,
                     marginLeft: 0,
                   }}
@@ -734,9 +736,10 @@ class Student extends Component {
                   icon={<DeleteOutlined />}
                   onClick={this.showConfirm}
                   style={{
-                    boxShadow: "0px 0px 5px rgba(0,0,0,0.2)",
                     marginTop: 10,
                     marginLeft: 10,
+                    boxShadow:
+                      "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
                   }}
                 >
                   Remove Student
@@ -764,12 +767,7 @@ class Student extends Component {
     const back = [
       <Link to={"/students"}>
         {
-          <Button
-            style={{ color: "blue" }}
-            type="text"
-            shape="circle"
-            icon={<LeftOutlined />}
-          >
+          <Button type="text" icon={<LeftOutlined />}>
             student list
           </Button>
         }
@@ -782,7 +780,7 @@ class Student extends Component {
     ];
 
     return (
-      <div className="student-container">
+      <div className="student-list">
         {back}
         <Card
           bordered={false}
@@ -801,7 +799,8 @@ class Student extends Component {
   }
 
   removeStudent() {
-    removeStudent(this.state.student)
+    const { id } = this.state.student;
+    removeStudent(id)
       .then((response) => {
         notification.success({
           message: "Removal Successful",
@@ -817,6 +816,12 @@ class Student extends Component {
             error.message || "Something went wrong. Please try again!",
         });
       });
+
+    removeStudentTestsByStudentId(id);
+    removeUserPeepsByStudentId(id);
+    removeAttendanceByStudentId(id);
+    removeStudentEventByStudentId(id);
+    removeStudentSessionByStudentId(id);
   }
 
   validateName = (name) => {

@@ -537,6 +537,8 @@ class NewItem extends Component {
 
       <Modal
         className="item-list"
+        //destroyOnClose={true}
+        closable={false}
         style={{ top: 0 }}
         visible={visible}
         title={ModalTitle}

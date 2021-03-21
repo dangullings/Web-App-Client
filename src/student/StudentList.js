@@ -23,6 +23,12 @@ import {
   getAllStudentsBySearch,
   createStudent,
   removeStudent,
+  removeStudentTestScore,
+  removeUserPeepsByStudentId,
+  removeStudentTestsByStudentId,
+  removeAttendanceByStudentId,
+  removeStudentEventByStudentId,
+  removeStudentSessionByStudentId,
 } from "../util/APIUtils";
 import { getRanks } from "../util/Helpers.js";
 import { STUDENT_LIST_SIZE } from "../constants";
@@ -307,6 +313,12 @@ class StudentList extends Component {
             error.message || "Something went wrong. Please try again!",
         });
       });
+
+    removeStudentTestsByStudentId(id);
+    removeUserPeepsByStudentId(id);
+    removeAttendanceByStudentId(id);
+    removeStudentEventByStudentId(id);
+    removeStudentSessionByStudentId(id);
   }
 
   resetFields() {

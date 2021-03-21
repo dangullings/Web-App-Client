@@ -13,6 +13,7 @@ import {
   Card,
   Input,
   Table,
+  List,
   Tag,
   Row,
   Col,
@@ -485,8 +486,8 @@ class EventCalendar extends Component {
       description: description,
       location: location,
       date: formattedDate,
-      startTime: eventStartTime.format("hh:mm a"),
-      endTime: eventEndTime.format("hh:mm a"),
+      startTime: eventStartTime.format("h:mm a"),
+      endTime: eventEndTime.format("h:mm a"),
       month: month,
       year: year,
       ageRange: ageRange,
@@ -671,27 +672,32 @@ class EventCalendar extends Component {
       }
     }
 
+    //<Divider style={{ marginTop: 8, marginBottom: 8 }} />
+    let daysEvents = [];
     if (valueEventsDate.length > 0) {
-      return (
-        <ul className="events">
-          {valueEventsDate.map((date) => (
-            <li key={date.title + date.id}>
-              {this.getFullDateData(date)}
-              <Divider style={{ marginTop: 8, marginBottom: 8 }} />
-            </li>
-          ))}
-        </ul>
-      );
+      <ul>
+        {valueEventsDate.map((date) =>
+          daysEvents.push(
+            <li key={date.title + date.id}>{this.getFullDateData(date)}</li>
+          )
+        )}
+      </ul>;
     }
+
+    return daysEvents;
   }
 
   getFullDateData(date) {
+    const firstLine = [
+      <Text strong>
+        <Tag color={this.getTypeColor(date.type)}>{date.title}</Tag>
+        {date.startTime + " - " + date.endTime}
+      </Text>,
+    ];
+    const secondLine = [<Text>{date.description}</Text>];
     const view = [
-      <Tag color={this.getTypeColor(date.type)}>{date.title}</Tag>,
-      <Divider type="vertical" />,
-      date.startTime + " - " + date.endTime,
-      <Divider type="vertical" />,
-      date.description,
+      <Row>{firstLine}</Row>,
+      <Row style={{ marginTop: 5, marginLeft: 15 }}>{secondLine}</Row>,
     ];
     return view;
   }
@@ -739,7 +745,6 @@ class EventCalendar extends Component {
               marginTop: 0,
               marginLeft: 10,
               marginRight: 0,
-              boxShadow: "0px 0px 5px rgba(0,0,0,0.2)",
             }}
           >
             New Event
@@ -764,6 +769,7 @@ class EventCalendar extends Component {
     valueEventsDate.sort((a, b) => (a.date > b.date ? 1 : -1));
 
     const ModalTitle = <Title level={2}>New Event</Title>;
+    const ModalSelectedDateTitle = <Title level={2}>{selectedDate}</Title>;
 
     const calendar = [
       <Row style={{ marginLeft: 10, marginRight: 10 }}>
@@ -816,6 +822,7 @@ class EventCalendar extends Component {
         }}
       >
         <Modal
+          closable={false}
           className="eventCalendar"
           visible={eventModalVisible}
           title={ModalTitle}
@@ -844,7 +851,7 @@ class EventCalendar extends Component {
                   "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
               }}
             >
-              Submit
+              Save
             </Button>,
           ]}
         >
@@ -1096,6 +1103,7 @@ class EventCalendar extends Component {
 
       <Spin spinning={loading}>
         <Calendar
+          style={{ marginTop: 10 }}
           loading={loading}
           headerRender={headerRender}
           mode={"month"}
@@ -1106,8 +1114,10 @@ class EventCalendar extends Component {
       </Spin>,
 
       <Modal
+        className="eventCalendar"
+        closable={false}
         visible={dayModalVisible}
-        title={selectedDate}
+        title={ModalSelectedDateTitle}
         onOk={this.handleOk}
         onCancel={this.handleCancel}
         footer={[
@@ -1116,7 +1126,11 @@ class EventCalendar extends Component {
           </Button>,
         ]}
       >
-        {this.getDaysEvents(selectedMoment)}
+        <List
+          size="default"
+          dataSource={this.getDaysEvents(selectedMoment)}
+          renderItem={(item) => <List.Item>{item}</List.Item>}
+        />
       </Modal>,
     ];
 
@@ -1133,13 +1147,13 @@ class EventCalendar extends Component {
         >
           <Row justify="space-around" style={{ marginBottom: 10 }}>
             <Col span={4}>
+              <Tag color="gray">Session</Tag>
+            </Col>
+            <Col span={4}>
               <Tag color="red">Test</Tag>
             </Col>
             <Col span={4}>
               <Tag color="lime">Camp</Tag>
-            </Col>
-            <Col span={4}>
-              <Tag color="blue">Session</Tag>
             </Col>
             <Col span={4}>
               <Tag color="cyan">Misc</Tag>
@@ -1214,6 +1228,7 @@ class EventCalendar extends Component {
     } else if (type == "Misc") {
       return "cyan";
     }
+    return "gray";
   }
 
   onMonthYearChange(date, dateString) {

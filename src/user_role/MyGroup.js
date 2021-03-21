@@ -268,7 +268,7 @@ class MyGroup extends Component {
 
   getMyPeepsList() {
     let promise;
-    promise = getMyPeeps(this.state.currentUser.id);
+    promise = getMyPeeps(4); //this.state.currentUser.id
     if (!promise) {
       return;
     }
@@ -1303,7 +1303,7 @@ class MyGroup extends Component {
               }}
               level={3}
             >
-              {peep.firstName}
+              {peep.firstName} {peep.lastName.charAt(0)}.
             </Title>
           </Row>
           <Row>

@@ -537,7 +537,7 @@ class Events extends Component {
     const content = [eventCards];
 
     const title = [
-      <Title level={2}>
+      <Title level={3}>
         <div>Events</div>
       </Title>,
     ];

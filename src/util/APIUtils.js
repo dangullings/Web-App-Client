@@ -222,7 +222,7 @@ export function getAllTestsBySearch(search, page, size) {
 
 export function createStudentEvent(data) {
   return request({
-    url: API_BASE_URL + "/students/saveStudentEvent",
+    url: API_BASE_URL + "/studentevents/saveStudentEvent",
     method: "POST",
     body: JSON.stringify(data),
   });
@@ -230,7 +230,7 @@ export function createStudentEvent(data) {
 
 export function createStudentSession(data) {
   return request({
-    url: API_BASE_URL + "/students/saveStudentSession",
+    url: API_BASE_URL + "/studentsessions/saveStudentSession",
     method: "POST",
     body: JSON.stringify(data),
   });
@@ -374,11 +374,51 @@ export function removeTest(id) {
   });
 }
 
+export function removeStudentEventByStudentId(studentId) {
+  return request({
+    url: API_BASE_URL + "/studentevents/student/" + studentId,
+    method: "DELETE",
+    body: JSON.stringify(studentId),
+  });
+}
+
+export function removeStudentSessionByStudentId(studentId) {
+  return request({
+    url: API_BASE_URL + "/studentsessions/student/" + studentId,
+    method: "DELETE",
+    body: JSON.stringify(studentId),
+  });
+}
+
+export function removeAttendanceByStudentId(studentId) {
+  return request({
+    url: API_BASE_URL + "/attendance/student/" + studentId,
+    method: "DELETE",
+    body: JSON.stringify(studentId),
+  });
+}
+
+export function removeUserPeepsByStudentId(studentId) {
+  return request({
+    url: API_BASE_URL + "/user_students/student/" + studentId,
+    method: "DELETE",
+    body: JSON.stringify(studentId),
+  });
+}
+
 export function removeStudentTestScores(testId) {
   return request({
     url: API_BASE_URL + "/tests/student_scores/test/" + testId,
     method: "DELETE",
     body: JSON.stringify(testId),
+  });
+}
+
+export function removeStudentTestsByStudentId(studentId) {
+  return request({
+    url: API_BASE_URL + "/tests/student_scores/student/" + studentId,
+    method: "DELETE",
+    body: JSON.stringify(studentId),
   });
 }
 
@@ -497,7 +537,7 @@ export function createUserStudent(userStudent) {
 export function getStudentSessions(studentId) {
   console.log("student id " + studentId);
   return request({
-    url: API_BASE_URL + "/students/" + studentId + "/sessions",
+    url: API_BASE_URL + "/studentsessions/" + studentId + "/sessions",
     method: "GET",
   });
 }
@@ -505,7 +545,7 @@ export function getStudentSessions(studentId) {
 export function getStudentEvents(studentId) {
   console.log("student id " + studentId);
   return request({
-    url: API_BASE_URL + "/students/" + studentId + "/events",
+    url: API_BASE_URL + "/studentevents/" + studentId + "/events",
     method: "GET",
   });
 }
