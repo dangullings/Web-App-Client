@@ -332,7 +332,7 @@ class Sessions extends Component {
 
         const title = [
           <Title
-            style={{ marginLeft: 0, marginTop: 10, color: "white" }}
+            style={{ marginLeft: 15, marginTop: 10, color: "white" }}
             level={4}
           >
             {session.title}
@@ -502,7 +502,7 @@ class Sessions extends Component {
     const content = [sessionCards];
 
     const mainTitle = [
-      <Title style={{ marginBottom: 0 }} level={3}>
+      <Title style={{ marginBottom: 0, marginLeft: 15 }} level={3}>
         <div>Sessions</div>
       </Title>,
     ];
@@ -534,14 +534,7 @@ class Sessions extends Component {
           style={{ top: 0 }}
           bodyStyle={{ padding: 4, marginBottom: 0 }}
           footer={[
-            <Button
-              key="back"
-              type="secondary"
-              onClick={this.handleCancel}
-              style={{
-                boxShadow: "0px 0px 5px rgba(0,0,0,0.2)",
-              }}
-            >
+            <Button key="back" type="secondary" onClick={this.handleCancel}>
               Cancel
             </Button>,
             <Button
@@ -551,9 +544,6 @@ class Sessions extends Component {
               disabled={this.isFormInvalid()}
               loading={loading}
               onClick={this.handleSubmit}
-              style={{
-                boxShadow: "0px 0px 5px rgba(0,0,0,0.2)",
-              }}
             >
               Signup
             </Button>,

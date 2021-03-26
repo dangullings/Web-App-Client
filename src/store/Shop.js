@@ -25,9 +25,14 @@ import {
   getAllItemsByActive,
   getImageByItem,
   getAllItemsByActiveSearch,
+  createOrder,
+  createLineItem,
 } from "../util/APIUtils";
+import moment from "moment";
 import { STUDENT_LIST_SIZE } from "../constants";
 import { withRouter } from "react-router-dom";
+
+import StripeContainer from "../stripe/StripeContainer";
 
 import "../styles/style.less";
 
@@ -64,6 +69,7 @@ class Shop extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      currentUser: this.props.currentUser,
       products: [],
       productCards: [],
       cartItems: [],
@@ -81,6 +87,7 @@ class Shop extends Component {
         pageSizeOptions: ["10", "25", "50", "100"],
       },
       total: 0,
+      orderId: "",
       cartVisible: false,
       loading: false,
 
@@ -88,6 +95,7 @@ class Shop extends Component {
     };
 
     this.addToCart = this.addToCart.bind(this);
+    this.handlePurchase = this.handlePurchase.bind(this);
     this.onSearch = this.onSearch.bind(this);
   }
 
@@ -244,7 +252,91 @@ class Shop extends Component {
     return false;
   }
 
-  handlePurchase() {}
+  saveOrder() {
+    const { total } = this.state;
+
+    let totalPrice = this.getTotalCartCost();
+    let note = "order note";
+
+    const order = {
+      id: "",
+      date: moment().format("YYYY-MM-DD"),
+      note: note,
+      isFullfilled: false,
+      isPaid: false,
+      price: totalPrice,
+      userId: this.state.currentUser.id,
+    };
+
+    createOrder(order)
+      .then((response) => {
+        this.setState(
+          {
+            orderId: response.id,
+          },
+          () => this.saveLineItems()
+        );
+      })
+      .catch((error) => {});
+  }
+
+  saveLineItems() {
+    const { cartItems, cartItemsQty, orderId } = this.state;
+
+    let lineItems = [];
+    let qty,
+      id = 0;
+    let item, itemQty;
+
+    for (item of cartItems) {
+      for (itemQty of cartItemsQty) {
+        if (itemQty.id == item.id) {
+          qty = itemQty.quantity;
+          break;
+        }
+      }
+
+      let num = item.product.saleCost * qty;
+      let lineItemCost = (Math.round(num * 100) / 100).toFixed(2);
+      const lineItem = {
+        id: id++,
+        color: item.product.color,
+        size: item.product.size,
+        itemId: item.product.id,
+        orderId: orderId,
+        price: lineItemCost,
+        quantity: qty,
+      };
+
+      lineItems.push(lineItem);
+    }
+
+    let promises = [];
+
+    for (item of lineItems) {
+      let promise = createLineItem(item);
+      promises.push(promise);
+    }
+
+    Promise.all(promises).then((response) => {
+      this.completeOrder();
+    });
+  }
+
+  handlePurchase() {
+    this.setState({
+      loading: true,
+    });
+
+    this.saveOrder();
+  }
+
+  completeOrder() {
+    this.setState({
+      loading: false,
+      visible: false,
+    });
+  }
 
   reduceItemQty(itemId) {
     const { cartItemsQty } = this.state;
@@ -671,7 +763,7 @@ class Shop extends Component {
       }
     }
 
-    return "$" + (Math.round(totalCost * 100) / 100).toFixed(2);
+    return (Math.round(totalCost * 100) / 100).toFixed(2);
   }
 
   render() {
@@ -687,6 +779,8 @@ class Shop extends Component {
       cartVisible,
     } = this.state;
 
+    const stripeView = <StripeContainer />;
+
     var productCards = [];
     if (products) {
       products.forEach((product) => {
@@ -701,7 +795,7 @@ class Shop extends Component {
       });
     }
 
-    let totalCartCost = this.getTotalCartCost();
+    let totalCartCost = "$" + this.getTotalCartCost();
 
     const totals = [
       <Row align="end" style={{ marginTop: 35, marginRight: 20 }}>
@@ -754,6 +848,7 @@ class Shop extends Component {
       >
         {cartCards}
         {totals}
+        {stripeView}
       </Modal>,
     ];
 

@@ -78,7 +78,7 @@ const openNotification = () => {
   }, 1000);
 };
 
-class Student extends Component {
+class Order extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -925,4 +925,4 @@ const tabList = [
   },
 ];
 
-export default withRouter(Student);
+export default withRouter(Order);

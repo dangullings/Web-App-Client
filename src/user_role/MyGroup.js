@@ -82,15 +82,14 @@ var testCols = [
     dataIndex: "date",
     key: "date",
     align: "center",
-    width: 50,
+    width: 25,
   },
   {
     title: "Location",
     dataIndex: "location",
     key: "location",
     align: "center",
-    width: 50,
-    ellipsis: true,
+    width: 25,
   },
   {
     title: "Scores",
@@ -100,7 +99,7 @@ var testCols = [
         dataIndex: "form",
         key: "form",
         align: "center",
-        width: 40,
+        width: 15,
         ellipsis: true,
       },
       {
@@ -108,7 +107,7 @@ var testCols = [
         dataIndex: "steps",
         key: "steps",
         align: "center",
-        width: 40,
+        width: 15,
         ellipsis: true,
       },
       {
@@ -116,7 +115,7 @@ var testCols = [
         dataIndex: "power",
         align: "center",
         key: "power",
-        width: 40,
+        width: 15,
         ellipsis: true,
       },
       {
@@ -124,7 +123,7 @@ var testCols = [
         dataIndex: "kiap",
         align: "center",
         key: "kiap",
-        width: 40,
+        width: 15,
         ellipsis: true,
       },
       {
@@ -132,7 +131,7 @@ var testCols = [
         dataIndex: "questions",
         align: "center",
         key: "questions",
-        width: 40,
+        width: 15,
         ellipsis: true,
       },
       {
@@ -140,7 +139,7 @@ var testCols = [
         dataIndex: "attitude",
         align: "center",
         key: "attitude",
-        width: 40,
+        width: 15,
         ellipsis: true,
       },
       {
@@ -148,7 +147,7 @@ var testCols = [
         dataIndex: "sparring",
         align: "center",
         key: "sparring",
-        width: 40,
+        width: 15,
         ellipsis: true,
       },
       {
@@ -156,7 +155,7 @@ var testCols = [
         dataIndex: "breaking",
         align: "center",
         key: "breaking",
-        width: 40,
+        width: 15,
         ellipsis: true,
       },
     ],
@@ -1344,21 +1343,21 @@ class MyGroup extends Component {
             <Button
               type="secondary"
               onClick={this.showPeepSchedule(peep)}
-              style={{ borderRadius: "10px", width: "90%" }}
+              style={{ width: "90%" }}
             >
               Schedule
             </Button>,
             <Button
               type="secondary"
               onClick={this.showPeepTests(peep)}
-              style={{ borderRadius: "10px", width: "90%" }}
+              style={{ width: "90%" }}
             >
               Tests
             </Button>,
             <Button
               type="secondary"
               onClick={this.showPeepAttendance(peep)}
-              style={{ borderRadius: "10px", width: "90%" }}
+              style={{ width: "90%" }}
             >
               Attendance
             </Button>,

@@ -87,7 +87,7 @@ const requestImage = (options) => {
 export function chargePayment(payment) {
   console.log("chargePayment " + payment);
   return request({
-    url: API_BASE_URL + "/payment/charge",
+    url: API_BASE_URL + "/payment/create-payment-intent",
     method: "POST",
     body: JSON.stringify(payment),
   });
@@ -374,6 +374,24 @@ export function removeTest(id) {
   });
 }
 
+export function createOrder(order) {
+  console.log("createOrder " + order);
+  return request({
+    url: API_BASE_URL + "/orders/saveOrder",
+    method: "POST",
+    body: JSON.stringify(order),
+  });
+}
+
+export function createLineItem(lineItem) {
+  console.log("createLineItem " + lineItem);
+  return request({
+    url: API_BASE_URL + "/lineitems/saveLineItem",
+    method: "POST",
+    body: JSON.stringify(lineItem),
+  });
+}
+
 export function removeStudentEventByStudentId(studentId) {
   return request({
     url: API_BASE_URL + "/studentevents/student/" + studentId,
@@ -581,9 +599,6 @@ export function getAllStudentsBySearch(page, size, searchText, active) {
 }
 
 export function createStudent(studentData) {
-  console.log(
-    "student save" + studentData.id + " name" + studentData.firstName
-  );
   return request({
     url: API_BASE_URL + "/students/saveStudent",
     method: "POST",

@@ -10,6 +10,8 @@ import Home from "../common/Home";
 import MyGroup from "../user_role/MyGroup";
 import Sessions from "../user_role/Sessions";
 import Events from "../user_role/Events";
+import OrderList from "../inventory/OrderList";
+import Order from "../inventory/Order";
 import EventCalendar from "../schedule/EventCalendar";
 import LocationList from "../location/LocationList";
 import SessionList from "../schedule/SessionList";
