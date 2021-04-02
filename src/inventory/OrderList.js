@@ -5,42 +5,36 @@ import {
   Typography,
   message,
   Space,
+  List,
   Icon,
   notification,
-  Form,
-  Input,
   Button,
   Card,
   Modal,
 } from "antd";
-import {
-  getAllLocations,
-  getLocation,
-  createLocation,
-  removeLocation,
-} from "../util/APIUtils";
+import { getOrders, getOrderLineItems, removeOrder } from "../util/APIUtils";
 import { STUDENT_LIST_SIZE } from "../constants";
 import { withRouter } from "react-router-dom";
+import Order from "./Order";
 import "../styles/style.less";
 
 import {
   PlusOutlined,
   DeleteOutlined,
-  EnvironmentOutlined,
+  ShoppingOutlined,
   SaveOutlined,
 } from "@ant-design/icons";
 
 const { Title, Text } = Typography;
 
 class OrderList extends Component {
-  formRef = React.createRef();
-
   constructor(props) {
     super(props);
 
     this.state = {
-      isSavedLocation: false,
-      locations: [],
+      orders: [],
+      orderLineItems: [],
+      selectedOrder: "",
       size: STUDENT_LIST_SIZE,
       search: "",
       page: 0,
@@ -52,43 +46,13 @@ class OrderList extends Component {
         pageSize: 10,
         pageSizeOptions: ["10", "25", "50", "100"],
       },
-      total: 0,
       loading: false,
       visible: false,
       count: 0,
-      name: "",
-      address: "",
-      location: "",
-
-      columns: [
-        {
-          title: "Name",
-          dataIndex: "name",
-        },
-        {
-          title: "Address",
-          dataIndex: "address",
-        },
-      ],
     };
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.removeLocation = this.removeLocation.bind(this);
-    this.handleNameChange = this.handleNameChange.bind(this);
-    this.handleAddressChange = this.handleAddressChange.bind(this);
-    this.getLocationList = this.getLocationList.bind(this);
+    this.removeOrder = this.removeOrder.bind(this);
+    this.getOrderList = this.getOrderList.bind(this);
   }
-
-  onFill = () => {
-    this.formRef.current.setFieldsValue({
-      name: this.state.name,
-      address: this.state.address,
-    });
-
-    this.setState({
-      isSavedLocation: true,
-      visible: true,
-    });
-  };
 
   showModal = () => {
     this.setState({
@@ -97,60 +61,96 @@ class OrderList extends Component {
   };
 
   handleCancel = () => {
-    this.formRef.current.resetFields();
-
     this.setState({
-      name: "",
-      address: "",
-      location: "",
       visible: false,
       loading: false,
-      isSavedLocation: false,
     });
   };
 
-  getLocationList(page) {
+  getOrderList(page, size) {
     let promise;
-    promise = getAllLocations(page, 1000);
+    promise = getOrders(page, size);
 
     if (!promise) {
       return;
     }
 
     this.setState({
-      isLoading: true,
+      loading: true,
     });
 
     promise
       .then((response) => {
+        let value;
+        for (value of response.content) {
+          this.getOrderLineItemList(value);
+        }
         this.setState({
-          locations: response.content,
+          //orders: response.content,
           page: response.page,
           size: response.size,
           totalElements: response.totalElements,
           totalPages: response.totalPages,
           last: response.last,
-          isLoading: false,
+          loading: false,
         });
       })
       .catch((error) => {
         this.setState({
-          isLoading: false,
+          loading: false,
         });
       });
   }
 
+  getOrderLineItemList(order) {
+    let promise,
+      lineItems = [];
+    promise = getOrderLineItems(order.id);
+
+    if (!promise) {
+      return;
+    }
+
+    promise
+      .then((response) => {
+        let value;
+        for (value of response) {
+          const lineItem = {
+            id: value.id,
+            color: value.color,
+            size: value.size,
+            itemId: value.itemId,
+            price: value.price,
+            quantity: value.quantity,
+          };
+
+          lineItems.push(lineItem);
+        }
+
+        const orderData = {
+          order: order,
+          lineItems: lineItems,
+        };
+
+        this.setState({
+          orders: this.state.orders.concat(orderData),
+          orderLineItems: lineItems,
+        });
+      })
+      .catch((error) => {});
+  }
+
   componentDidMount() {
-    this.getLocationList(this.state.page);
+    this.getOrderList(this.state.page, this.state.STUDENT_LIST_SIZE);
   }
 
-  removeLocation() {
-    const { location } = this.state;
-    removeLocation(location.id)
+  removeOrder() {
+    const { selectedOrder } = this.state;
+    removeOrder(selectedOrder.id)
       .then((response) => {
-        message.success("Location deleted.");
+        message.success("Order deleted.");
         this.handleCancel;
-        this.getLocationList(this.state.page);
+        this.getOrderList(this.state.page, STUDENT_LIST_SIZE);
         this.setState({ loading: false, visible: false });
       })
       .catch((error) => {
@@ -158,239 +158,213 @@ class OrderList extends Component {
       });
   }
 
-  handleSubmit(event) {
-    let name = this.formRef.current.getFieldValue("name");
-    let address = this.formRef.current.getFieldValue("address");
-
-    this.setState({ loading: true });
-
-    const location = {
-      id: this.state.location.id,
-      name: name,
-      address: address,
-    };
-    createLocation(location)
-      .then((response) => {
-        message.success("Location saved.");
-        this.getLocationList(this.state.page);
-        this.handleCancel;
-        this.setState({ loading: false, visible: false });
-      })
-      .catch((error) => {
-        message.error("Error [" + error.message + "]");
+  expandedRowRender = (order) => {
+    const lineItems = order.lineItems;
+    const data = [];
+    for (let i = 0; i < lineItems.length; ++i) {
+      data.push({
+        key: i,
+        id: lineItems[i].id,
+        itemId: lineItems[i].itemId,
+        color: lineItems[i].color,
+        size: lineItems[i].size,
+        price: lineItems[i].price,
+        quantity: lineItems[i].quantity,
       });
-  }
+    }
 
-  handleNameChange(event) {
-    const value = event.target.value;
-    this.setState({
-      name: value,
-    });
-  }
-
-  handleAddressChange(event) {
-    const value = event.target.value;
-    this.setState({
-      address: value,
-    });
-  }
-
-  clearInput(event) {
-    event.target.value = "";
-    console.log("clear");
-  }
+    return (
+      <List
+        size="small"
+        header={
+          <Text strong style={{ marginLeft: 10 }}>
+            Line Items
+          </Text>
+        }
+        bordered
+        dataSource={data}
+        renderItem={(lineItem) => (
+          <List.Item>
+            <Text style={{ textShadow: "0px 1px 0px rgba(255,255,255,1.0)" }}>
+              {lineItem.itemId} {lineItem.price} | {lineItem.quantity}
+            </Text>
+          </List.Item>
+        )}
+      />
+    );
+  };
 
   render() {
     const {
-      locations,
+      orders,
       visible,
       loading,
       pagination,
       columns,
-      isSavedLocation,
-      name,
-      address,
-      location,
+      selectedOrder,
     } = this.state;
 
-    var ModalTitle;
-    if (isSavedLocation) {
-      ModalTitle = <Title level={2}>Edit Location</Title>;
-    } else {
-      ModalTitle = <Title level={2}>New Location</Title>;
-    }
-
-    const renderButton = () => {
-      if (isSavedLocation) {
-        return (
-          <Popconfirm
-            title="Delete location?"
-            onConfirm={this.removeLocation}
-            okText="Yes"
-            cancelText="No"
-          >
-            <Button
-              type="primary"
-              danger
-              icon={<DeleteOutlined />}
-              loading={loading}
-            >
-              Delete
-            </Button>
-          </Popconfirm>
-        );
-      } else {
-        return [];
-      }
+    const tableProps = {
+      expandedRowRender: (record) => this.expandedRowRender(record),
     };
 
-    const contentList = [
-      <Button
-        type="primary"
-        icon={<PlusOutlined />}
-        onClick={this.showModal}
-        style={{
-          marginBottom: 10,
-          marginTop: 10,
-          marginLeft: 4,
-          marginRight: 10,
-        }}
-      >
-        New Location
-      </Button>,
+    const orderCols = [
+      {
+        title: "Date",
+        dataIndex: "date",
+        key: "date",
+        width: 50,
+      },
+      {
+        title: "User",
+        dataIndex: "user",
+        key: "user",
+        width: 50,
+      },
+      {
+        title: "Note",
+        dataIndex: "note",
+        key: "note",
+        width: 50,
+      },
+      {
+        title: "Total",
+        dataIndex: "price",
+        key: "price",
+        width: 50,
+      },
+    ];
 
+    const orderList = [];
+    for (let i = 0; i < orders.length; ++i) {
+      orderList.push({
+        key: i,
+        id: orders[i].order.id,
+        date: orders[i].order.date,
+        userId: orders[i].order.userId,
+        note: orders[i].order.note,
+        price: orders[i].order.price,
+        lineItems: orders[i].lineItems,
+      });
+    }
+
+    const contentList = [
+      <Table
+        loading={loading}
+        rowKey={orderList.id}
+        pagination={pagination}
+        bordered
+        columns={orderCols}
+        dataSource={orderList}
+        size="small"
+        scroll={{ y: 350 }}
+        onChange={this.handleTableChange}
+        onRow={(record, rowIndex) => {
+          return {
+            onClick: (event) => {
+              this.handleRowClick(record);
+            }, // click row
+            //onDoubleClick: event => { this.handleRowClick(record) }, // double click row
+            //onContextMenu: event => { }, // right button click row
+            //onMouseEnter: event => { }, // mouse enter row
+            //onMouseLeave: event => { }, // mouse leave row
+          };
+        }}
+        {...tableProps}
+      />,
+    ];
+
+    const order = [<Order order={selectedOrder} />];
+
+    const modalTitle = [
+      <Title style={{ marginBottom: 0, marginTop: 10 }} level={3}>
+        Order #{selectedOrder.id}
+      </Title>,
+    ];
+
+    const orderModal = [
       <Modal
-        className="location-list"
+        className="sessionList"
         visible={visible}
-        title={ModalTitle}
+        title={modalTitle}
         closable={false}
+        style={{ top: 0 }}
+        bodyStyle={{ padding: 8, marginBottom: 20 }}
+        onOk={this.handleOk}
         onCancel={this.handleCancel}
         footer={[
-          <Button key="back" type="secondary" onClick={this.handleCancel}>
+          <Button
+            key="back"
+            type="secondary"
+            onClick={this.handleCancel}
+            style={{
+              boxShadow:
+                "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
+            }}
+          >
             Cancel
           </Button>,
-          renderButton(),
           <Button
             key="submit"
             type="primary"
             icon={<SaveOutlined />}
             loading={loading}
             onClick={this.handleSubmit}
+            style={{
+              boxShadow:
+                "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
+            }}
           >
             Save
           </Button>,
         ]}
       >
-        <Form
-          layout="vertical"
-          onFinish={this.handleSubmit}
-          ref={this.formRef}
-          name="control-ref"
-        >
-          <Form.Item
-            name="name"
-            label={
-              <Title style={{ marginBottom: 0 }} level={5}>
-                {"Name"}
-              </Title>
-            }
-            hasFeedback
-            rules={[
-              {
-                required: true,
-                message: "Please enter the location name.",
-              },
-            ]}
-          >
-            <Input
-              placeholder="East View Elementary"
-              style={{ fontSize: "16px" }}
-              autosize={{ minRows: 1, maxRows: 1 }}
-              onChange={this.handleNameChange}
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="address"
-            label={
-              <Title style={{ marginBottom: 0 }} level={5}>
-                {"Address"}
-              </Title>
-            }
-            hasFeedback
-            rules={[
-              {
-                required: true,
-                message: "Please enter the location address.",
-              },
-            ]}
-          >
-            <Input
-              placeholder="1234 Street City State"
-              style={{ fontSize: "16px" }}
-              autosize={{ minRows: 1, maxRows: 2 }}
-              onChange={this.handleAddressChange}
-            />
-          </Form.Item>
-        </Form>
+        {order}
       </Modal>,
-
-      <Table
-        style={{ padding: 2 }}
-        loading={this.state.loading}
-        rowKey={locations.id}
-        bordered
-        columns={columns}
-        dataSource={locations}
-        size="small"
-        scroll={{ y: 300 }}
-        onRow={(record, rowIndex) => {
-          return {
-            onClick: (event) => {
-              this.handleRowClick(record);
-            },
-          };
-        }}
-      />,
     ];
 
     const title = [
       <Title level={3}>
         <div>
-          Locations <EnvironmentOutlined />
+          Orders <ShoppingOutlined />
         </div>
       </Title>,
     ];
 
     return (
       <Card
-        className="location-list"
+        className="order-list"
         bordered={false}
         bodyStyle={{ padding: 0 }}
         title={title}
       >
         {contentList}
+        {orderModal}
       </Card>
     );
   }
 
-  handleRowClick(location) {
-    this.showLocation(location);
+  handleRowClick(order) {
+    this.props.history.push(`/orders/${order.id}`);
+    //this.showOrder(order);
   }
 
-  showLocation(location) {
-    this.setState(
-      {
-        location: location,
-        name: location.name,
-        address: location.address,
-        loading: false,
-        isSavedLocation: true,
-        visible: true,
-      },
-      this.onFill
-    );
+  showOrder(order) {
+    this.setState({
+      selectedOrder: order,
+      visible: true,
+    });
   }
+
+  handleTableChange = (pagination, filters, sorter) => {
+    this.getOrderList(pagination.current, pagination.pageSize);
+    /* this.fetch({
+          sortField: sorter.field,
+          sortOrder: sorter.order,
+          pagination,
+          ...filter
+        }); */
+  };
 }
 
 export default withRouter(OrderList);

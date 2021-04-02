@@ -614,6 +614,48 @@ export function removeStudent(id) {
   });
 }
 
+export function removeOrder(id) {
+  return request({
+    url: API_BASE_URL + "/orders/order/" + id,
+    method: "DELETE",
+    body: JSON.stringify(id),
+  });
+}
+
+export function removeLineItem(id) {
+  return request({
+    url: API_BASE_URL + "/lineitems/lineitem/" + id,
+    method: "DELETE",
+    body: JSON.stringify(id),
+  });
+}
+
+export function getOrders(page, size) {
+  //page = page || 0;
+  --page;
+  size = size || STUDENT_LIST_SIZE;
+
+  return request({
+    url: API_BASE_URL + "/orders?page=" + page + "&size=" + size,
+    method: "GET",
+  });
+}
+
+export function getOrder(id) {
+  return request({
+    url: API_BASE_URL + "/orders/" + id,
+    method: "GET",
+  });
+}
+
+export function getOrderLineItems(orderId) {
+  console.log("order id " + orderId);
+  return request({
+    url: API_BASE_URL + "/orders/" + orderId + "/lineItems",
+    method: "GET",
+  });
+}
+
 export function getAllItemsByActiveSearch(page, size, search) {
   page = page || 0;
   size = size || STUDENT_LIST_SIZE;
@@ -783,6 +825,13 @@ export function getCurrentUser() {
 export function getUserProfile(username) {
   return request({
     url: API_BASE_URL + "/users/" + username,
+    method: "GET",
+  });
+}
+
+export function getUser(id) {
+  return request({
+    url: API_BASE_URL + "/user/" + id,
     method: "GET",
   });
 }

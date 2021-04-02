@@ -825,7 +825,6 @@ class StudentList extends Component {
   }
 
   handleRowClick(student) {
-    console.log("handlerowlick");
     this.props.history.push(`/students/${student.id}`);
   }
 

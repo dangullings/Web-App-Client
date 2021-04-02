@@ -1,0 +1,86 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
+
+.info {
+  display: grid;
+  justify-content: center;
+}
+
+.order-date {
+  margin-top: 20px;
+  font-weight: 800;
+  font-size: large;
+}
+
+.user-header {
+  font-weight: 800;
+  font-size: x-large;
+}
+
+.user {
+  margin-top: 20px;
+  font-weight: 500;
+  font-size: small;
+}
+
+.business-header {
+  font-weight: 800;
+  font-size: x-large;
+}
+
+.business {
+  text-align: center;
+  margin-top: -20px;
+  font-weight: 500;
+  font-size: small;
+}
+
+.list-title {
+  display: flex;
+  justify-content: space-between;
+  padding-left: 17px;
+  padding-right: 17px;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.order {
+  font-family: "Roboto", sans-serif;
+}
+
+.list-item-container {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  grid-gap: 0px;
+  padding: 0px;
+}
+
+.list-item {
+  text-align: left;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.name {
+  grid-column: 1 / span 2;
+  grid-row: 1;
+  color: black;
+  font-weight: bolder;
+  font-size: larger;
+}
+
+.desc {
+  grid-column: 1 / span 3;
+  grid-row: 2;
+  color: rgb(71, 71, 71);
+  width: 70%;
+  font-size: small;
+  font-weight: 500;
+}
+
+.price {
+  grid-column: 3;
+  grid-row: 2;
+  text-align: right;
+  font-weight: 700;
+}

@@ -269,6 +269,18 @@ class App extends Component {
               ></Route>
               <Route
                 exact
+                path="/orders"
+                render={(props) => (
+                  <OrderList
+                    isAuthenticated={this.state.isAuthenticated}
+                    currentUser={this.state.currentUser}
+                    handleLogout={this.handleLogout}
+                    {...props}
+                  />
+                )}
+              ></Route>
+              <Route
+                exact
                 path="/user/group"
                 render={(props) => (
                   <MyGroup
@@ -362,6 +374,16 @@ class App extends Component {
                 path="/students/:id"
                 render={(props) => (
                   <Student
+                    isAuthenticated={this.state.isAuthenticated}
+                    currentUser={this.state.currentUser}
+                    {...props}
+                  />
+                )}
+              ></Route>
+              <Route
+                path="/orders/:id"
+                render={(props) => (
+                  <Order
                     isAuthenticated={this.state.isAuthenticated}
                     currentUser={this.state.currentUser}
                     {...props}

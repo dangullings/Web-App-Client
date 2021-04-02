@@ -1,928 +1,265 @@
 import React, { Component } from "react";
+import "../styles/components/Order.css";
 import "../styles/style.less";
-import moment from "moment";
 import { Link, withRouter } from "react-router-dom";
-import { getRanks } from "../util/Helpers.js";
 import {
   Typography,
   Modal,
-  Table,
-  Row,
   Form,
-  Button,
-  notification,
-  Input,
   Card,
-  Switch,
+  List,
+  Row,
+  Col,
   Divider,
-  Select,
-  Tabs,
+  Button,
 } from "antd";
 import {
-  getStudent,
-  createStudent,
-  removeStudent,
-  getTest,
-  getAllTestScoresByStudentId,
-  removeUserPeepsByStudentId,
-  removeStudentTestsByStudentId,
-  removeAttendanceByStudentId,
-  removeStudentEventByStudentId,
-  removeStudentSessionByStudentId,
+  getItem,
+  getUser,
+  getOrder,
+  getOrderLineItems,
 } from "../util/APIUtils";
-import { STUDENT_LIST_SIZE } from "../constants";
-import { NAME_MIN_LENGTH, NAME_MAX_LENGTH } from "../constants";
 
-import {
-  SaveOutlined,
-  DeleteOutlined,
-  ExclamationCircleOutlined,
-  LeftOutlined,
-} from "@ant-design/icons";
+import { LeftOutlined } from "@ant-design/icons";
 
-const { TabPane } = Tabs;
-const Option = Select.Option;
-const rankList = getRanks();
 const { Title, Text } = Typography;
-const children = [
-  <Option key={1}>January</Option>,
-  <Option key={2}>February</Option>,
-  <Option key={3}>March</Option>,
-  <Option key={4}>April</Option>,
-  <Option key={5}>May</Option>,
-  <Option key={6}>June</Option>,
-  <Option key={7}>July</Option>,
-  <Option key={8}>August</Option>,
-  <Option key={9}>September</Option>,
-  <Option key={10}>October</Option>,
-  <Option key={11}>November</Option>,
-  <Option key={12}>December</Option>,
-];
 
 const { confirm } = Modal;
 
 const FormItem = Form.Item;
-const key = "updatable";
-const openNotification = () => {
-  notification.open({
-    key,
-    message: "Save Successful!",
-    description: "Student info updated.",
-  });
-  setTimeout(() => {
-    notification.open({
-      key,
-      message: "Student info saved!",
-      description: "Student info was saved.",
-    });
-  }, 1000);
-};
 
 class Order extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      windowWidth: window.innerWidth,
-      student: {
-        id: "",
-        firstName: "",
-        lastName: "",
-        email: "",
-        birthDate: "",
-        ranks: "",
-        active: false,
-        key: "Bios",
-      },
-      firstNameText: "",
-      lastNameText: "",
-      emailText: "",
-      ranksText: "",
-      activeText: false,
-      birthDateMonth: "January",
-      birthDateDay: "",
-      birthDateYear: "",
-      tests: [],
-      testScores: [],
-      testData: [],
-      loading: false,
+      order: "",
+      lineItems: [],
+      items: [],
+      user: "",
     };
 
-    this.studentList = this.studentList.bind(this);
-    this.loadStudentTests = this.loadStudentTests.bind(this);
-    this.loadStudent = this.loadStudent.bind(this);
-    this.handleFirstNameChange = this.handleFirstNameChange.bind(this);
-    this.handleYearChange = this.handleYearChange.bind(this);
-    this.handleMonthChange = this.handleMonthChange.bind(this);
-    this.handleDayChange = this.handleDayChange.bind(this);
-    this.handleLastNameChange = this.handleLastNameChange.bind(this);
-    this.handleEmailChange = this.handleEmailChange.bind(this);
-    this.handleRankChange = this.handleRankChange.bind(this);
-    this.isFormInvalid = this.isFormInvalid.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-
     const id = this.props.match.params.id;
-    this.loadStudent(id);
+    this.getOrder(id);
   }
 
-  handleResize = (e) => {
-    this.setState({ windowWidth: window.innerWidth });
+  getOrder(id) {
+    let promise;
+    promise = getOrder(id);
 
-    console.log("resize" + window.innerWidth);
-  };
+    if (!promise) {
+      return;
+    }
 
-  componentDidMount() {
-    window.addEventListener("resize", this.handleResize);
-  }
-
-  componentWillUnMount() {
-    window.addEventListener("resize", this.handleResize);
-  }
-
-  onTabChange = (key) => {
-    console.log(key);
-    this.setState({ key: key });
-  };
-
-  loadStudent(id) {
-    getStudent(id)
+    promise
       .then((response) => {
         this.setState(
           {
-            student: response,
+            order: response,
           },
-          () => this.loadStudentTestScores(id)
+          () => this.getLineItems(response)
         );
       })
-      .catch((error) => {
-        console.log("fail");
-        if (error.status === 404) {
-          this.setState({
-            notFound: true,
-            isLoading: false,
-          });
-        } else {
-          this.setState({
-            serverError: true,
-            isLoading: false,
-          });
-        }
-      });
+      .catch((error) => {});
   }
 
-  loadStudentTestScores(studentId) {
-    const dateParts = this.state.student.birthDate.split("-");
-    const year = dateParts[0];
-    const month = dateParts[1];
-    const day = dateParts[2];
-    const monthName = moment.months(month - 1);
+  getLineItems(order) {
+    let promise,
+      lineItems = [];
+    promise = getOrderLineItems(order.id);
 
-    this.setState({
-      birthDateDay: day,
-      birthDateMonth: monthName,
-      birthDateYear: year,
-      firstNameText: this.state.student.firstName,
-      lastNameText: this.state.student.lastName,
-      emailText: this.state.student.email,
-      ranksText: this.state.student.ranks,
-      activeText: this.state.student.active,
-    });
+    if (!promise) {
+      return;
+    }
 
-    getAllTestScoresByStudentId(this.state.page, this.state.size, studentId)
+    promise
       .then((response) => {
+        console.log("response " + response);
+        let value;
+        for (value of response) {
+          console.log("value " + value);
+          lineItems.push(value);
+        }
+
         this.setState(
           {
-            testScores: response.content,
+            lineItems: lineItems,
           },
-          () => this.loadStudentTests()
+          () => this.getItems(order, lineItems)
         );
       })
-      .catch((error) => {
-        console.log("fail");
-        if (error.status === 404) {
-          this.setState({
-            notFound: true,
-            isLoading: false,
-          });
-        } else {
-          this.setState({
-            serverError: true,
-            isLoading: false,
-          });
-        }
-      });
+      .catch((error) => {});
   }
 
-  loadStudentTests() {
-    var testScores = this.state.testScores;
-    var value,
-      promises = [],
-      testResults = [];
-    this.state.tests.length = 0;
-
-    var score;
-    for (score of testScores) {
-      let promise = getTest(score.testId);
+  getItems(order, lineItems) {
+    let promises = [];
+    let newItems = [];
+    let lineItem;
+    for (lineItem of lineItems) {
+      console.log("line item " + lineItem.id);
+      let promise = getItem(lineItem.itemId);
       promises.push(promise);
     }
 
     Promise.all(promises).then((values) => {
+      let value;
       for (value of values) {
         if (value != "null") {
-          testResults.push(value);
+          newItems.push(value);
+          console.log("value id " + value.id);
         }
       }
       this.setState(
         {
-          tests: this.state.tests.concat(testResults),
+          items: newItems,
         },
-        () => this.createTestData()
+        () => this.getUser(order.userId)
       );
     });
   }
 
-  createTestData() {
-    const { student, tests, testScores } = this.state;
-    this.state.testData.length = 0;
-    var datas = [];
+  getUser(id) {
+    let promise;
+    promise = getUser(id);
 
-    var test, score, i;
-    for (test of tests) {
-      for (score of testScores) {
-        if (score.testId == test.id) {
-          i++;
-          datas.push({
-            key: i,
-            date: test.date,
-            location: test.location,
-            form: score.form,
-            power: score.power,
-            steps: score.steps,
-            kiap: score.kiap,
-            questions: score.questions,
-            sparring: score.sparring,
-            breaking: score.breaking,
-            attitude: score.attitude,
+    if (!promise) {
+      return;
+    }
+
+    promise
+      .then((response) => {
+        this.setState({
+          user: response,
+          loading: false,
+        });
+      })
+      .catch((error) => {});
+  }
+
+  render() {
+    const { order, lineItems, user, items } = this.state;
+
+    const back = [
+      <Link to={"/orders"}>
+        {
+          <Button
+            style={{ marginTop: 10, marginBottom: 0 }}
+            type="text"
+            icon={<LeftOutlined />}
+          ></Button>
+        }
+      </Link>,
+    ];
+
+    const title = [
+      <Divider
+        style={{
+          marginTop: 20,
+          marginBottom: 8,
+          borderWidth: 1,
+          borderColor: "black",
+        }}
+      />,
+      <div className="list-title">
+        <div>Summary</div>
+        <div>Price USD</div>
+      </div>,
+    ];
+
+    const businessContent = [
+      <div className="info business">
+        <div className="info business-header">Some Company</div>
+        <div>787 Brunswick, Minneapolis, Mn 55313</div>
+        <div>support@some-company.com</div>
+        <div>432-432-5434</div>
+      </div>,
+    ];
+
+    const userContent = [
+      <div className="info user">
+        <div className="info user-header">{user.name}</div>
+        <div>{user.email}</div>
+      </div>,
+    ];
+
+    const orderDate = <div className="info order-date">{order.date}</div>;
+
+    let lineItemsList = [];
+    let item, lineItem;
+
+    for (lineItem of lineItems) {
+      for (item of items) {
+        if (lineItem.itemId == item.id) {
+          lineItemsList.push({
+            key: item.id,
+            id: lineItem.id,
+            name: item.name,
+            description: item.description,
+            saleCost: item.saleCost,
+            price: lineItem.price,
+            color: lineItem.color,
+            size: lineItem.size,
+            quantity: lineItem.quantity,
           });
+          break;
         }
       }
     }
 
-    this.setState(
-      {
-        testData: this.state.testData.concat(datas),
-      },
-      () => this.onTabChange("Bios", "key")
-    );
-  }
-
-  handleSubmit(event) {
-    this.setState({ loading: true });
-
-    console.log("birth month " + this.state.birthDateMonth);
-
-    var monthNum = -1;
-    if (this.state.birthDateMonth == "January") {
-      monthNum = 0;
-    } else if (this.state.birthDateMonth == "February") {
-      monthNum = 1;
-    } else if (this.state.birthDateMonth == "March") {
-      monthNum = 2;
-    } else if (this.state.birthDateMonth == "April") {
-      monthNum = 3;
-    } else if (this.state.birthDateMonth == "May") {
-      monthNum = 4;
-    } else if (this.state.birthDateMonth == "June") {
-      monthNum = 5;
-    } else if (this.state.birthDateMonth == "July") {
-      monthNum = 6;
-    } else if (this.state.birthDateMonth == "August") {
-      monthNum = 7;
-    } else if (this.state.birthDateMonth == "September") {
-      monthNum = 8;
-    } else if (this.state.birthDateMonth == "October") {
-      monthNum = 9;
-    } else if (this.state.birthDateMonth == "November") {
-      monthNum = 10;
-    } else if (this.state.birthDateMonth == "December") {
-      monthNum = 11;
-    }
-
-    if (monthNum > -1) {
-      var d = new Date(
-        this.state.birthDateYear,
-        monthNum,
-        this.state.birthDateDay
-      );
-    } else {
-      var d = new Date(
-        this.state.birthDateYear,
-        this.state.birthDateMonth,
-        this.state.birthDateDay
-      );
-    }
-
-    const studentData = {
-      id: this.state.student.id,
-      firstName: this.state.firstNameText,
-      lastName: this.state.lastNameText,
-      email: this.state.emailText,
-      birthDate: d,
-      ranks: this.state.ranksText,
-      active: this.state.activeText,
-      joined: this.state.student.joined,
-    };
-
-    createStudent(studentData)
-      .then((response) => {
-        notification.success({
-          message: "Update Successful!",
-          description:
-            "Student " +
-            this.state.firstNameText +
-            " " +
-            this.state.lastNameText +
-            " was updated.",
-          duration: 2,
-        });
-        this.setState({ loading: false });
-        this.props.history.push(`/students/`);
-      })
-      .catch((error) => {
-        if (error.status === 401) {
-          this.props.handleLogout(
-            "/login",
-            "error",
-            "You have been logged out. Please login."
-          );
-        } else {
-          notification.error({
-            message: "Dans App",
-            description:
-              error.message || "Sorry! Something went wrong. Please try again!",
-          });
-        }
-      });
-  }
-
-  handleMonthChange(value) {
-    value--;
-    this.setState({
-      birthDateMonth: value,
-    });
-  }
-
-  handleRankChange(value) {
-    this.setState({
-      ranksText: value,
-    });
-  }
-
-  handleDayChange(event) {
-    const value = event.target.value;
-    this.setState({
-      birthDateDay: value,
-    });
-  }
-  handleYearChange(event) {
-    const value = event.target.value;
-    this.setState({
-      birthDateYear: value,
-    });
-  }
-
-  handleEmailChange(event) {
-    const value = event.target.value;
-    this.setState({
-      emailText: value,
-      ...this.validateEmail(value),
-    });
-  }
-
-  handleFirstNameChange(event) {
-    const value = event.target.value;
-    this.setState({
-      firstNameText: value,
-      ...this.validateName(value),
-    });
-  }
-
-  handleLastNameChange(event) {
-    const value = event.target.value;
-    this.setState({
-      lastNameText: value,
-      ...this.validateName(value),
-    });
-  }
-
-  isFormInvalid() {}
-
-  render() {
-    const {
-      id,
-      firstName,
-      lastName,
-      email,
-      ranks,
-      active,
-    } = this.state.student;
-    const {
-      firstNameText,
-      lastNameText,
-      emailText,
-      ranksText,
-      activeText,
-    } = this.state;
-    const {
-      testData,
-      size,
-      birthDateDay,
-      birthDateYear,
-      birthDateMonth,
-      loading,
-    } = this.state;
-
-    console.log("firstName " + firstNameText);
-
-    var testCols = [
-      {
-        title: "Date",
-        dataIndex: "date",
-        key: "date",
-        width: 50,
-      },
-      {
-        title: "Location",
-        dataIndex: "location",
-        key: "location",
-        width: 60,
-        ellipsis: true,
-      },
-      {
-        title: "Scores",
-        children: [
-          {
-            title: "Form",
-            dataIndex: "form",
-            key: "form",
-            align: "center",
-            width: 40,
-            ellipsis: true,
-          },
-          {
-            title: "Steps",
-            dataIndex: "steps",
-            key: "steps",
-            align: "center",
-            width: 40,
-            ellipsis: true,
-          },
-          {
-            title: "Power",
-            dataIndex: "power",
-            align: "center",
-            key: "power",
-            width: 40,
-            ellipsis: true,
-          },
-          {
-            title: "Kiap",
-            dataIndex: "kiap",
-            align: "center",
-            key: "kiap",
-            width: 40,
-            ellipsis: true,
-          },
-          {
-            title: "Questions",
-            dataIndex: "questions",
-            align: "center",
-            key: "questions",
-            width: 40,
-            ellipsis: true,
-          },
-          {
-            title: "Attitude",
-            dataIndex: "attitude",
-            align: "center",
-            key: "attitude",
-            width: 40,
-            ellipsis: true,
-          },
-          {
-            title: "Sparring",
-            dataIndex: "sparring",
-            align: "center",
-            key: "sparring",
-            width: 40,
-            ellipsis: true,
-          },
-          {
-            title: "Breaking",
-            dataIndex: "breaking",
-            align: "center",
-            key: "breaking",
-            width: 40,
-            ellipsis: true,
-          },
-        ],
-      },
-    ];
-
-    const contentBios = [
-      <Form
-        layout="vertical"
-        initialValues={{
-          firstName: firstName,
-          lastName: lastName,
-          email: email,
-          ranks: ranks,
-          active: active,
-          birthDateDay: birthDateDay,
-          birthDateMonth: birthDateMonth,
-          birthDateYear: birthDateYear,
-        }}
-      >
-        <Form.Item
-          label={
-            <Title style={{ marginBottom: 0 }} level={5}>
-              {"First"}
-            </Title>
-          }
-          hasFeedback
-          rules={[
-            {
-              required: true,
-              message: "Please enter students first name.",
-            },
-          ]}
-        >
-          <Input
-            placeholder="Bruce"
-            style={{ fontSize: "16px" }}
-            autosize={{ minRows: 1, maxRows: 1 }}
-            value={firstNameText}
-            onChange={this.handleFirstNameChange}
-          />
-        </Form.Item>
-
-        <Form.Item
-          label={
-            <Title style={{ marginBottom: 0 }} level={5}>
-              {"Last"}
-            </Title>
-          }
-          hasFeedback
-          rules={[
-            {
-              required: true,
-              message: "Please enter students last name.",
-            },
-          ]}
-        >
-          <Input
-            placeholder="Wayne"
-            style={{ fontSize: "16px" }}
-            autosize={{ minRows: 1, maxRows: 1 }}
-            value={lastNameText}
-            onChange={this.handleLastNameChange}
-          />
-        </Form.Item>
-
-        <Form.Item
-          label={
-            <Title style={{ marginBottom: 0 }} level={5}>
-              {"Email"}
-            </Title>
-          }
-          hasFeedback
-          rules={[
-            {
-              required: false,
-              type: "email",
-              message: "Please enter students email.",
-            },
-          ]}
-        >
-          <Input
-            placeholder="myemail@gmail.com"
-            style={{ fontSize: "16px" }}
-            autosize={{ minRows: 1, maxRows: 1 }}
-            value={emailText}
-            onChange={this.handleEmailChange}
-          />
-        </Form.Item>
-
-        <Divider orientation="left">Birth Date</Divider>
-
-        <Form.Item
-          label={
-            <Title style={{ marginBottom: 0 }} level={5}>
-              {"Month"}
-            </Title>
-          }
-          hasFeedback
-          rules={[
-            {
-              required: true,
-              message: "Please select student birth month.",
-            },
-          ]}
-        >
-          <Select
-            size={size}
-            onChange={this.handleMonthChange}
-            style={{ width: 200 }}
-            value={birthDateMonth}
-          >
-            {children}
-          </Select>
-        </Form.Item>
-
-        <Form.Item
-          label={
-            <Title style={{ marginBottom: 0 }} level={5}>
-              {"Day"}
-            </Title>
-          }
-          hasFeedback
-          rules={[
-            {
-              required: true,
-              message: "Please select student birth day.",
-            },
-          ]}
-        >
-          <Input
-            placeholder="DD"
-            style={{ width: 100, fontSize: "16px" }}
-            autosize={{ minRows: 1, maxRows: 1 }}
-            value={birthDateDay}
-            onChange={this.handleDayChange}
-          />
-        </Form.Item>
-
-        <Form.Item
-          label={
-            <Title style={{ marginBottom: 0 }} level={5}>
-              {"Year"}
-            </Title>
-          }
-          hasFeedback
-          rules={[
-            {
-              required: true,
-              message: "Please select student birth year.",
-            },
-          ]}
-        >
-          <Input
-            placeholder="YYYY"
-            style={{ width: 100, fontSize: "16px" }}
-            autosize={{ minRows: 1, maxRows: 1 }}
-            value={birthDateYear}
-            onChange={this.handleYearChange}
-          />
-        </Form.Item>
-        <Divider></Divider>
-
-        <Form.Item
-          label={
-            <Title style={{ marginBottom: 0 }} level={5}>
-              {"Rank"}
-            </Title>
-          }
-          hasFeedback
-          rules={[
-            {
-              required: true,
-              message: "Please select student rank.",
-            },
-          ]}
-        >
-          <Select
-            size={size}
-            onChange={this.handleRankChange}
-            style={{ width: 200 }}
-            value={ranks}
-          >
-            {rankList.map((rank) => (
-              <Select.Option key={rank} value={rank}>
-                {rank}
-              </Select.Option>
-            ))}
-          </Select>
-        </Form.Item>
-
-        <Form.Item
-          label={
-            <Title style={{ marginBottom: 0 }} level={5}>
-              {"Active"}
-            </Title>
-          }
-        >
-          <Switch checked={activeText} onChange={this.toggle} />
-        </Form.Item>
-
-        <Divider />
-
-        <Row>
-          <Form.Item>
-            <Button
-              shape="round"
-              type="primary"
-              icon={<SaveOutlined />}
-              disabled={this.isFormInvalid()}
-              loading={loading}
-              onClick={this.handleSubmit}
-              disabled={this.isFormInvalid()}
-              style={{
-                marginTop: 10,
-                marginLeft: 0,
-              }}
-            >
-              Update Student
-            </Button>
-          </Form.Item>
-          <Form.Item>
-            <Button
-              shape="round"
-              type="primary"
-              danger
-              icon={<DeleteOutlined />}
-              onClick={this.showConfirm}
-              style={{
-                marginTop: 10,
-                marginLeft: 10,
-                boxShadow:
-                  "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
-              }}
-            >
-              Remove Student
-            </Button>
-          </Form.Item>
-        </Row>
-      </Form>,
-    ];
-
-    const contentTests = [
-      <Table
-        rowKey={key}
-        pagination={true}
-        bordered
-        columns={testCols}
-        dataSource={testData}
+    const lineItemList = [
+      <List
+        split={false}
         size="small"
-        style={{ marginTop: 2, width: "100%", height: "100%" }}
-        scroll={{ x: 800 }}
+        itemLayout="horizontal"
+        dataSource={lineItemsList}
+        renderItem={(item) => this.getListItem(item)}
       />,
     ];
 
-    const back = [
-      <Link to={"/students"}>
-        {
-          <Button
-            style={{ marginTop: 10, marginBottom: 10 }}
-            type="text"
-            icon={<LeftOutlined />}
-          >
-            student list
-          </Button>
-        }
-      </Link>,
-    ];
-    const title = [
-      <Title style={{ marginBottom: 0, marginTop: 10 }} level={3}>
-        {firstName + " " + lastName}
-      </Title>,
+    const content = [
+      <Card
+        className="order-list"
+        bordered={false}
+        bodyStyle={{ padding: 0 }}
+        title={title}
+      >
+        {lineItemList}
+      </Card>,
     ];
 
     return (
-      <div className="student">
+      <div className="order">
         {back}
-        <Card
-          className="student"
-          bordered={false}
-          bodyStyle={{ padding: 8 }}
-          title={title}
-        >
-          <Tabs defaultActiveKey="Bios" onChange={this.onTabChange}>
-            <TabPane tab="Bios" key="Bios">
-              {contentBios}
-            </TabPane>
-            <TabPane tab="Tests" key="Tests">
-              {contentTests}
-            </TabPane>
-          </Tabs>
-        </Card>
+        <div>{businessContent}</div>
+        <div>{userContent}</div>
+        <div>{orderDate}</div>
+        <div>{content}</div>
       </div>
     );
   }
 
-  removeStudent() {
-    const { id } = this.state.student;
-    removeStudent(id)
-      .then((response) => {
-        notification.success({
-          message: "Removal Successful",
-          description: "Student removed.",
-          duration: 2,
-        });
-        this.props.history.push("/students");
-      })
-      .catch((error) => {
-        notification.error({
-          message: "Unsuccessful",
-          description:
-            error.message || "Something went wrong. Please try again!",
-        });
-      });
+  getListItem(item) {
+    console.log("getlistitem " + item.name);
+    const listItem = [
+      <Divider
+        style={{
+          marginTop: 6,
+          marginBottom: 6,
+          borderWidth: 1,
+          borderColor: "black",
+        }}
+      />,
+      <div className="list-item-container">
+        <div className="list-item name">{item.name}</div>
+        <div className="list-item desc">
+          this is the description of the item, it can include size and color as
+          well
+        </div>
+        <div className="list-item price">$149.99</div>
+      </div>,
+    ];
 
-    removeStudentTestsByStudentId(id);
-    removeUserPeepsByStudentId(id);
-    removeAttendanceByStudentId(id);
-    removeStudentEventByStudentId(id);
-    removeStudentSessionByStudentId(id);
+    return <List.Item style={{ padding: 0 }}>{listItem}</List.Item>;
   }
-
-  validateName = (name) => {
-    if (name.length < NAME_MIN_LENGTH) {
-      return {
-        validateStatus: "error",
-        errorMsg: `Name is too short (Minimum ${NAME_MIN_LENGTH} characters needed.)`,
-      };
-    } else if (name.length > NAME_MAX_LENGTH) {
-      return {
-        validationStatus: "error",
-        errorMsg: `Name is too long (Maximum ${NAME_MAX_LENGTH} characters allowed.)`,
-      };
-    } else {
-      return {
-        validateStatus: "success",
-        errorMsg: null,
-      };
-    }
-  };
-
-  validateEmail = (text) => {
-    if (text.length === 0) {
-      return {
-        validateStatus: "error",
-        errorMsg: "Please enter students email",
-      };
-    } else if (text.length > 40) {
-      return {
-        validateStatus: "error",
-        errorMsg: `email is too long (Maximum ${40} characters allowed)`,
-      };
-    } else {
-      return {
-        validateStatus: "success",
-        errorMsg: null,
-      };
-    }
-  };
-
-  isFormInvalid() {
-    return false; //!(this.state.student.name.validateStatus === 'success' );
-  }
-
-  studentList = () => {
-    return this.props.history.push("/students");
-  };
-
-  showConfirm = () => {
-    confirm({
-      title: "Do you want to remove this student?",
-      icon: <ExclamationCircleOutlined />,
-      okText: "Yes",
-      cancelText: "No",
-      content: "This will erase all records of this student.",
-      onOk: () => {
-        return this.removeStudent();
-      },
-      onCancel: () => {
-        return console.log("student " + this.state.student.firstName);
-      },
-    });
-  };
-
-  toggle = () => {
-    console.log("switch to" + !this.state.activeText);
-    this.setState({
-      activeText: !this.state.activeText,
-    });
-  };
 }
-
-const tabList = [
-  {
-    key: "Bios",
-    tab: <Title level={4}>{"Bios"}</Title>,
-  },
-  {
-    key: "Tests",
-    tab: <Title level={4}>{"Tests"}</Title>,
-  },
-];
 
 export default withRouter(Order);

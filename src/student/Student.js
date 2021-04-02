@@ -441,8 +441,6 @@ class Student extends Component {
       loading,
     } = this.state;
 
-    console.log("firstName " + firstNameText);
-
     var testCols = [
       {
         title: "Date",

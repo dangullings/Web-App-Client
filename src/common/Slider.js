@@ -4,6 +4,7 @@ import "../styles/style.less";
 import { Layout, Menu, Divider, Drawer, Button, Affix, Typography } from "antd";
 
 import {
+  ShopOutlined,
   AppstoreOutlined,
   ProfileOutlined,
   EnvironmentOutlined,
@@ -12,6 +13,7 @@ import {
   UserOutlined,
   MenuOutlined,
   IdcardOutlined,
+  ShoppingOutlined,
 } from "@ant-design/icons";
 
 const { SubMenu } = Menu;
@@ -89,7 +91,7 @@ class Slider extends Component {
       </Menu.Item>,
       <Menu.Item
         key="/store/Shop"
-        icon={<AppstoreOutlined />}
+        icon={<ShopOutlined />}
         onClick={this.onClose}
       >
         <Link to={"/store/Shop"}>Store</Link>
@@ -109,6 +111,13 @@ class Slider extends Component {
 
       <Menu.Item key="/tests" icon={<ProfileOutlined />} onClick={this.onClose}>
         <Link to={"/tests"}>Tests</Link>
+      </Menu.Item>,
+      <Menu.Item
+        key="/orders"
+        icon={<ShoppingOutlined />}
+        onClick={this.onClose}
+      >
+        <Link to={"/orders"}>Orders</Link>
       </Menu.Item>,
       <Menu.Item
         key="/items"
