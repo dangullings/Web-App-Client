@@ -12,7 +12,12 @@ import {
   Card,
   Modal,
 } from "antd";
-import { getOrders, getOrderLineItems, removeOrder } from "../util/APIUtils";
+import {
+  getOrders,
+  getOrderLineItems,
+  getOrderUsers,
+  removeOrder,
+} from "../util/APIUtils";
 import { STUDENT_LIST_SIZE } from "../constants";
 import { withRouter } from "react-router-dom";
 import Order from "./Order";
@@ -32,8 +37,8 @@ class OrderList extends Component {
     super(props);
 
     this.state = {
-      orders: [],
-      orderLineItems: [],
+      orderList: [],
+      //orderLineItems: [],
       selectedOrder: "",
       size: STUDENT_LIST_SIZE,
       search: "",
@@ -52,6 +57,8 @@ class OrderList extends Component {
     };
     this.removeOrder = this.removeOrder.bind(this);
     this.getOrderList = this.getOrderList.bind(this);
+
+    this.getOrderList(0, STUDENT_LIST_SIZE);
   }
 
   showModal = () => {
@@ -81,19 +88,27 @@ class OrderList extends Component {
 
     promise
       .then((response) => {
-        let value;
+        if (response.content === undefined) {
+          this.setState({
+            loading: false,
+          });
+          return;
+        }
+        /* let value;
         for (value of response.content) {
           this.getOrderLineItemList(value);
-        }
-        this.setState({
-          //orders: response.content,
-          page: response.page,
-          size: response.size,
-          totalElements: response.totalElements,
-          totalPages: response.totalPages,
-          last: response.last,
-          loading: false,
-        });
+        } */
+        this.setState(
+          {
+            //orders: response.content,
+            page: response.page,
+            size: response.size,
+            totalElements: response.totalElements,
+            totalPages: response.totalPages,
+            last: response.last,
+          },
+          () => this.getOrdersUserList(response.content)
+        );
       })
       .catch((error) => {
         this.setState({
@@ -102,7 +117,51 @@ class OrderList extends Component {
       });
   }
 
-  getOrderLineItemList(order) {
+  getOrdersUserList(orders) {
+    let promises = [];
+    let order;
+    var userList = [];
+
+    for (order of orders) {
+      let promise = getOrderUsers(order.id);
+      promises.push(promise);
+    }
+
+    Promise.all(promises).then((values) => {
+      let value;
+      for (value of values) {
+        userList.push(value[0]);
+      }
+      this.translateOrderList(orders, userList);
+    });
+  }
+
+  translateOrderList(orders, users) {
+    let order, user;
+    let orderList = [];
+
+    for (order of orders) {
+      for (user of users) {
+        if (order.userId == user.id) {
+          const newOrder = {
+            id: order.id,
+            date: order.date,
+            user: user.name,
+            price: "$" + order.price,
+          };
+          orderList.push(newOrder);
+          break;
+        }
+      }
+    }
+
+    this.setState({
+      orderList: orderList,
+      loading: false,
+    });
+  }
+
+  /* getOrderLineItemList(order) {
     let promise,
       lineItems = [];
     promise = getOrderLineItems(order.id);
@@ -138,7 +197,7 @@ class OrderList extends Component {
         });
       })
       .catch((error) => {});
-  }
+  } */
 
   componentDidMount() {
     this.getOrderList(this.state.page, this.state.STUDENT_LIST_SIZE);
@@ -158,7 +217,7 @@ class OrderList extends Component {
       });
   }
 
-  expandedRowRender = (order) => {
+  /*   expandedRowRender = (order) => {
     const lineItems = order.lineItems;
     const data = [];
     for (let i = 0; i < lineItems.length; ++i) {
@@ -192,11 +251,11 @@ class OrderList extends Component {
         )}
       />
     );
-  };
+  }; */
 
   render() {
     const {
-      orders,
+      orderList,
       visible,
       loading,
       pagination,
@@ -204,49 +263,27 @@ class OrderList extends Component {
       selectedOrder,
     } = this.state;
 
-    const tableProps = {
+    /* const tableProps = {
       expandedRowRender: (record) => this.expandedRowRender(record),
-    };
+    }; */
 
     const orderCols = [
       {
         title: "Date",
         dataIndex: "date",
         key: "date",
-        width: 50,
       },
       {
         title: "User",
         dataIndex: "user",
         key: "user",
-        width: 50,
-      },
-      {
-        title: "Note",
-        dataIndex: "note",
-        key: "note",
-        width: 50,
       },
       {
         title: "Total",
         dataIndex: "price",
         key: "price",
-        width: 50,
       },
     ];
-
-    const orderList = [];
-    for (let i = 0; i < orders.length; ++i) {
-      orderList.push({
-        key: i,
-        id: orders[i].order.id,
-        date: orders[i].order.date,
-        userId: orders[i].order.userId,
-        note: orders[i].order.note,
-        price: orders[i].order.price,
-        lineItems: orders[i].lineItems,
-      });
-    }
 
     const contentList = [
       <Table
@@ -270,7 +307,7 @@ class OrderList extends Component {
             //onMouseLeave: event => { }, // mouse leave row
           };
         }}
-        {...tableProps}
+        //{...tableProps}
       />,
     ];
 

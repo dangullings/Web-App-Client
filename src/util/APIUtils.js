@@ -648,6 +648,14 @@ export function getOrder(id) {
   });
 }
 
+export function getOrderUsers(orderId) {
+  console.log("order id " + orderId);
+  return request({
+    url: API_BASE_URL + "/orders/" + orderId + "/users",
+    method: "GET",
+  });
+}
+
 export function getOrderLineItems(orderId) {
   console.log("order id " + orderId);
   return request({

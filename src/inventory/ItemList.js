@@ -43,15 +43,21 @@ const Option = Select.Option;
 const children = [
   <Option key={"Clothing"}>Clothing</Option>,
   <Option key={"Drinkware"}>Drinkware</Option>,
-  <Option key={"Training Gear"}>Training Gear</Option>,
+  <Option key={"Gear"}>Gear</Option>,
   <Option key={"Arts and Crafts"}>Arts and Crafts</Option>,
 ];
 const clothingSizes = [
-  <Option key={"Extra Small"}>Extra Small</Option>,
-  <Option key={"Small"}>Small</Option>,
-  <Option key={"Medium"}>Medium</Option>,
-  <Option key={"Large"}>Large</Option>,
-  <Option key={"Extra Large"}>Extra Large</Option>,
+  <Option key={"XXS"}>XXS</Option>,
+  <Option key={"XS"}>XS</Option>,
+  <Option key={"S"}>S</Option>,
+  <Option key={"M"}>M</Option>,
+  <Option key={"L"}>L</Option>,
+  <Option key={"XL"}>XL</Option>,
+  <Option key={"XXL"}>XXL</Option>,
+];
+const clothingGender = [
+  <Option key={"Mens"}>Mens</Option>,
+  <Option key={"Womans"}>Womans</Option>,
 ];
 const colorsAvailable = [
   <Option key={"White"}>White</Option>,

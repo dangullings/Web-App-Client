@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@500,700&display=swap");
 
 .info {
   display: grid;
@@ -7,23 +7,24 @@
 
 .order-date {
   margin-top: 20px;
-  font-weight: 800;
+  font-weight: 700;
   font-size: large;
 }
 
 .user-header {
-  font-weight: 800;
+  font-weight: 700;
   font-size: x-large;
 }
 
 .user {
   margin-top: 20px;
-  font-weight: 500;
+  text-align: center;
+  font-weight: 200;
   font-size: small;
 }
 
 .business-header {
-  font-weight: 800;
+  font-weight: 700;
   font-size: x-large;
 }
 
@@ -39,12 +40,19 @@
   justify-content: space-between;
   padding-left: 17px;
   padding-right: 17px;
+  margin-top: 15px;
   font-size: 14px;
-  font-weight: 800;
+  font-weight: 700;
+  color: rgb(71, 71, 71);
+  border-bottom: rgb(172, 172, 172) solid 1px;
+  border-top: rgb(238, 238, 238) solid 1px;
+  height: 45px;
+  line-height: 45px;
 }
 
 .order {
   font-family: "Roboto", sans-serif;
+  color: rgb(71, 71, 71);
 }
 
 .list-item-container {
@@ -53,6 +61,9 @@
   height: 100%;
   grid-gap: 0px;
   padding: 0px;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  color: rgb(71, 71, 71);
 }
 
 .list-item {
@@ -64,23 +75,37 @@
 .name {
   grid-column: 1 / span 2;
   grid-row: 1;
-  color: black;
-  font-weight: bolder;
+  font-weight: 700;
   font-size: larger;
+}
+
+.detail {
+  grid-column: 3;
+  grid-row: 1;
+  text-align: right;
+  font-weight: 500;
+  margin-right: 100px;
 }
 
 .desc {
   grid-column: 1 / span 3;
   grid-row: 2;
-  color: rgb(71, 71, 71);
-  width: 70%;
+  width: 50%;
   font-size: small;
   font-weight: 500;
 }
 
 .price {
   grid-column: 3;
-  grid-row: 2;
+  grid-row: 1;
   text-align: right;
   font-weight: 700;
+  font-size: larger;
+}
+
+.total-price {
+  text-align: right;
+  font-weight: 700;
+  font-size: larger;
+  padding: 20px;
 }

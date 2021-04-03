@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import "../styles/components/Order.css";
 import "../styles/style.less";
+import moment from "moment";
 import { Link, withRouter } from "react-router-dom";
 import {
   Typography,
@@ -135,6 +136,17 @@ class Order extends Component {
       .catch((error) => {});
   }
 
+  formatPhoneNumber(phoneNumber) {
+    return (
+      "(" +
+      phoneNumber.substring(0, 3) +
+      ")" +
+      phoneNumber.substring(3, 6) +
+      "-" +
+      phoneNumber.substring(6, 11)
+    );
+  }
+
   render() {
     const { order, lineItems, user, items } = this.state;
 
@@ -151,14 +163,6 @@ class Order extends Component {
     ];
 
     const title = [
-      <Divider
-        style={{
-          marginTop: 20,
-          marginBottom: 8,
-          borderWidth: 1,
-          borderColor: "black",
-        }}
-      />,
       <div className="list-title">
         <div>Summary</div>
         <div>Price USD</div>
@@ -170,18 +174,21 @@ class Order extends Component {
         <div className="info business-header">Some Company</div>
         <div>787 Brunswick, Minneapolis, Mn 55313</div>
         <div>support@some-company.com</div>
-        <div>432-432-5434</div>
+        <div>(432)432-5434</div>
       </div>,
     ];
 
     const userContent = [
       <div className="info user">
         <div className="info user-header">{user.name}</div>
+        <div>{user.address}</div>
         <div>{user.email}</div>
+        <div>{this.formatPhoneNumber(String(user.phoneNumber))}</div>
       </div>,
     ];
 
-    const orderDate = <div className="info order-date">{order.date}</div>;
+    const date = moment(order.date).format("Do MMMM, YYYY");
+    const orderDate = <div className="info order-date">{date}</div>;
 
     let lineItemsList = [];
     let item, lineItem;
@@ -196,6 +203,7 @@ class Order extends Component {
             description: item.description,
             saleCost: item.saleCost,
             price: lineItem.price,
+            itemPrice: item.saleCost,
             color: lineItem.color,
             size: lineItem.size,
             quantity: lineItem.quantity,
@@ -207,7 +215,6 @@ class Order extends Component {
 
     const lineItemList = [
       <List
-        split={false}
         size="small"
         itemLayout="horizontal"
         dataSource={lineItemsList}
@@ -233,32 +240,34 @@ class Order extends Component {
         <div>{userContent}</div>
         <div>{orderDate}</div>
         <div>{content}</div>
+        <div className="total-price">
+          Total: ${this.getPriceFormatted(order.price)}
+        </div>
       </div>
     );
   }
 
   getListItem(item) {
-    console.log("getlistitem " + item.name);
     const listItem = [
-      <Divider
-        style={{
-          marginTop: 6,
-          marginBottom: 6,
-          borderWidth: 1,
-          borderColor: "black",
-        }}
-      />,
       <div className="list-item-container">
         <div className="list-item name">{item.name}</div>
-        <div className="list-item desc">
-          this is the description of the item, it can include size and color as
-          well
+        <div className="list-item detail">
+          ${item.itemPrice} x {item.quantity}
         </div>
-        <div className="list-item price">$149.99</div>
+        <div className="list-item desc">
+          {item.size} {item.color} {item.description}
+        </div>
+        <div className="list-item price">
+          ${this.getPriceFormatted(item.price)}
+        </div>
       </div>,
     ];
 
     return <List.Item style={{ padding: 0 }}>{listItem}</List.Item>;
+  }
+
+  getPriceFormatted(price) {
+    return (Math.round(price * 100) / 100).toFixed(2);
   }
 }
 

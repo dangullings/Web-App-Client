@@ -48,6 +48,12 @@ class Signup extends Component {
       email: {
         value: "",
       },
+      address: {
+        value: "",
+      },
+      phoneNumber: {
+        value: "",
+      },
       password: {
         value: "",
       },
@@ -75,10 +81,11 @@ class Signup extends Component {
   }
 
   handleSubmit() {
-    console.log("name" + this.state.name.value);
     const signupRequest = {
       name: this.state.name.value,
       email: this.state.email.value,
+      address: this.state.address.value,
+      phoneNumber: this.state.phoneNumber.value,
       username: this.state.username.value,
       password: this.state.password.value,
       role: "user",
@@ -88,7 +95,7 @@ class Signup extends Component {
         notification.success({
           message: "Registration Successful",
           description: "Confirmation email sent! Thank you for registering.",
-          duration: 8,
+          duration: 6,
         });
         this.props.history.push("/login");
       })
@@ -106,7 +113,9 @@ class Signup extends Component {
       this.state.name.validateStatus === "success" &&
       this.state.username.validateStatus === "success" &&
       this.state.email.validateStatus === "success" &&
-      this.state.password.validateStatus === "success"
+      this.state.password.validateStatus === "success" &&
+      this.state.address.validateStatus === "success" &&
+      this.state.phoneNumber.validateStatus === "success"
     );
   }
 
@@ -120,6 +129,12 @@ class Signup extends Component {
               label="Full Name"
               validateStatus={this.state.name.validateStatus}
               help={this.state.name.errorMsg}
+              hasFeedback
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
             >
               <Input
                 size="large"
@@ -151,6 +166,23 @@ class Signup extends Component {
               />
             </Form.Item>
             <Form.Item
+              label="Password"
+              validateStatus={this.state.password.validateStatus}
+              help={this.state.password.errorMsg}
+            >
+              <Input
+                size="large"
+                name="password"
+                type="password"
+                autoComplete="off"
+                placeholder="A password between 6 to 20 characters"
+                value={this.state.password.value}
+                onChange={(event) =>
+                  this.handleInputChange(event, this.validatePassword)
+                }
+              />
+            </Form.Item>
+            <Form.Item
               label="Email"
               hasFeedback
               validateStatus={this.state.email.validateStatus}
@@ -170,19 +202,36 @@ class Signup extends Component {
               />
             </Form.Item>
             <Form.Item
-              label="Password"
-              validateStatus={this.state.password.validateStatus}
-              help={this.state.password.errorMsg}
+              label="Address"
+              hasFeedback
+              validateStatus={this.state.address.validateStatus}
+              help={this.state.address.errorMsg}
             >
               <Input
                 size="large"
-                name="password"
-                type="password"
+                name="address"
                 autoComplete="off"
-                placeholder="A password between 6 to 20 characters"
-                value={this.state.password.value}
+                placeholder="Your Address"
+                value={this.state.address.value}
                 onChange={(event) =>
-                  this.handleInputChange(event, this.validatePassword)
+                  this.handleInputChange(event, this.validateAddress)
+                }
+              />
+            </Form.Item>
+            <Form.Item
+              label="Phone Number"
+              hasFeedback
+              validateStatus={this.state.phoneNumber.validateStatus}
+              help={this.state.phoneNumber.errorMsg}
+            >
+              <Input
+                size="large"
+                name="phoneNumber"
+                autoComplete="off"
+                placeholder="Your Phone Number"
+                value={this.state.phoneNumber.value}
+                onChange={(event) =>
+                  this.handleInputChange(event, this.validatePhoneNumber)
                 }
               />
             </Form.Item>
@@ -250,6 +299,41 @@ class Signup extends Component {
 
     return {
       validateStatus: null,
+      errorMsg: null,
+    };
+  };
+
+  validateAddress = (address) => {
+    if (!address) {
+      return {
+        validateStatus: "error",
+        errorMsg: "Address may not be empty",
+      };
+    }
+
+    return {
+      validateStatus: "success",
+      errorMsg: null,
+    };
+  };
+
+  validatePhoneNumber = (phoneNumber) => {
+    if (!phoneNumber) {
+      return {
+        validateStatus: "error",
+        errorMsg: "Phone Number may not be empty",
+      };
+    }
+
+    if (phoneNumber.length !== 10) {
+      return {
+        validateStatus: "error",
+        errorMsg: "10 digits required without special characters",
+      };
+    }
+
+    return {
+      validateStatus: "success",
       errorMsg: null,
     };
   };
