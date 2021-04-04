@@ -91,7 +91,7 @@ class Shop extends Component {
       cartVisible: false,
       loading: false,
 
-      windowWidth: window.innerWidth,
+      screenWidth: window.screen.width,
     };
 
     this.addToCart = this.addToCart.bind(this);
@@ -172,6 +172,7 @@ class Shop extends Component {
         saleCost: product.saleCost,
         description: product.description,
         imageId: product.imageId,
+        genders: product.genders,
         colors: product.colors,
         sizes: product.sizes,
         size: "",
@@ -200,6 +201,7 @@ class Shop extends Component {
   }
 
   showModal = () => {
+    console.log("show cart ");
     this.setState({
       cartVisible: true,
     });
@@ -302,6 +304,7 @@ class Shop extends Component {
         id: id++,
         color: item.product.color,
         size: item.product.size,
+        gender: item.product.gender,
         itemId: item.product.id,
         orderId: orderId,
         price: lineItemCost,
@@ -334,7 +337,7 @@ class Shop extends Component {
   completeOrder() {
     this.setState({
       loading: false,
-      visible: false,
+      cartVisible: false,
     });
   }
 
@@ -476,6 +479,23 @@ class Shop extends Component {
     });
   }
 
+  changeSelectedGender = (tags) => (value) => {
+    let i,
+      ii = 0;
+    for (i of this.state.products) {
+      if (i.id == tags.id) {
+        break;
+      }
+      ii++;
+    }
+
+    let products = [...this.state.products];
+    let product = { ...products[ii] };
+    product.gender = value;
+    products[ii] = product;
+    this.setState({ products });
+  };
+
   changeSelectedColor = (tags) => (value) => {
     let i,
       ii = 0;
@@ -526,24 +546,41 @@ class Shop extends Component {
   cartItemCard(product) {
     const item = product.product;
     const itemId = product.id;
+
+    const genderLabel = [
+      <Space size="small">
+        <Text type="secondary">Gender:</Text>
+        <Text style={{ marginLeft: -5 }} strong>
+          {" "}
+          {item.gender}
+        </Text>
+      </Space>,
+    ];
     const colorLabel = [
       <Space size="small">
         <Text type="secondary">Color:</Text>
-        <Text strong> {item.color}</Text>
+        <Text style={{ marginLeft: -5 }} strong>
+          {" "}
+          {item.color}
+        </Text>
       </Space>,
     ];
     const sizeLabel = [
       <Space size="small">
         <Text type="secondary">Size:</Text>
-        <Text strong>{item.size}</Text>
+        <Text style={{ marginLeft: -5 }} strong>
+          {item.size}
+        </Text>
       </Space>,
     ];
     let num = item.saleCost * this.getItemQty(itemId);
     let totalItemCost = (Math.round(num * 100) / 100).toFixed(2);
     const saleCostLabel = [
       <Space size="small">
-        <Text type="secondary"></Text>
-        <Text strong>${totalItemCost}</Text>
+        <Text type="secondary">Price:</Text>
+        <Text style={{ marginLeft: -5 }} strong>
+          ${totalItemCost}
+        </Text>
       </Space>,
     ];
     const itemQty = [
@@ -554,7 +591,15 @@ class Shop extends Component {
     ];
 
     return (
-      <Row style={{ marginTop: 20, width: "100%" }}>
+      <Row
+        style={{
+          marginTop: 10,
+          marginBottom: 30,
+          paddingLeft: 10,
+          paddingRight: 10,
+          width: "100%",
+        }}
+      >
         <Card
           hoverable
           key={itemId}
@@ -578,6 +623,7 @@ class Shop extends Component {
           }
           actions={[
             <Row style={{ width: "33%", marginLeft: 8, marginTop: -8 }}>
+              {genderLabel}
               {colorLabel}
               {sizeLabel}
             </Row>,
@@ -632,7 +678,7 @@ class Shop extends Component {
             <Row
               align="bottom"
               style={{
-                marginLeft: 16,
+                marginLeft: 4,
                 marginTop: 10,
               }}
             >
@@ -650,16 +696,23 @@ class Shop extends Component {
     let saleCost = (Math.round(product.saleCost * 100) / 100).toFixed(2);
 
     const saleCostLabel = [
-      <Title style={{ marginLeft: 50 }} level={3}>
+      <Title
+        style={{
+          marginLeft: 30,
+          marginRight: 30,
+        }}
+        level={3}
+      >
         ${saleCost}
       </Title>,
     ];
 
     let productColors = product.colors.split(",");
     let productSizes = product.sizes.split(",");
+    let productGenders = product.genders.split(",");
 
     return (
-      <Row style={{ marginBottom: 15 }}>
+      <Row style={{ marginBottom: 35 }}>
         <Col>
           <Card
             hoverable
@@ -671,7 +724,7 @@ class Shop extends Component {
                 "0 4px 8px 0 rgba(0, 0, 0, 0.4), 0 6px 20px 0 rgba(0, 0, 0, 0.39)",
             }}
             headStyle={{ backgroundColor: "#fafafa" }}
-            bodyStyle={{ backgroundColor: "#fafafa" }}
+            bodyStyle={{ backgroundColor: "#fafafa", height: 100 }}
             cover={
               <Image
                 style={{ left: -1 }}
@@ -684,6 +737,24 @@ class Shop extends Component {
             }
             actions={[
               <Row style={{ padding: 8 }}>
+                <Select
+                  align="center"
+                  style={{
+                    width: "100%",
+                    marginLeft: 0,
+                    boxShadow:
+                      "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
+                  }}
+                  placeholder="Genders"
+                  onChange={this.changeSelectedGender(product)}
+                  //Key={eventDates.index}
+                >
+                  {productGenders.map((gender) => (
+                    <Select.Option value={gender} key={gender}>
+                      {gender}
+                    </Select.Option>
+                  ))}
+                </Select>
                 <Select
                   align="center"
                   style={{
@@ -772,7 +843,7 @@ class Shop extends Component {
       pagination,
       totalPages,
       search,
-      windowWidth,
+      screenWidth,
       cartItems,
       cartItemsQty,
       loading,
@@ -866,8 +937,6 @@ class Shop extends Component {
             marginLeft: 8,
             width: 120,
             height: 32,
-            boxShadow:
-              "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
           }}
         />
         <Select
@@ -876,8 +945,6 @@ class Shop extends Component {
             marginLeft: 8,
             width: 120,
             height: 32,
-            boxShadow:
-              "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
           }}
           placeholder={"type"}
           onChange={this.handleTypeDropdownChange}
@@ -900,32 +967,34 @@ class Shop extends Component {
               gutter: 16,
               xs: 1,
               sm: 2,
-              md: 4,
+              md: 3,
               lg: 4,
-              xl: 6,
-              xxl: 3,
+              xl: 5,
+              xxl: 6,
             }}
             dataSource={productCards}
             renderItem={(item) => <List.Item>{item}</List.Item>}
           />
-          ,
+
           <Affix
-            offsetTop={10}
-            style={{ position: "absolute", top: 0, left: windowWidth - 80 }}
+            offsetTop={55}
+            style={{ position: "absolute", top: 0, left: -25 }}
           >
-            <Badge count={cartItems.length} offset={[-10, 15]}>
+            <Badge count={cartItems.length}>
               <Button
                 style={{
                   boxShadow:
                     "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
+                  borderRadius: "14px",
+                  height: "60px",
+                  width: "80px",
                 }}
-                shape="round"
                 size={"large"}
                 onClick={this.showModal}
                 icon={
                   <ShoppingCartOutlined
                     offset={[-30, -10]}
-                    style={{ fontSize: "50px", marginLeft: -16 }}
+                    style={{ fontSize: "40px" }}
                   />
                 }
               ></Button>

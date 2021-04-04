@@ -1121,7 +1121,7 @@ class EventCalendar extends Component {
         onOk={this.handleOk}
         onCancel={this.handleCancel}
         footer={[
-          <Button key="back" onClick={this.handleCancel}>
+          <Button key="back" block={true} onClick={this.handleCancel}>
             Ok
           </Button>,
         ]}

@@ -1360,7 +1360,7 @@ class SessionList extends Component {
             style={{
               boxShadow:
                 "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
-              marginLeft: 10,
+
               width: "60%",
             }}
             onClick={this.setDates}
@@ -1377,7 +1377,7 @@ class SessionList extends Component {
             style={{
               boxShadow:
                 "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
-              marginLeft: 10,
+
               width: "60%",
             }}
             onClick={this.setDates}
@@ -1414,18 +1414,18 @@ class SessionList extends Component {
             inputReadOnly="true"
             style={{ marginBottom: 10, marginLeft: 0 }}
             align="center"
-            size={"small"}
+            size={"default"}
             defaultValue={moment()}
             value={specific.date}
             onChange={this.changeSpecificDate}
           />
-          <Checkbox
+          {/* <Checkbox
             style={{ marginLeft: 20 }}
             checked={this.state.specific.hasSecondHour}
             onChange={this.onSpecificSecondHourCheckboxChange}
           >
             2nd
-          </Checkbox>
+          </Checkbox> */}
         </Col>
       </Row>,
       <Row style={{ marginTop: 0, marginLeft: 10, marginBottom: 20 }}>
@@ -1459,7 +1459,7 @@ class SessionList extends Component {
     ];
 
     const dayCheckboxes = [
-      <Row style={{ marginTop: 0, marginLeft: 4 }}>
+      <Row style={{ marginTop: 0, marginLeft: 20 }}>
         <Col>
           <Checkbox
             style={{ width: "65px" }}
@@ -1504,7 +1504,7 @@ class SessionList extends Component {
         </Col>
         <Divider style={{ marginTop: 8, marginBottom: 8 }} />
       </Row>,
-      <Row style={{ marginTop: 0, marginLeft: 4 }}>
+      <Row style={{ marginTop: 0, marginLeft: 20 }}>
         <Col>
           <Checkbox
             style={{ width: "65px" }}
@@ -1549,7 +1549,7 @@ class SessionList extends Component {
         </Col>
         <Divider style={{ marginTop: 8, marginBottom: 8 }} />
       </Row>,
-      <Row style={{ marginTop: 0, marginLeft: 4 }}>
+      <Row style={{ marginTop: 0, marginLeft: 20 }}>
         <Col>
           <Checkbox
             style={{ width: "65px" }}
@@ -1594,7 +1594,7 @@ class SessionList extends Component {
         </Col>
         <Divider style={{ marginTop: 8, marginBottom: 8 }} />
       </Row>,
-      <Row style={{ marginTop: 0, marginLeft: 4 }}>
+      <Row style={{ marginTop: 0, marginLeft: 20 }}>
         <Col>
           <Checkbox
             style={{ width: "65px" }}
@@ -1639,7 +1639,7 @@ class SessionList extends Component {
         </Col>
         <Divider style={{ marginTop: 8, marginBottom: 8 }} />
       </Row>,
-      <Row style={{ marginTop: 0, marginLeft: 4 }}>
+      <Row style={{ marginTop: 0, marginLeft: 20 }}>
         <Col>
           <Checkbox
             style={{ width: "65px" }}
@@ -1684,7 +1684,7 @@ class SessionList extends Component {
         </Col>
         <Divider style={{ marginTop: 8, marginBottom: 8 }} />
       </Row>,
-      <Row style={{ marginTop: 0, marginBottom: 20, marginLeft: 4 }}>
+      <Row style={{ marginTop: 0, marginBottom: 20, marginLeft: 20 }}>
         <Col>
           <Checkbox
             style={{ width: "65px" }}
@@ -1796,19 +1796,14 @@ class SessionList extends Component {
         New Session
       </Button>,
 
-      <Form
-        {...layout}
-        onFinish={this.handleSubmit}
-        ref={this.formRef}
-        style={{ top: 0, padding: 0, marginLeft: 0 }}
-      >
+      <Form {...layout} onFinish={this.handleSubmit} ref={this.formRef}>
         <Modal
           className="sessionList"
           visible={visible}
           title={ModalTitle}
           closable={false}
           style={{ top: 0 }}
-          bodyStyle={{ padding: 8, marginBottom: 20 }}
+          bodyStyle={{ padding: 20, marginBottom: 20 }}
           onOk={this.handleOk}
           onCancel={this.handleCancel}
           footer={[
@@ -2134,12 +2129,8 @@ class SessionList extends Component {
     return (
       <Card
         className="sessionList"
+        bordered={false}
         bodyStyle={{ padding: 0 }}
-        style={{
-          width: "100%",
-          //textShadow: '1px 1px 1px rgba(0,0,0,0.1)',
-          borderRadius: 6,
-        }}
         title={TableTitle}
       >
         {contentList}

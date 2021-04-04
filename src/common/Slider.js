@@ -188,7 +188,12 @@ class Slider extends Component {
       <div style={{ backgroundColor: "#fefefa", height: 41 }}>
         <Affix offsetTop={0}>
           <Button
-            style={{ marginBottom: 20, backgroundColor: "#fefefa" }}
+            style={{
+              marginBottom: 20,
+              backgroundColor: "#fefefa",
+              boxShadow:
+                "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
+            }}
             size="large"
             type="default"
             icon={<MenuOutlined />}

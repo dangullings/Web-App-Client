@@ -55,9 +55,9 @@ const clothingSizes = [
   <Option key={"XL"}>XL</Option>,
   <Option key={"XXL"}>XXL</Option>,
 ];
-const clothingGender = [
+const clothingGenders = [
   <Option key={"Mens"}>Mens</Option>,
-  <Option key={"Womans"}>Womans</Option>,
+  <Option key={"Womans"}>Womens</Option>,
 ];
 const colorsAvailable = [
   <Option key={"White"}>White</Option>,
@@ -88,6 +88,7 @@ class NewItem extends Component {
       selectedType: "",
       selectedSizes: "",
       selectedColors: "",
+      selectedGender: "",
       active: false,
       loading: false,
       visible: false,
@@ -253,6 +254,7 @@ class NewItem extends Component {
     let type = this.formRef.current.getFieldValue("type");
     let colors = this.formRef.current.getFieldValue("colors");
     let sizes = this.formRef.current.getFieldValue("sizes");
+    let genders = this.formRef.current.getFieldValue("genders");
     let saleCost = this.formRef.current.getFieldValue("saleCost");
     let active = this.state.active;
 
@@ -289,6 +291,7 @@ class NewItem extends Component {
       type: type,
       sizes: sizes.toString(),
       colors: colors.toString(),
+      genders: genders.toString(),
       saleCost: saleCost,
       description: description,
       active: active,
@@ -323,6 +326,7 @@ class NewItem extends Component {
       sizes: "",
       selectedColors: "",
       selectedSizes: "",
+      genders: "",
       photo: "",
       itemImage: "",
       active: false,
@@ -390,13 +394,15 @@ class NewItem extends Component {
   };
 
   handleSizeDropdownChange = (value) => {
-    console.log("values " + value);
     this.setState({ selectedSizes: value });
   };
 
   handleColorDropdownChange = (value) => {
-    console.log("values " + value);
     this.setState({ selectedColors: value });
+  };
+
+  handleGenderDropdownChange = (value) => {
+    this.setState({ selectedGenders: value });
   };
 
   handleTableChange = (pagination, filters, sorter) => {
@@ -445,6 +451,7 @@ class NewItem extends Component {
       itemImage: this.state.itemImage.photo,
       colors: this.state.selectedColors,
       sizes: this.state.selectedSizes,
+      genders: this.state.selectedGenders,
     });
   };
 
@@ -465,6 +472,7 @@ class NewItem extends Component {
       sizes: "",
       selectedColors: "",
       selectedSizes: "",
+      selectedGenders: "",
       photo: "",
       itemImage: "",
       active: false,
@@ -490,6 +498,7 @@ class NewItem extends Component {
       saleCost,
       selectedColors,
       selectedSizes,
+      selectedGenders,
       selectedType,
       itemImage,
     } = this.state;
@@ -500,6 +509,10 @@ class NewItem extends Component {
     } else {
       ModalTitle = <Title level={2}>New Item</Title>;
     }
+
+    const warningText = [
+      <Text type="warning">*consistant picture size recommended</Text>,
+    ];
 
     const renderButton = () => {
       if (isSavedItem) {
@@ -591,7 +604,27 @@ class NewItem extends Component {
               {children}
             </Select>
           </Form.Item>
-
+          <Form.Item
+            name="genders"
+            label={
+              <Title style={{ marginBottom: 0 }} level={5}>
+                Genders Available
+              </Title>
+            }
+          >
+            <Select
+              disabled={!isClothingSelected}
+              mode="multiple"
+              allowClear
+              align="center"
+              style={{ marginLeft: 0, width: "100%" }}
+              placeholder={"select genders"}
+              value={selectedSizes}
+              onChange={this.handleGenderDropdownChange}
+            >
+              {clothingGenders}
+            </Select>
+          </Form.Item>
           <Form.Item
             name="sizes"
             label={
@@ -613,7 +646,6 @@ class NewItem extends Component {
               {clothingSizes}
             </Select>
           </Form.Item>
-
           <Form.Item
             name="colors"
             label={
@@ -635,7 +667,6 @@ class NewItem extends Component {
               {colorsAvailable}
             </Select>
           </Form.Item>
-
           <Form.Item
             name="name"
             label={
@@ -658,7 +689,6 @@ class NewItem extends Component {
               onChange={this.handleNameChange}
             />
           </Form.Item>
-
           <Form.Item
             name="saleCost"
             label={
@@ -682,7 +712,6 @@ class NewItem extends Component {
               onChange={this.handleSaleCostChange}
             />
           </Form.Item>
-
           <Form.Item
             name="description"
             label={
@@ -706,11 +735,9 @@ class NewItem extends Component {
               onChange={this.handleDescriptionChange}
             />
           </Form.Item>
-
           <Title style={{ marginBottom: 8 }} level={5}>
             Current Image
           </Title>
-
           <Image
             width={"100%"}
             height={"100%"}
@@ -726,13 +753,15 @@ class NewItem extends Component {
             onChange={this.handleUpload}
             beforeUpload={() => false}
           >
-            <Button style={{ marginTop: 20 }} icon={<UploadOutlined />}>
+            <Button
+              style={{ marginTop: 20, marginBottom: 10 }}
+              icon={<UploadOutlined />}
+            >
               Upload Image (Max: 1)
             </Button>
           </Upload>
-
+          {warningText}
           <Divider></Divider>
-
           <Form.Item
             name="active"
             label={
