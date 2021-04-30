@@ -1568,7 +1568,7 @@ class MyGroup extends Component {
       <div className="my-group">
         <Card
           bordered={false}
-          bodyStyle={{ padding: 0 }}
+          bodyStyle={{ padding: 6 }}
           style={{
             width: "100%",
             padding: 0,

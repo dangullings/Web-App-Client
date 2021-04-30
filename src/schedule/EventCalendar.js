@@ -778,8 +778,6 @@ class EventCalendar extends Component {
           style={{
             width: "100%",
             marginLeft: 0,
-            boxShadow:
-              "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
           }}
           placeholder="Events / Classes"
           optionFilterProp="children"
@@ -802,8 +800,6 @@ class EventCalendar extends Component {
           value={datepickerValue}
           style={{
             marginLeft: 0,
-            boxShadow:
-              "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
           }}
         />
         {renderButton()}
@@ -1135,8 +1131,7 @@ class EventCalendar extends Component {
     ];
 
     var shortName = moment.monthsShort(parseInt(selectedMoment.month(), 10));
-    var cardTitle =
-      "Event Calendar " + shortName + " '" + String(year).slice(-2);
+    var cardTitle = "Calendar " + shortName + " '" + String(year).slice(-2);
 
     return (
       <Content className="eventCalendar">
@@ -1156,7 +1151,7 @@ class EventCalendar extends Component {
               <Tag color="lime">Camp</Tag>
             </Col>
             <Col span={4}>
-              <Tag color="cyan">Misc</Tag>
+              <Tag color="cyan">Event</Tag>
             </Col>
           </Row>
 

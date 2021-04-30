@@ -456,8 +456,6 @@ class StudentList extends Component {
   handleTableChange = (pagination) => {
     const { pageSize, current } = pagination;
 
-    console.log("current " + current + " pagesize" + pageSize);
-
     this.setState(
       {
         current: current,
@@ -526,6 +524,15 @@ class StudentList extends Component {
       totalPages: totalPages,
     };
 
+    console.log(
+      "paginations current " +
+        paginations.current +
+        " total " +
+        paginations.total +
+        " totalpages " +
+        paginations.totalPages
+    );
+
     const title = [<Title level={3}>Students</Title>];
     const newStudentTitle = [<Title level={2}>New Student</Title>];
 
@@ -535,7 +542,7 @@ class StudentList extends Component {
         <Divider style={{ height: 35, marginLeft: 5 }} type="vertical" />
         <Search
           size={"small"}
-          placeholder="search"
+          placeholder="search name"
           onSearch={this.onSearch}
           onChange={this.onChangeSearch}
           style={{

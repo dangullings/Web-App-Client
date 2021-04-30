@@ -150,6 +150,8 @@ class Events extends Component {
     this.setState({
       loading: false,
       eventSignupVisible: false,
+      signedUpPeeps: [],
+      eventSignupPrice: 0,
     });
   };
 
@@ -240,7 +242,7 @@ class Events extends Component {
 
     const { myPeeps } = this.state;
 
-    const myPeepOptions = [];
+    var myPeepOptions = [];
     let peep,
       notAllowedRank = true,
       notAllowedAge = true;
@@ -302,6 +304,7 @@ class Events extends Component {
         style={{ marginLeft: 15, marginBottom: 15 }}
         options={myPeepOptions}
         onChange={this.onChange}
+        value={this.state.signedUpPeeps}
       >
         <Space>{myPeepOptions}</Space>
       </Checkbox.Group>,
@@ -380,6 +383,12 @@ class Events extends Component {
       selectedEvent,
       myPeeps,
     } = this.state;
+
+    const stripeView = [
+      <div className="session" style={{ paddingLeft: 15, paddingRight: 15 }}>
+        <StripeContainer />
+      </div>,
+    ];
 
     let eventCards = [];
     eventCards.length = 0;
@@ -528,7 +537,7 @@ class Events extends Component {
         ];
 
         eventCards.push(
-          <div style={{ marginLeft: 2, marginRight: 2, marginBottom: 20 }}>
+          <div style={{ marginLeft: 10, marginRight: 10, marginBottom: 20 }}>
             {eventCard}
           </div>
         );
@@ -543,12 +552,10 @@ class Events extends Component {
       </Title>,
     ];
 
-    const stripeView = <StripeContainer />;
     const eventModalTitle = [<Title level={2}>{selectedEvent.title}</Title>];
 
     return (
       <div>
-        {stripeView}
         <Card
           className="event"
           bordered={false}
@@ -595,6 +602,8 @@ class Events extends Component {
           ]}
         >
           {this.getEventSignupForm(selectedEvent)}
+          <Divider orientation="left">Payment</Divider>
+          {stripeView}
         </Modal>
       </div>
     );

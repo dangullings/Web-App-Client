@@ -1,14 +1,15 @@
-.sessionList {
+.session-list {
   .ant-btn {
     color: #fff;
     background: @primary-blue;
     border-color: @border-blue;
     border-radius: 6px;
+    text-shadow: 0 -1px 0 rgb(0 0 0 / 12%);
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39);
     &:hover {
-      background-color: @highlight-blue !important;
-      border-color: @border-blue !important;
-      color: white;
+      //background-color: @highlight-blue !important;
+      //border-color: @border-blue !important;
+      //color: white;
     }
   }
 
@@ -16,12 +17,29 @@
     color: @primary-blue;
     background: white;
     border-color: @border-blue;
+    text-shadow: 0 -1px 0 rgb(0 0 0 / 12%);
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39);
   }
 
-  .ant-btn:focus {
+  .ant-btn-dangerous.ant-btn-primary {
+    color: #fff;
+    background: #ff4d4f;
+    border-color: #ff4d4f;
+    text-shadow: 0 -1px 0 rgb(0 0 0 / 12%);
+    -webkit-box-shadow: 0 2px 0 rgb(0 0 0 / 5%);
+    border-radius: 6px;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39);
+  }
+
+  .ant-btn-primary:focus {
     color: #fff;
     background: @primary-blue;
+    border-color: white;
+  }
+
+  .ant-btn-dangerous.ant-btn-primary:focus {
+    color: #fff;
+    background: #ff4d4f;
     border-color: white;
   }
 
@@ -36,6 +54,13 @@
     background: transparent;
     border-bottom: 1px solid #f0f0f0;
     border-radius: 2px 2px 0 0;
+  }
+
+  .ant-modal-body {
+    padding: 16px;
+    font-size: 14px;
+    line-height: 1.5715;
+    word-wrap: break-word;
   }
 
   .ant-modal-header {

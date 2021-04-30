@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Link, withRouter } from "react-router-dom";
+import AppHeader from "../common/AppHeader";
 import "../styles/style.less";
 import { Layout, Menu, Divider, Drawer, Button, Affix, Typography } from "antd";
 
@@ -22,7 +23,7 @@ const { Title } = Typography;
 class Slider extends Component {
   constructor(props) {
     super(props);
-    this.handleMenuClick = this.handleMenuClick.bind(this);
+
     this.state = {
       currentUser: this.props.currentUser || "visitor",
       isAuthenticated: false,
@@ -30,6 +31,8 @@ class Slider extends Component {
       collapsed: false,
       visible: this.props.visible,
     };
+
+    this.sliderLogout = this.sliderLogout.bind(this);
   }
 
   componentDidMount() {
@@ -38,11 +41,10 @@ class Slider extends Component {
     });
   }
 
-  handleMenuClick({ key }) {
-    if (key === "logout") {
-      this.props.onLogout();
-    }
-  }
+  sliderLogout = () => {
+    console.log("yay we called sliders logout");
+    this.props.appLogout();
+  };
 
   onCollapse = (collapsed) => {
     console.log(collapsed);
@@ -136,6 +138,9 @@ class Slider extends Component {
         <Menu.Item key="/schedule/Sessions" onClick={this.onClose}>
           <Link to={"/schedule/Sessions"}>Sessions</Link>
         </Menu.Item>
+        <Menu.Item key="/schedule/Events" onClick={this.onClose}>
+          <Link to={"/schedule/Events"}>Events</Link>
+        </Menu.Item>
       </SubMenu>,
 
       <Menu.Item
@@ -154,7 +159,7 @@ class Slider extends Component {
     ];
     //}
 
-    if (this.props.currentUser) {
+    /*     if (this.props.currentUser) {
       menuItems = [
         <SubMenu
           key="profile"
@@ -176,7 +181,7 @@ class Slider extends Component {
           <Link to="/signup">Signup</Link>
         </Menu.Item>,
       ];
-    }
+    } */
 
     const title = [
       <Title style={{ marginBottom: 0, marginTop: 0 }} level={3}>
@@ -184,158 +189,63 @@ class Slider extends Component {
       </Title>,
     ];
 
-    return (
-      <div style={{ backgroundColor: "#fefefa", height: 41 }}>
-        <Affix offsetTop={0}>
-          <Button
-            style={{
-              marginBottom: 20,
-              backgroundColor: "#fefefa",
-              boxShadow:
-                "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
-            }}
-            size="large"
-            type="default"
-            icon={<MenuOutlined />}
-            onClick={this.showDrawer}
-          >
-            Menu
-          </Button>
-        </Affix>
+    const profile = [
+      <div className="container app-header">
+        <AppHeader
+          isAuthenticated={this.state.isAuthenticated}
+          currentUser={this.state.currentUser}
+          parentLogout={this.sliderLogout}
+        />
+      </div>,
+    ];
 
-        <Drawer
-          className="slider"
-          title={title}
-          placement="left"
-          closable={false}
-          onClose={this.onClose}
-          visible={visible}
-          key="placement"
-          bodyStyle={{ padding: "0" }}
-        >
-          <div className="logo" />
-          <Menu theme="light" defaultSelectedKeys={["1"]} mode="inline">
-            {menuItems}
-            <Divider></Divider>
-            {userMenuItems}
-            {adminMenu}
-          </Menu>
-        </Drawer>
-      </div>
-    );
+    const content = [
+      <div className="container">
+        <div className="slider">
+          <Affix offsetTop={0}>
+            <Button
+              style={{
+                marginBottom: 10,
+                marginLeft: 6,
+                marginTop: 4,
+                backgroundColor: "#fefefa",
+                boxShadow:
+                  "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 6px 0 rgba(0, 0, 0, 0.39)",
+              }}
+              size="large"
+              type="default"
+              icon={<MenuOutlined />}
+              onClick={this.showDrawer}
+            >
+              Menu
+            </Button>
+          </Affix>
+
+          <Drawer
+            title={title}
+            placement="left"
+            closable={false}
+            onClose={this.onClose}
+            visible={visible}
+            key="placement"
+            bodyStyle={{ padding: "0" }}
+          >
+            <div className="logo" />
+
+            <Menu theme="light" defaultSelectedKeys={["1"]} mode="inline">
+              {menuItems}
+              <Divider></Divider>
+              {userMenuItems}
+              {adminMenu}
+            </Menu>
+          </Drawer>
+        </div>
+        {profile}
+      </div>,
+    ];
+    // #fefefa
+    return content;
   }
 }
 
-/* const dropdownMenu = (
-  <Menu title="dan" onClick={props.handleMenuClick} className="profile-dropdown-menu">
-    <Menu.Item key="user-info" className="dropdown-item" disabled>
-      <div className="user-full-name-info">
-        {props.currentUser.name}
-      </div>
-      <div className="username-info">
-        @{props.currentUser.username}
-      </div>
-    </Menu.Item>
-    <Menu.Divider />
-    <Menu.Item key="profile" className="dropdown-item">
-      <Link to={`/users/${props.currentUser.username}`}>Profile</Link>
-    </Menu.Item>
-    <Menu.Item key="logout" className="dropdown-item">
-      Logout
-    </Menu.Item>
-  </Menu>
-); */
-
-function ProfileDropdownMenu(props) {
-  const dropdownMenu = (
-    <div>
-      <Menu.Item key="user-info" className="dropdown-item" disabled>
-        <div className="username-info">{props.currentUser.role}</div>
-      </Menu.Item>
-      <Menu.Item key="user-info" className="dropdown-item" disabled>
-        <div className="username-info">{props.currentUser.username}</div>
-      </Menu.Item>
-      <Menu.Divider />
-      <Menu.Item key="profile" className="dropdown-item">
-        <Link to={`/users/${props.currentUser.username}`}>Profile</Link>
-      </Menu.Item>
-      <Menu.Item key="logout" className="dropdown-item">
-        Logout
-      </Menu.Item>
-    </div>
-  );
-
-  return dropdownMenu;
-}
-
 export default withRouter(Slider);
-
-{
-  /* <SubMenu key="user" icon={<UserOutlined />} title="User">
-                            <Menu.Item key="profile" disabled>
-                                <div className="user-full-name-info">
-                                    {'dan'}
-                                </div>
-                                <div className="username-info">
-                                    @{'dan'}
-                                </div>
-                            </Menu.Item>
-                            <Menu.Divider />
-                            <Menu.Item key="/profile">
-                                <Link to={`/users/${this.props.currentUser.username}`}>Profile</Link>
-                            </Menu.Item>
-                            <Menu.Item key="logout" className="dropdown-item">
-                                Logout
-                        </Menu.Item>
-                        </SubMenu> */
-}
-
-/*  return (
-                          <div style={{ height: '100%', backgroundColor: "blue" }}>
-                              <Sider theme="light" style={{
-                                //overflow: 'auto',
-                                height: '100%',
-                                left: 0,
-                                position: 'fixed',
-                              }} 
-                            
-                              width='80%' 
-                              breakpoint="lg"
-                              collapsedWidth="0"
-                              onBreakpoint={broken => {
-                                console.log(broken);
-                              }}
-                              onCollapse={(collapsed, type) => {
-                                console.log(collapsed, type);
-                              }}
-              
-                              >
-                                  <div className="logo" />
-                                  <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline" >
-              
-                                  {menuItems}
-              
-                                      <Divider ></Divider>
-              
-                                      <SubMenu key="students" icon={<UserOutlined />} title="Students">
-                                          <Menu.Item key="/students/NewStudentForm">
-                                              <Link to={"/students/NewStudentForm"}>New Student</Link>
-                                          </Menu.Item>
-                                          <Menu.Item key="/students">
-                                              <Link to={"/students"}>View Students</Link>
-                                          </Menu.Item>
-                                      </SubMenu>
-              
-                                      <SubMenu key="tests" icon={<TeamOutlined />} title="Tests">
-                                          <Menu.Item key="/tests">
-                                              <Link to={"/tests"}>View Tests</Link>
-                                          </Menu.Item>
-                                          <Menu.Item key="/tests/NewTestForm">
-                                              <Link to={"/tests/NewTestForm"}>New Test</Link>
-                                          </Menu.Item>
-                                      </SubMenu>
-                                  </Menu>
-                              </Sider>
-                          </div>
-                      );
-                  } */

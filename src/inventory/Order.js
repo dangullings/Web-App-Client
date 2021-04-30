@@ -12,16 +12,31 @@ import {
   Row,
   Col,
   Divider,
+  Alert,
+  Input,
   Button,
+  message,
+  Popconfirm,
 } from "antd";
 import {
   getItem,
   getUser,
   getOrder,
   getOrderLineItems,
+  createOrder,
+  removeOrder,
 } from "../util/APIUtils";
 
-import { LeftOutlined } from "@ant-design/icons";
+import {
+  LeftOutlined,
+  SaveOutlined,
+  EditOutlined,
+  LikeOutlined,
+  DislikeOutlined,
+  DeleteOutlined,
+} from "@ant-design/icons";
+
+const { TextArea } = Input;
 
 const { Title, Text } = Typography;
 
@@ -37,7 +52,15 @@ class Order extends Component {
       lineItems: [],
       items: [],
       user: "",
+      note: "",
+      fulfillAlertVisible: false,
+      noteAlertVisible: false,
     };
+
+    this.handleNoteChange = this.handleNoteChange.bind(this);
+    this.fulfillOrderChange = this.fulfillOrderChange.bind(this);
+    this.saveNote = this.saveNote.bind(this);
+    this.deleteOrder = this.deleteOrder.bind(this);
 
     const id = this.props.match.params.id;
     this.getOrder(id);
@@ -56,6 +79,7 @@ class Order extends Component {
         this.setState(
           {
             order: response,
+            note: response.note,
           },
           () => this.getLineItems(response)
         );
@@ -147,17 +171,201 @@ class Order extends Component {
     );
   }
 
+  saveNote() {
+    this.setState(
+      (prevState) => ({
+        order: {
+          ...prevState.order,
+          note: this.state.note,
+        },
+      }),
+      () => this.saveOrder()
+    );
+
+    this.setState({
+      noteAlertVisible: true,
+    });
+    setTimeout(
+      function () {
+        this.setState({ noteAlertVisible: false });
+      }.bind(this),
+      3000
+    );
+  }
+
+  handleNoteChange(event) {
+    const value = event.target.value;
+    this.setState({
+      note: value,
+    });
+  }
+
+  fulfillOrderChange() {
+    this.setState(
+      (prevState) => ({
+        order: {
+          ...prevState.order,
+          isFulfilled: !prevState.order.isFulfilled,
+        },
+      }),
+      () => this.saveOrder()
+    );
+
+    this.setState({
+      fulfillAlertVisible: true,
+    });
+    setTimeout(
+      function () {
+        this.setState({ fulfillAlertVisible: false });
+      }.bind(this),
+      3000
+    );
+  }
+
+  deleteOrder() {
+    const { order } = this.state;
+
+    removeOrder(order.id)
+      .then((response) => {
+        message.success("Order deleted.");
+        this.props.history.push(`/orders/`);
+      })
+      .catch((error) => {
+        message.error("Error [" + error.message + "]");
+      });
+  }
+
+  saveOrder() {
+    const { order } = this.state;
+
+    this.setState({
+      loading: true,
+    });
+
+    createOrder(order)
+      .then((response) => {
+        this.setState({
+          loading: false,
+        });
+      })
+      .catch((error) => {
+        this.setState({
+          loading: false,
+        });
+      });
+  }
+
   render() {
-    const { order, lineItems, user, items } = this.state;
+    const {
+      order,
+      lineItems,
+      user,
+      items,
+      fulfillAlertVisible,
+      noteAlertVisible,
+      note,
+    } = this.state;
+
+    var fulFillAlert = [];
+    var fulfillBtn = [];
+
+    if (order.isFulfilled) {
+      if (fulfillAlertVisible) {
+        fulFillAlert = [
+          <Alert
+            message="Order fulfilled"
+            type="success"
+            style={{ marginTop: 5 }}
+          />,
+        ];
+      }
+      fulfillBtn = [
+        <Button
+          key="submit"
+          type="primary"
+          block={true}
+          icon={<DislikeOutlined />}
+          onClick={this.fulfillOrderChange}
+          style={{ marginTop: 5 }}
+        >
+          Unfulfill Order
+        </Button>,
+      ];
+    } else {
+      if (fulfillAlertVisible) {
+        fulFillAlert = [
+          <Alert
+            message="Order unfulfilled"
+            type="warning"
+            style={{ marginTop: 5 }}
+          />,
+        ];
+      }
+      fulfillBtn = [
+        <Button
+          key="submit"
+          type="primary"
+          block={true}
+          icon={<LikeOutlined />}
+          onClick={this.fulfillOrderChange}
+          style={{ marginTop: 5 }}
+        >
+          Fulfill Order
+        </Button>,
+      ];
+    }
+
+    const fulfill = [fulfillBtn];
+
+    var noteAlert = [];
+    const saveNoteBtn = [
+      <Button
+        key="submit"
+        type="primary"
+        block={true}
+        icon={<SaveOutlined />}
+        onClick={this.saveNote}
+        style={{ marginTop: 3, marginBottom: 10 }}
+      >
+        Save Note
+      </Button>,
+    ];
+
+    const deleteOrderBtn = [
+      <Popconfirm
+        title="Delete order?"
+        onConfirm={this.deleteOrder}
+        okText="Yes"
+        cancelText="No"
+      >
+        <Button
+          type="primary"
+          danger
+          icon={<DeleteOutlined />}
+          block={true}
+          style={{ marginTop: 15 }}
+        >
+          Delete Order
+        </Button>
+      </Popconfirm>,
+    ];
+
+    if (noteAlertVisible) {
+      noteAlert = [
+        <Alert message="Note saved" type="success" style={{ marginTop: 5 }} />,
+      ];
+    }
 
     const back = [
       <Link to={"/orders"}>
         {
           <Button
-            style={{ marginTop: 10, marginBottom: 0 }}
+            style={{ marginTop: 0, marginBottom: 30, marginLeft: -10 }}
             type="text"
             icon={<LeftOutlined />}
-          ></Button>
+          >
+            Order List
+          </Button>
         }
       </Link>,
     ];
@@ -233,6 +441,16 @@ class Order extends Component {
       </Card>,
     ];
 
+    const noteTextArea = [
+      <TextArea
+        placeholder="note"
+        style={{ fontSize: "16px", marginTop: 0 }}
+        maxLength={200}
+        value={note}
+        onChange={this.handleNoteChange}
+      />,
+    ];
+
     return (
       <div className="order">
         {back}
@@ -243,6 +461,13 @@ class Order extends Component {
         <div className="total-price">
           Total: ${this.getPriceFormatted(order.price)}
         </div>
+        <div>{noteTextArea}</div>
+        {noteAlert}
+        <div>{saveNoteBtn}</div>
+
+        {fulFillAlert}
+        <div>{fulfill}</div>
+        <div>{deleteOrderBtn}</div>
       </div>
     );
   }

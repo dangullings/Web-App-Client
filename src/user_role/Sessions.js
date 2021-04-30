@@ -24,7 +24,7 @@ import {
   createStudentSession,
 } from "../util/APIUtils";
 import { withRouter } from "react-router-dom";
-
+import StripeContainer from "../stripe/StripeContainer";
 import {
   SaveOutlined,
   DeleteOutlined,
@@ -138,6 +138,8 @@ class Sessions extends Component {
     this.setState({
       loading: false,
       sessionSignupVisible: false,
+      signedUpPeeps: [],
+      sessionSignupPrice: 0,
     });
   };
 
@@ -199,7 +201,7 @@ class Sessions extends Component {
 
     const { myPeeps } = this.state;
 
-    const myPeepOptions = [];
+    var myPeepOptions = [];
     let peep,
       notAllowedRank = true,
       notAllowedAge = true;
@@ -227,6 +229,7 @@ class Sessions extends Component {
       }
 
       let lastLetter = peep.lastName.split("");
+
       let p = {
         label:
           peep.firstName +
@@ -250,6 +253,7 @@ class Sessions extends Component {
         style={{ marginLeft: 15, marginBottom: 15 }}
         options={myPeepOptions}
         onChange={this.onChange}
+        value={this.state.signedUpPeeps}
       >
         <Space>{myPeepOptions}</Space>
       </Checkbox.Group>,
@@ -320,6 +324,12 @@ class Sessions extends Component {
       selectedSession,
       myPeeps,
     } = this.state;
+
+    const stripeView = [
+      <div className="session" style={{ paddingLeft: 15, paddingRight: 15 }}>
+        <StripeContainer />
+      </div>,
+    ];
 
     let sessionCards = [];
     sessionCards.length = 0;
@@ -487,8 +497,8 @@ class Sessions extends Component {
         sessionCards.push(
           <div
             style={{
-              marginLeft: 2,
-              marginRight: 2,
+              marginLeft: 10,
+              marginRight: 10,
               marginBottom: 20,
               marginTop: 0,
             }}
@@ -550,6 +560,8 @@ class Sessions extends Component {
           ]}
         >
           {this.getSessionSignupForm(selectedSession)}
+          <Divider orientation="left">Payment</Divider>
+          {stripeView}
         </Modal>
       </div>
     );

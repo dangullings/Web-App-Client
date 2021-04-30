@@ -4,19 +4,23 @@ import {
   Popconfirm,
   Typography,
   message,
-  Space,
-  List,
-  Icon,
-  notification,
+  Row,
+  Divider,
+  Spin,
+  Input,
+  Switch,
   Button,
   Card,
   Modal,
+  Alert,
 } from "antd";
 import {
   getOrders,
   getOrderLineItems,
   getOrderUsers,
   removeOrder,
+  getAllOrdersBySearch,
+  getAllOrdersByFulfilled,
 } from "../util/APIUtils";
 import { STUDENT_LIST_SIZE } from "../constants";
 import { withRouter } from "react-router-dom";
@@ -31,6 +35,7 @@ import {
 } from "@ant-design/icons";
 
 const { Title, Text } = Typography;
+const { Search } = Input;
 
 class OrderList extends Component {
   constructor(props) {
@@ -40,25 +45,62 @@ class OrderList extends Component {
       orderList: [],
       //orderLineItems: [],
       selectedOrder: "",
-      size: STUDENT_LIST_SIZE,
       search: "",
-      page: 0,
       searchText: "",
       searchedColumn: "",
-      pagination: {
-        showSizeChanger: true,
-        current: 1,
-        pageSize: 10,
-        pageSizeOptions: ["10", "25", "50", "100"],
-      },
       loading: false,
       visible: false,
       count: 0,
+
+      showSizeChanger: true,
+      current: 1,
+      pageSize: STUDENT_LIST_SIZE,
+      pageSizeOptions: ["10", "25", "50", "100"],
+      total: 0,
+      totalPages: 0,
+
+      search: "",
+
+      fulfilledView: false,
+
+      orderCols: [
+        {
+          title: "Date",
+          dataIndex: "date",
+          key: "date",
+        },
+        {
+          title: "User",
+          dataIndex: "user",
+          key: "user",
+        },
+        {
+          title: "Total",
+          dataIndex: "price",
+          key: "price",
+        },
+        {
+          title: "Fulfilled",
+          dataIndex: "isFulfilled",
+          key: "isFulfilled",
+          render: (text, record) => this.getFulfillRender(record.isFulfilled),
+        },
+      ],
     };
+
     this.removeOrder = this.removeOrder.bind(this);
     this.getOrderList = this.getOrderList.bind(this);
 
-    this.getOrderList(0, STUDENT_LIST_SIZE);
+    this.getOrderList();
+  }
+
+  getFulfillRender(fulfilled) {
+    console.log("get render " + fulfilled);
+    if (fulfilled) {
+      return <Alert message="YES" type="success" />;
+    } else {
+      return <Alert message="NO" type="warning" />;
+    }
   }
 
   showModal = () => {
@@ -74,9 +116,44 @@ class OrderList extends Component {
     });
   };
 
-  getOrderList(page, size) {
+  getAllOrdersBySearchList(search) {
     let promise;
-    promise = getOrders(page, size);
+
+    promise = getAllOrdersBySearch(
+      this.state.current,
+      this.state.pageSize,
+      search,
+      this.state.fulfilledView
+    );
+
+    if (!promise) {
+      return;
+    }
+
+    this.setState({
+      loading: true,
+    });
+
+    promise.then((response) => {
+      this.setState(
+        {
+          //current: response.number,
+          pageSize: response.size,
+          total: response.totalElements,
+          totalPages: response.totalPages,
+        },
+        () => this.getOrdersUserList(response.content)
+      );
+    });
+  }
+
+  getOrderList() {
+    let promise;
+    promise = getAllOrdersByFulfilled(
+      this.state.current,
+      this.state.pageSize,
+      this.state.fulfilledView
+    );
 
     if (!promise) {
       return;
@@ -98,14 +175,14 @@ class OrderList extends Component {
         for (value of response.content) {
           this.getOrderLineItemList(value);
         } */
+
         this.setState(
           {
             //orders: response.content,
-            page: response.page,
-            size: response.size,
-            totalElements: response.totalElements,
+            //current: response.number,
+            pageSize: response.size,
+            total: response.totalElements,
             totalPages: response.totalPages,
-            last: response.last,
           },
           () => this.getOrdersUserList(response.content)
         );
@@ -148,6 +225,7 @@ class OrderList extends Component {
             date: order.date,
             user: user.name,
             price: "$" + order.price,
+            isFulfilled: order.isFulfilled,
           };
           orderList.push(newOrder);
           break;
@@ -199,10 +277,6 @@ class OrderList extends Component {
       .catch((error) => {});
   } */
 
-  componentDidMount() {
-    this.getOrderList(this.state.page, this.state.STUDENT_LIST_SIZE);
-  }
-
   removeOrder() {
     const { selectedOrder } = this.state;
     removeOrder(selectedOrder.id)
@@ -253,43 +327,119 @@ class OrderList extends Component {
     );
   }; */
 
+  handleTableChange = (pagination) => {
+    const { pageSize, current } = pagination;
+
+    this.setState(
+      {
+        current: current,
+        pageSize: pageSize,
+      },
+      () => this.fetchNewTableList()
+    );
+  };
+
+  fetchNewTableList() {
+    const { search } = this.state;
+    if (search == "") {
+      this.getOrderList();
+      return;
+    }
+
+    this.getAllOrdersBySearchList(search);
+  }
+
+  onSearch = (value) => {
+    this.setState({
+      search: value,
+    });
+
+    if (value == "") {
+      this.getOrderList();
+      return;
+    }
+
+    this.getAllOrdersBySearchList(value);
+  };
+
+  onChangeSearch = (value) => {
+    this.setState({
+      search: value.target.value,
+    });
+
+    if (value.target.value == "") {
+      this.setState({ search: "" }, () => this.getOrderList());
+    } else {
+      this.getAllOrdersBySearchList(value.target.value);
+    }
+  };
+
   render() {
     const {
       orderList,
       visible,
       loading,
-      pagination,
+      current,
+      total,
+      totalPages,
       columns,
       selectedOrder,
+      orderCols,
     } = this.state;
+
+    const paginations = {
+      current: current,
+      pageSize: STUDENT_LIST_SIZE,
+      total: total,
+      totalPages: totalPages,
+    };
 
     /* const tableProps = {
       expandedRowRender: (record) => this.expandedRowRender(record),
     }; */
 
-    const orderCols = [
-      {
-        title: "Date",
-        dataIndex: "date",
-        key: "date",
-      },
-      {
-        title: "User",
-        dataIndex: "user",
-        key: "user",
-      },
-      {
-        title: "Total",
-        dataIndex: "price",
-        key: "price",
-      },
+    const title = [
+      <Title level={3}>
+        <div>
+          Orders <ShoppingOutlined />
+        </div>
+      </Title>,
+    ];
+
+    const newHeader = [
+      <Row>
+        {title}
+        <Divider style={{ height: 35, marginLeft: 5 }} type="vertical" />
+        <Search
+          size={"small"}
+          placeholder="search note"
+          onSearch={this.onSearch}
+          onChange={this.onChangeSearch}
+          style={{
+            marginLeft: 5,
+            width: 120,
+            height: 32,
+          }}
+        />
+        <Text type="secondary" style={{ marginTop: 5, marginLeft: 8 }}>
+          Fulfilled
+        </Text>
+        <Switch
+          className="order-list"
+          style={{
+            marginTop: 5,
+            marginLeft: 5,
+          }}
+          onChange={this.toggleActive}
+        ></Switch>
+      </Row>,
     ];
 
     const contentList = [
       <Table
         loading={loading}
         rowKey={orderList.id}
-        pagination={pagination}
+        pagination={paginations}
         bordered
         columns={orderCols}
         dataSource={orderList}
@@ -360,22 +510,14 @@ class OrderList extends Component {
       </Modal>,
     ];
 
-    const title = [
-      <Title level={3}>
-        <div>
-          Orders <ShoppingOutlined />
-        </div>
-      </Title>,
-    ];
-
     return (
       <Card
         className="order-list"
         bordered={false}
         bodyStyle={{ padding: 0 }}
-        title={title}
+        title={newHeader}
       >
-        {contentList}
+        <Spin spinning={loading}>{contentList}</Spin>
         {orderModal}
       </Card>
     );
@@ -393,14 +535,14 @@ class OrderList extends Component {
     });
   }
 
-  handleTableChange = (pagination, filters, sorter) => {
-    this.getOrderList(pagination.current, pagination.pageSize);
-    /* this.fetch({
-          sortField: sorter.field,
-          sortOrder: sorter.order,
-          pagination,
-          ...filter
-        }); */
+  toggleActive = () => {
+    this.setState(
+      {
+        fulfilledView: !this.state.fulfilledView,
+        search: "",
+      },
+      () => this.getOrderList()
+    );
   };
 }
 

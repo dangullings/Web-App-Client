@@ -698,8 +698,9 @@ class Shop extends Component {
     const saleCostLabel = [
       <Title
         style={{
-          marginLeft: 30,
-          marginRight: 30,
+          width: "100%",
+          textAlign: "center",
+          marginBottom: 0,
         }}
         level={3}
       >
@@ -742,8 +743,6 @@ class Shop extends Component {
                   style={{
                     width: "100%",
                     marginLeft: 0,
-                    boxShadow:
-                      "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
                   }}
                   placeholder="Genders"
                   onChange={this.changeSelectedGender(product)}
@@ -760,8 +759,6 @@ class Shop extends Component {
                   style={{
                     width: "100%",
                     marginLeft: 0,
-                    boxShadow:
-                      "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
                   }}
                   placeholder="Colors"
                   onChange={this.changeSelectedColor(product)}
@@ -778,8 +775,6 @@ class Shop extends Component {
                   style={{
                     width: "100%",
                     marginLeft: 0,
-                    boxShadow:
-                      "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
                   }}
                   placeholder="Sizes"
                   onChange={this.changeSelectedSize(product)}
@@ -802,6 +797,7 @@ class Shop extends Component {
                   style={{
                     marginLeft: 10,
                     marginRight: 10,
+                    marginTop: 10,
                     width: "100%",
                     borderRadius: "10px",
                     boxShadow:
@@ -958,7 +954,7 @@ class Shop extends Component {
         className="shop"
         bordered={false}
         headStyle={{ padding: 6, marginBottom: 8 }}
-        bodyStyle={{ padding: 6 }}
+        bodyStyle={{ padding: 16 }}
         title={newHeader}
       >
         <Spin spinning={loading}>

@@ -187,6 +187,16 @@ export function getAllSessions(page, size) {
   });
 }
 
+export function getAllEvents(page, size) {
+  page = page || 0;
+  size = size || STUDENT_LIST_SIZE;
+
+  return request({
+    url: API_BASE_URL + "/schedule/events?page=" + page + "&size=" + size,
+    method: "GET",
+  });
+}
+
 export function getAllSessionsByDate() {
   // most current limit 10
   return request({
@@ -375,7 +385,7 @@ export function removeTest(id) {
 }
 
 export function createOrder(order) {
-  console.log("createOrder " + order);
+  console.log("createOrder " + order.isFulfilled);
   return request({
     url: API_BASE_URL + "/orders/saveOrder",
     method: "POST",
@@ -453,6 +463,19 @@ export function removeStudentTestScore(testId, studentId) {
   });
 }
 
+export function removeStudentEvent(eventId, studentId) {
+  return request({
+    url:
+      API_BASE_URL +
+      "/studentevents/event/" +
+      eventId +
+      "/student/" +
+      studentId,
+    method: "DELETE",
+    body: JSON.stringify(eventId),
+  });
+}
+
 export function saveStudentTestScores(test_studentData) {
   return request({
     url: API_BASE_URL + "/tests/student_scores/saveTest_Student",
@@ -474,6 +497,13 @@ export function getAllTestScoresByStudentId(page, size, studentId) {
       page +
       "&size=" +
       size,
+    method: "GET",
+  });
+}
+
+export function getStudentEventsByEventId(eventId) {
+  return request({
+    url: API_BASE_URL + "/studentevents/event/" + eventId,
     method: "GET",
   });
 }
@@ -568,6 +598,21 @@ export function getStudentEvents(studentId) {
   });
 }
 
+export function getEventStudents(eventId) {
+  console.log("session id " + eventId);
+  return request({
+    url: API_BASE_URL + "/attendance/events/" + eventId + "/events",
+    method: "GET",
+  });
+}
+
+export function getAllStudentsByEventId(eventId) {
+  return request({
+    url: API_BASE_URL + "/studentevents/" + eventId + "/students/",
+    method: "GET",
+  });
+}
+
 export function getSessionStudents(sessionId) {
   console.log("session id " + sessionId);
   return request({
@@ -616,7 +661,7 @@ export function removeStudent(id) {
 
 export function removeOrder(id) {
   return request({
-    url: API_BASE_URL + "/orders/order/" + id,
+    url: API_BASE_URL + "/orders/" + id,
     method: "DELETE",
     body: JSON.stringify(id),
   });
@@ -660,6 +705,43 @@ export function getOrderLineItems(orderId) {
   console.log("order id " + orderId);
   return request({
     url: API_BASE_URL + "/orders/" + orderId + "/lineItems",
+    method: "GET",
+  });
+}
+
+export function getAllOrdersByFulfilled(page, size, fulfilled) {
+  //page = page || 0;
+  let newPage = page - 1;
+  size = size || STUDENT_LIST_SIZE;
+  return request({
+    url:
+      API_BASE_URL +
+      "/orders/fulfilled/" +
+      fulfilled +
+      "?page=" +
+      newPage +
+      "&size=" +
+      size,
+    method: "GET",
+  });
+}
+
+export function getAllOrdersBySearch(page, size, searchText, fulfilled) {
+  //page = page || 0;
+  let newPage = page - 1;
+  size = size || STUDENT_LIST_SIZE;
+
+  return request({
+    url:
+      API_BASE_URL +
+      "/orders/search/" +
+      searchText +
+      "/fulfilled/" +
+      fulfilled +
+      "?page=" +
+      newPage +
+      "&size=" +
+      size,
     method: "GET",
   });
 }

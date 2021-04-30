@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import "../styles/style.less";
 import { Route, Link, withRouter, Switch } from "react-router-dom";
 
-import { Image } from "antd";
+import { Image, message } from "antd";
 import { getCurrentUser, getUserProfile } from "../util/APIUtils";
 import { ACCESS_TOKEN } from "../constants";
 
@@ -15,6 +15,7 @@ import Order from "../inventory/Order";
 import EventCalendar from "../schedule/EventCalendar";
 import LocationList from "../location/LocationList";
 import SessionList from "../schedule/SessionList";
+import EventList from "../schedule/EventList";
 import NewSession from "../schedule/NewSession";
 import Session from "../schedule/Session";
 import Attendance from "../schedule/Attendance";
@@ -63,11 +64,12 @@ class App extends Component {
     this.loadCurrentUser();
   }
 
-  handleLogout(
-    redirectTo = "/",
-    notificationType = "success",
-    description = "You're successfully logged out."
-  ) {
+  handleLogout = () => {
+    notification.success({
+      message: "Dans App",
+      description: "You're successfully logged out.",
+      duration: 2,
+    });
     localStorage.removeItem(ACCESS_TOKEN);
 
     this.setState({
@@ -75,13 +77,8 @@ class App extends Component {
       isAuthenticated: false,
     });
 
-    this.props.history.push(redirectTo);
-
-    notification[notificationType]({
-      message: "Dans App",
-      description: description,
-    });
-  }
+    this.props.history.push("/");
+  };
 
   loadCurrentUser() {
     this.setState({
@@ -135,27 +132,27 @@ class App extends Component {
     }
     const isLoggedIn = this.state.isAuthenticated;
     const isGood = this.state.currentUser;
+
+    console.log("logged " + isLoggedIn);
     if (isGood) {
       console.log("render current name " + this.state.currentUser.role);
     }
     return (
       <Layout>
-        {isGood ? (
+        {isLoggedIn ? (
           <div></div>
         ) : (
           <AppHeader
             isAuthenticated={this.state.isAuthenticated}
             currentUser={this.state.currentUser}
-            onLogout={this.handleLogout}
-            style={{ marginTop: 0, width: "100%", height: 20 }}
           />
         )}
 
-        {isGood ? (
+        {isLoggedIn ? (
           <Slider
             isAuthenticated={this.state.isAuthenticated}
             currentUser={this.state.currentUser}
-            onLogout={this.handleLogout}
+            appLogout={this.handleLogout}
           ></Slider>
         ) : (
           <div></div>
@@ -170,15 +167,15 @@ class App extends Component {
         >
           <div>
             <Switch>
-              <Route exact path="/" render={(props) => <Home />}></Route>
+              <Route exact path="/" render={(isLoggedIn) => <Home />}></Route>
               <Route
                 exact
                 path="/schedule/calendar"
+                authenticated={this.state.isAuthenticated}
                 render={(props) => (
                   <EventCalendar
                     isAuthenticated={this.state.isAuthenticated}
                     currentUser={this.state.currentUser}
-                    handleLogout={this.handleLogout}
                     {...props}
                   />
                 )}
@@ -186,11 +183,11 @@ class App extends Component {
               <Route
                 exact
                 path="/schedule/attendance"
+                authenticated={this.state.isAuthenticated}
                 render={(props) => (
                   <Attendance
                     isAuthenticated={this.state.isAuthenticated}
                     currentUser={this.state.currentUser}
-                    handleLogout={this.handleLogout}
                     {...props}
                   />
                 )}
@@ -198,11 +195,23 @@ class App extends Component {
               <Route
                 exact
                 path="/schedule/sessions"
+                authenticated={this.state.isAuthenticated}
                 render={(props) => (
                   <SessionList
                     isAuthenticated={this.state.isAuthenticated}
                     currentUser={this.state.currentUser}
-                    handleLogout={this.handleLogout}
+                    {...props}
+                  />
+                )}
+              ></Route>
+              <Route
+                exact
+                path="/schedule/events"
+                authenticated={this.state.isAuthenticated}
+                render={(props) => (
+                  <EventList
+                    isAuthenticated={this.state.isAuthenticated}
+                    currentUser={this.state.currentUser}
                     {...props}
                   />
                 )}
@@ -210,11 +219,11 @@ class App extends Component {
               <Route
                 exact
                 path="/students"
+                authenticated={this.state.isAuthenticated}
                 render={(props) => (
                   <StudentList
                     isAuthenticated={this.state.isAuthenticated}
                     currentUser={this.state.currentUser}
-                    handleLogout={this.handleLogout}
                     {...props}
                   />
                 )}
@@ -222,11 +231,11 @@ class App extends Component {
               <Route
                 exact
                 path="/tests"
+                authenticated={this.state.isAuthenticated}
                 render={(props) => (
                   <TestList
                     isAuthenticated={this.state.isAuthenticated}
                     currentUser={this.state.currentUser}
-                    handleLogout={this.handleLogout}
                     {...props}
                   />
                 )}
@@ -238,7 +247,6 @@ class App extends Component {
                   <ItemList
                     isAuthenticated={this.state.isAuthenticated}
                     currentUser={this.state.currentUser}
-                    handleLogout={this.handleLogout}
                     {...props}
                   />
                 )}
@@ -250,7 +258,6 @@ class App extends Component {
                   <Products
                     isAuthenticated={this.state.isAuthenticated}
                     currentUser={this.state.currentUser}
-                    handleLogout={this.handleLogout}
                     {...props}
                   />
                 )}
@@ -262,7 +269,6 @@ class App extends Component {
                   <Shop
                     isAuthenticated={this.state.isAuthenticated}
                     currentUser={this.state.currentUser}
-                    handleLogout={this.handleLogout}
                     {...props}
                   />
                 )}
@@ -274,7 +280,6 @@ class App extends Component {
                   <OrderList
                     isAuthenticated={this.state.isAuthenticated}
                     currentUser={this.state.currentUser}
-                    handleLogout={this.handleLogout}
                     {...props}
                   />
                 )}
@@ -286,7 +291,6 @@ class App extends Component {
                   <MyGroup
                     isAuthenticated={this.state.isAuthenticated}
                     currentUser={this.state.currentUser}
-                    handleLogout={this.handleLogout}
                     {...props}
                   />
                 )}
@@ -298,7 +302,6 @@ class App extends Component {
                   <Sessions
                     isAuthenticated={this.state.isAuthenticated}
                     currentUser={this.state.currentUser}
-                    handleLogout={this.handleLogout}
                     {...props}
                   />
                 )}
@@ -310,7 +313,6 @@ class App extends Component {
                   <Events
                     isAuthenticated={this.state.isAuthenticated}
                     currentUser={this.state.currentUser}
-                    handleLogout={this.handleLogout}
                     {...props}
                   />
                 )}
@@ -322,7 +324,6 @@ class App extends Component {
                   <LocationList
                     isAuthenticated={this.state.isAuthenticated}
                     currentUser={this.state.currentUser}
-                    handleLogout={this.handleLogout}
                     {...props}
                   />
                 )}
@@ -333,7 +334,6 @@ class App extends Component {
                   <Login onLogin={this.handleLogin} {...props} />
                 )}
               ></Route>
-              <Route path="/signup" component={Signup}></Route>
               <Route path="/signup" component={Signup}></Route>
               <Route
                 path="/users/:username"
