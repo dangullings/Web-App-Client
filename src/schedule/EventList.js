@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import ReactDOM from "react-dom";
+import NewWindow from "react-new-window";
 import {
   Table,
   Typography,
@@ -15,6 +15,7 @@ import {
   TimePicker,
   Button,
   Card,
+  Space,
   Popconfirm,
 } from "antd";
 import {
@@ -24,8 +25,11 @@ import {
   getAllStudentsByEventId,
   getAllStudentsByActive,
   removeStudentEvent,
+  removeEventById,
   createStudentEvent,
   getStudentEventsByEventId,
+  removeStudentEventByEventIdAndStudentId,
+  removeStudentEventsByEventId,
 } from "../util/APIUtils";
 import moment from "moment";
 import { STUDENT_LIST_SIZE } from "../constants";
@@ -52,6 +56,8 @@ for (let i = 0; i < 100; i++) {
   ages.push(<Option key={i}>{i}</Option>);
 }
 
+//after delete, select allstudents list needs updating
+
 class EventList extends Component {
   formRef = React.createRef();
 
@@ -61,8 +67,9 @@ class EventList extends Component {
       events: [],
       event: "",
       studentEvents: [],
+      selectedStudentId: "",
       selectedEvent: "",
-      eventStudents: [],
+      signupStudents: [],
       selectedItems: [],
       size: STUDENT_LIST_SIZE,
       search: "",
@@ -81,20 +88,8 @@ class EventList extends Component {
 
       allStudents: [],
       locations: [],
-      selectedLocation: "",
-      title: "",
-      type: "Test",
-      description: "",
-      newEventStartDate: "",
-      newEventStartTime: "",
-      newEventEndTime: "",
-      ageRange: "",
-      rankRange: "",
-      youngestAge: "",
-      oldestAge: "",
-      lowestRank: "",
-      highestRank: "",
-      price: 0,
+      selectedLocation: "select a location",
+      type: "Camp",
     };
 
     this.handleAgeRangeChange = this.handleAgeRangeChange.bind(this);
@@ -104,6 +99,9 @@ class EventList extends Component {
     this.handleOldestAgeChange = this.handleOldestAgeChange.bind(this);
     this.handleLowestRankChange = this.handleLowestRankChange.bind(this);
     this.handleHighestRankChange = this.handleHighestRankChange.bind(this);
+
+    this.handleStudentChange = this.handleStudentChange.bind(this);
+    this.signupStudent = this.signupStudent.bind(this);
 
     this.handleEventSubmit = this.handleEventSubmit.bind(this);
     this.handleDateChange = this.handleDateChange.bind(this);
@@ -115,14 +113,11 @@ class EventList extends Component {
       this
     );
     this.handleTypeChange = this.handleTypeChange.bind(this);
-
-    this.expandedRowRender = this.expandedRowRender.bind(this);
   }
 
   componentDidMount() {
     this.getEventList(this.state.page, this.state.STUDENT_LIST_SIZE);
     this.getLocationList(0);
-    this.getAllStudentsList(0);
   }
 
   getAllStudentsList() {
@@ -139,10 +134,13 @@ class EventList extends Component {
 
     promise
       .then((response) => {
-        this.setState({
-          allStudents: response.content,
-          loading: false,
-        });
+        this.setState(
+          {
+            allStudents: response.content,
+            loading: false,
+          },
+          () => this.updateAllStudentList()
+        );
       })
       .catch((error) => {
         this.setState({
@@ -152,12 +150,28 @@ class EventList extends Component {
   }
 
   isFormInvalid() {
-    if (this.state.selectedLocation == "") {
+    if (!this.formRef.current) {
       return true;
     }
-    if (this.state.dates.length == 0) {
-      return true;
+    let title = this.formRef.current.getFieldValue("title");
+    let description = this.formRef.current.getFieldValue("description");
+    let startTime = this.formRef.current.getFieldValue("startTime");
+    let endTime = this.formRef.current.getFieldValue("endTime");
+    let youngestAge = this.formRef.current.getFieldValue("youngestAge");
+    let oldestAge = this.formRef.current.getFieldValue("oldestAge");
+
+    if (title == "") {
+      //return true;
     }
+    if (description == "") {
+      //return true;
+    }
+    //if (youngestAge > oldestAge) {
+    //  return true;
+    //}
+    //if (startTime.isAfter(endTime)) {
+    //  return true;
+    //}
 
     return false;
   }
@@ -195,48 +209,9 @@ class EventList extends Component {
       })
       .catch((error) => {
         this.setState({
-          isLoading: false,
+          loading: false,
         });
       });
-  }
-
-  isFormInvalid() {
-    const {
-      title,
-      type,
-      description,
-      selectedLocation,
-      newEventDate,
-      newEventStartTime,
-      newEventEndTime,
-    } = this.state;
-
-    if (title == "") {
-      return true;
-    }
-    if (description == "") {
-      return true;
-    }
-    if (newEventDate == "") {
-      return true;
-    }
-    if (newEventStartTime == "") {
-      return true;
-    }
-    if (newEventEndTime == "") {
-      return true;
-    }
-    if (type == "") {
-      return true;
-    }
-    if (selectedLocation == "") {
-      return true;
-    }
-    if (newEventStartTime.isAfter(newEventEndTime)) {
-      return true;
-    }
-
-    return false;
   }
 
   resetFields() {
@@ -248,9 +223,9 @@ class EventList extends Component {
       title: "",
       type: "",
       description: "",
-      newEventDate: "",
-      newEventStartTime: "",
-      newEventEndTime: "",
+      date: "",
+      startTime: "",
+      endTime: "",
     });
   }
 
@@ -324,7 +299,7 @@ class EventList extends Component {
   };
 
   handleTableChange = (pagination, filters, sorter) => {
-    this.getSessionList(pagination.current, pagination.pageSize);
+    //this.getSessionList(pagination.current, pagination.pageSize);
     /* this.fetch({
           sortField: sorter.field,
           sortOrder: sorter.order,
@@ -332,23 +307,6 @@ class EventList extends Component {
           ...filter
         }); */
   };
-
-  deleteRemovedStudentEvents() {
-    let removedStudent, student, initial;
-    for (initial of this.state.initialEventStudents) {
-      removedStudent = true;
-      for (student of this.state.eventStudents) {
-        if (initial.id == student.id) {
-          removedStudent = false;
-          break;
-        }
-      }
-
-      if (removedStudent) {
-        this.removeStudentEvent(this.state.eventId, initial.id);
-      }
-    }
-  }
 
   removeStudentEvent(eventId, studentId) {
     removeStudentEvent(eventId, studentId)
@@ -363,22 +321,12 @@ class EventList extends Component {
     }, 3000);
   };
 
-  handleCancel = () => {
-    this.setState({ eventModalVisible: false });
-    this.onReset();
-  };
-
-  onReset() {
-    console.log("reset forms");
-    this.formRef.current.resetFields();
-  }
-
   handleEventSubmit(event) {
     let title = this.formRef.current.getFieldValue("title");
     let type = this.formRef.current.getFieldValue("type");
     let description = this.formRef.current.getFieldValue("description");
     let location = this.formRef.current.getFieldValue("location");
-    let date = this.formRef.current.getFieldValue("eventDate");
+    let date = this.formRef.current.getFieldValue("date");
     let startTime = this.formRef.current.getFieldValue("startTime");
     let endTime = this.formRef.current.getFieldValue("endTime");
     let youngestAge = this.formRef.current.getFieldValue("youngestAge");
@@ -389,6 +337,13 @@ class EventList extends Component {
 
     let ageRange = youngestAge + "-" + oldestAge;
     let rankRange = lowestRank + "-" + highestRank;
+
+    this.setState({ loading: true });
+
+    let formattedDate = date.format("YYYY-MM-DD");
+    let parts = formattedDate.split("-");
+    let month = parts[1];
+    let year = parts[0];
 
     console.log(
       title +
@@ -416,17 +371,6 @@ class EventList extends Component {
         price
     );
 
-    return;
-
-    this.setState({ loading: true });
-
-    this.deleteRemovedStudentEvents();
-
-    let formattedDate = date.format("YYYY-MM-DD");
-    let parts = formattedDate.split("-");
-    let month = parts[1];
-    let year = parts[0];
-
     const EventData = {
       title: title,
       type: type,
@@ -450,17 +394,15 @@ class EventList extends Component {
           duration: 2,
         });
         this.props.history.push("/schedule/calendar");
-        this.setState({ loading: false, eventModalVisible: false }, () =>
-          this.startSavingStudentEvents(this.state.eventStudents)
-        );
-        this.resetFields();
+        this.setState({ loading: false, eventModalVisible: false });
+        this.handleCancel();
       })
       .catch((error) => {
         if (error.status === 401) {
           this.props.handleLogout(
             "/login",
             "error",
-            "You have been logged out. Please login create poll."
+            "You have been logged out."
           );
         } else {
           notification.error({
@@ -470,38 +412,6 @@ class EventList extends Component {
           });
         }
       });
-  }
-
-  startSavingStudentEvents(students) {
-    let student, initial;
-    let isNewStudent = true;
-    for (student of students) {
-      isNewStudent = true;
-      for (initial of this.state.initialEventStudents) {
-        if (initial.id == student.id) {
-          isNewStudent = false;
-          break;
-        }
-      }
-
-      if (isNewStudent) {
-        this.saveAllStudentEvents(student);
-      }
-    }
-  }
-
-  saveAllStudentEvents(student) {
-    let eventId = this.state.eventId;
-
-    const data = {
-      calendarEventId: eventId,
-      studentId: student.id,
-      isAttending: true,
-    };
-
-    createStudentEvent(data)
-      .then((response) => {})
-      .catch((error) => {});
   }
 
   handleLocationDropdownChange = (value) => {
@@ -544,15 +454,12 @@ class EventList extends Component {
       {
         eventModalVisible: true,
         isSavedEvent: false,
-        eventStudents: [],
-        selectedItems: [],
+        signupStudents: [],
       },
       this.setFormValues
     );
 
     this.getAllStudentsList(0);
-    this.getLocationList(0);
-
     //var today = new Date();
     //var dd = String(today.getDate()).padStart(2, "0");
     //var mm = String(today.getMonth() + 1).padStart(2, "0");
@@ -617,35 +524,50 @@ class EventList extends Component {
     });
   }
 
+  handleStudentChange(value) {
+    this.setState({
+      selectedStudentId: value,
+    });
+  }
+
   setFormValues = () => {
     var startTime = moment();
     var endTime = moment().add(2, "hours");
     this.formRef.current.setFieldsValue({
       title: "",
       startTime: startTime,
+      description: "",
       endTime: endTime,
+      selectedLocation: this.state.locations[0],
       date: moment(),
-      location: "",
       type: "Camp",
-      eventStudentIds: [],
     });
   };
 
   handleCancel = () => {
-    //this.formRef.current.resetFields();
+    this.formRef.current.resetFields();
 
     var startTime = moment();
     var endTime = moment().add(2, "hours");
 
     this.setState({
       title: "",
-      location: "",
+      event: "",
+      description: "",
+      selectedLocation: "",
       type: "",
+      lowestRank: "",
+      highestRank: "",
+      youngestAge: "",
+      oldestAge: "",
+      price: 0,
       date: moment(),
       startTime: startTime,
       endTime: endTime,
-      eventStudents: [],
-      visible: false,
+      signupStudents: [],
+      studentEvents: [],
+      allStudents: [],
+      eventModalVisible: false,
       loading: false,
       isSavedEvent: false,
     });
@@ -667,36 +589,177 @@ class EventList extends Component {
 
     this.setState({
       selectedItems,
-      eventStudents: joined,
+      signupStudents: joined,
     });
+  };
+
+  handleDelete = (studentId) => {
+    const { eventId } = this.state;
+    removeStudentEventByEventIdAndStudentId(eventId, studentId)
+      .then((response) => {
+        message.success("Student removed from signup.");
+        this.handleAfterDeletion(studentId);
+      })
+      .catch((error) => {
+        message.error("Error [" + error.message + "]");
+      });
+  };
+
+  handleAfterDeletion(studentId) {
+    this.setState({
+      loading: true,
+    });
+
+    const { studentEvents, signupStudents, allStudents } = this.state;
+
+    let signup, student;
+    let newSignupList = signupStudents;
+    for (signup of signupStudents) {
+      if (signup.id == studentId) {
+        student = signup;
+        newSignupList = signupStudents.filter(function (value) {
+          return value.id != studentId;
+        });
+        break;
+      }
+    }
+
+    var newStudentEventList = studentEvents.filter(function (value) {
+      return value.studentId != studentId;
+    });
+
+    this.setState({
+      signupStudents: newSignupList,
+      allStudents: this.state.allStudents.concat(student),
+      studentEvents: newStudentEventList,
+      loading: false,
+    });
+  }
+
+  updateStudentEventList(studentId) {
+    this.setState({
+      loading: true,
+    });
+
+    var { studentEvents, signupStudents } = this.state;
+
+    var newList = studentEvents.filter(function (value, index, arr) {
+      return value.studentId != studentId;
+    });
+
+    var newSignupList = signupStudents.filter(function (value, index, arr) {
+      return value.id != studentId;
+    });
+
+    this.setState({
+      studentEvents: newList,
+      signupStudents: newSignupList,
+      loading: false,
+    });
+  }
+
+  updateAllStudentList() {
+    this.setState({
+      loading: true,
+    });
+
+    var { studentEvents, allStudents } = this.state;
+
+    var newStudentList = allStudents;
+    newStudentList = allStudents.filter(function (value) {
+      return checkCondition(value, studentEvents);
+    });
+
+    this.setState({
+      allStudents: newStudentList,
+      loading: false,
+    });
+  }
+
+  signupStudent() {
+    const { eventId, selectedStudentId } = this.state;
+
+    this.setState({
+      loading: true,
+    });
+
+    let s, student;
+    for (s of this.state.allStudents) {
+      if (s.id == selectedStudentId) {
+        student = s;
+        break;
+      }
+    }
+
+    const data = {
+      calendarEventId: eventId,
+      studentId: selectedStudentId,
+      charged: this.state.event.price,
+      paid: 0,
+      signupDate: moment().format("YYYY-MM-DD"),
+    };
+
+    createStudentEvent(data)
+      .then((response) => {
+        this.setState(
+          {
+            loading: false,
+            selectedStudentId: "",
+            studentEvents: this.state.studentEvents.concat(data),
+            signupStudents: this.state.signupStudents.concat(student),
+          },
+          () => this.updateAllStudentList()
+        );
+        notification.success({
+          message: "Signup Successful!",
+          description: "",
+          duration: 4,
+        });
+      })
+      .catch((error) => {
+        this.setState({
+          loading: false,
+        });
+        if (error.status === 401) {
+        } else {
+        }
+      });
+  }
+
+  removeEvent = () => {
+    const id = this.state.eventId;
+    removeEventById(id)
+      .then((response) => {
+        message.success("Event deleted.");
+        this.handleCancel;
+        this.getEventList(this.state.page, this.state.STUDENT_LIST_SIZE);
+        this.setState({ loading: false, eventModalVisible: false });
+      })
+      .catch((error) => {
+        message.error("Error [" + error.message + "]");
+      });
+
+    removeStudentEventsByEventId(id)
+      .then((response) => {})
+      .catch((error) => {});
   };
 
   render() {
     const {
       events,
-      eventStudents,
+      signupStudents,
       studentEvents,
       allStudents,
-      title,
-      description,
+      selectedStudentId,
       locations,
-      selectedLocation,
-      selectedDate,
-      selectedType,
-      selectedItems,
       isSavedEvent,
       eventModalVisible,
-      price,
     } = this.state;
-    const { pagination, loading, size } = this.state;
-
-    const filteredOptions = allStudents.filter(
-      (o) => !selectedItems.includes(o)
-    );
+    const { pagination, loading } = this.state;
 
     var studentEventList = [];
     let student, se, studEvent;
-    for (student of eventStudents) {
+    for (student of signupStudents) {
       for (se of studentEvents) {
         if (se.studentId == student.id) {
           studEvent = se;
@@ -704,9 +767,11 @@ class EventList extends Component {
         }
       }
 
-      let balance = 0;
+      let balance = 0,
+        date = "";
       if (studEvent) {
         balance = "$" + (studEvent.charged - studEvent.paid);
+        date = studEvent.signupDate;
       }
 
       const studentEvent = {
@@ -714,6 +779,7 @@ class EventList extends Component {
         studentName:
           student.firstName + " " + student.lastName.substring(0, 1) + ".",
         studentRank: student.ranks,
+        date: date,
         balance: balance,
       };
 
@@ -726,6 +792,16 @@ class EventList extends Component {
         dataIndex: "studentName",
         key: "studentName",
         ellipsis: true,
+        sorter: true,
+        render: (text, record) => (
+          <a
+            href={"/students/" + record.studentId}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {text}
+          </a>
+        ),
       },
       {
         title: "Rank",
@@ -738,7 +814,30 @@ class EventList extends Component {
         dataIndex: "balance",
         key: "balance",
         align: "right",
+        width: 70,
         ellipsis: true,
+      },
+      {
+        title: "Date",
+        dataIndex: "date",
+        key: "date",
+        ellipsis: true,
+      },
+      {
+        title: "",
+        key: "action",
+        align: "center",
+        ellipsis: true,
+        fixed: "right",
+        width: 35,
+        render: (text, record) => (
+          <Popconfirm
+            title="Remove Student?"
+            onConfirm={() => this.handleDelete(record.studentId)}
+          >
+            <DeleteOutlined style={{ color: "red" }} />
+          </Popconfirm>
+        ),
       },
     ];
 
@@ -753,22 +852,23 @@ class EventList extends Component {
         title: "Location",
         dataIndex: "location",
         key: "location",
-        width: 50,
+        width: 60,
       },
       {
         title: "Date",
         dataIndex: "date",
         key: "date",
-        width: 50,
+        width: 40,
       },
     ];
 
-    const ModalTitle = <Title level={2}>New Event</Title>;
+    var ModalTitle;
+    if (isSavedEvent) {
+      ModalTitle = <Title level={2}>Edit Event</Title>;
+    } else {
+      ModalTitle = <Title level={2}>New Event</Title>;
+    }
     const TableTitle = <Title level={3}>Event List</Title>;
-
-    const tableProps = {
-      expandedRowRender: (record) => this.expandedRowRender(record),
-    };
 
     const renderButton = () => {
       if (isSavedEvent) {
@@ -868,11 +968,7 @@ class EventList extends Component {
               },
             ]}
           >
-            <Input
-              placeholder="Title"
-              style={{ fontSize: "16px" }}
-              autosize={{ minRows: 1, maxRows: 1 }}
-            />
+            <Input placeholder="Title" autosize={{ minRows: 1, maxRows: 1 }} />
           </Form.Item>
 
           <Form.Item
@@ -893,7 +989,6 @@ class EventList extends Component {
             <TextArea
               placeholder="describe the event in detail"
               rows={3}
-              style={{ fontSize: "16px" }}
               autosize={{ minRows: 1, maxRows: 3 }}
             />
           </Form.Item>
@@ -915,7 +1010,6 @@ class EventList extends Component {
           >
             <Select
               align="center"
-              size={"large"}
               placeholder={"select type"}
               onChange={this.handleTypeChange}
             >
@@ -941,7 +1035,6 @@ class EventList extends Component {
           >
             <Select
               align="center"
-              size={"large"}
               Key={locations.id}
               placeholder={"select location"}
               onChange={this.handleLocationDropdownChange}
@@ -973,6 +1066,9 @@ class EventList extends Component {
               inputReadOnly="true"
               align="center"
               placeholder={"select date"}
+              style={{
+                width: "100%",
+              }}
             />
           </Form.Item>
 
@@ -985,7 +1081,7 @@ class EventList extends Component {
             }
             style={{
               display: "inline-block",
-              width: "calc(50% - 12px)",
+              width: "calc(50%)",
             }}
             hasFeedback
             rules={[
@@ -1015,7 +1111,7 @@ class EventList extends Component {
             }
             style={{
               display: "inline-block",
-              width: "calc(50% - 12px)",
+              width: "calc(50%)",
             }}
             hasFeedback
             rules={[
@@ -1047,7 +1143,7 @@ class EventList extends Component {
             name="price"
             style={{ marginLeft: 0 }}
             label={
-              <Title style={{ marginTop: 14 }} level={5}>
+              <Title style={{ marginTop: 14, marginBottom: 0 }} level={5}>
                 {"Price"}
               </Title>
             }
@@ -1055,7 +1151,7 @@ class EventList extends Component {
             rules={[
               {
                 required: true,
-                message: "Please enter the session price.",
+                message: "Please enter the event price.",
               },
             ]}
           >
@@ -1066,9 +1162,6 @@ class EventList extends Component {
             />
           </Form.Item>
 
-          <Divider style={{ marginTop: 10 }} orientation="left">
-            {<Title level={4}>rank limits</Title>}
-          </Divider>
           <Form.Item
             name="lowestRank"
             label={
@@ -1076,10 +1169,13 @@ class EventList extends Component {
                 {"Lowest Rank"}
               </Title>
             }
+            style={{
+              display: "inline-block",
+              width: "calc(50%)",
+            }}
           >
             <Select
               align="center"
-              sie={"large"}
               style={{ width: "100%" }}
               placeholder={"select a lowest rank"}
               defaultValue={"Gold Stripe"}
@@ -1099,10 +1195,13 @@ class EventList extends Component {
                 {"Highest Rank"}
               </Title>
             }
+            style={{
+              display: "inline-block",
+              width: "calc(50%)",
+            }}
           >
             <Select
               align="center"
-              sie={"large"}
               style={{ width: "100%" }}
               placeholder={"select a highest rank"}
               defaultValue={"Fifth Degree"}
@@ -1116,9 +1215,6 @@ class EventList extends Component {
             </Select>
           </Form.Item>
 
-          <Divider style={{ marginTop: 10 }} orientation="left">
-            {<Title level={4}>age limits</Title>}
-          </Divider>
           <Form.Item
             name="youngestAge"
             label={
@@ -1126,10 +1222,13 @@ class EventList extends Component {
                 {"Youngest Age"}
               </Title>
             }
+            style={{
+              display: "inline-block",
+              width: "calc(50%)",
+            }}
           >
             <Select
               align="center"
-              sie={"large"}
               style={{ width: "100%" }}
               placeholder={"select a youngest age"}
               defaultValue={0}
@@ -1145,10 +1244,13 @@ class EventList extends Component {
                 {"Oldest Age"}
               </Title>
             }
+            style={{
+              display: "inline-block",
+              width: "calc(50%)",
+            }}
           >
             <Select
               align="center"
-              sie={"large"}
               style={{ width: "100%" }}
               placeholder={"select an oldest age"}
               defaultValue={99}
@@ -1161,7 +1263,51 @@ class EventList extends Component {
           <Form.Item
             label={
               <Title style={{ marginBottom: 0 }} level={5}>
-                {"Students"}
+                {"Signup Student"}
+              </Title>
+            }
+          >
+            <Select
+              showSearch
+              align="center"
+              style={{ width: "100%" }}
+              optionFilterProp="children"
+              Key={allStudents.id}
+              onChange={this.handleStudentChange}
+              placeholder={"select student"}
+              filterOption={(input, option) =>
+                option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+              }
+            >
+              {allStudents.map((student) => (
+                <Select.Option value={student.id} key={student.id}>
+                  {student.firstName +
+                    " " +
+                    student.lastName +
+                    " | " +
+                    student.ranks}
+                </Select.Option>
+              ))}
+            </Select>
+
+            <Button
+              type="primary"
+              loading={loading}
+              icon={<PlusCircleOutlined />}
+              onClick={this.signupStudent}
+              disabled={selectedStudentId == ""}
+              size={"default"}
+              block={true}
+              style={{ marginTop: 6 }}
+            >
+              Signup
+            </Button>
+          </Form.Item>
+
+          <Form.Item
+            label={
+              <Title style={{ marginBottom: 0 }} level={5}>
+                {"Students Signed Up"}
               </Title>
             }
             hasFeedback
@@ -1172,22 +1318,23 @@ class EventList extends Component {
                 type: "array",
               },
             ]}
-            style={{ marginTop: 20 }}
           >
             <Table
               loading={loading}
               rowKey={studentEventList.studentId}
-              pagination={pagination}
+              rowClassName={(record, index) => this.getRowColor(record, index)}
+              pagination={false}
               bordered
               columns={studentCols}
               dataSource={studentEventList}
               size="small"
-              scroll={{ y: 350 }}
+              style={{ width: "100%" }}
+              scroll={{ x: 400 }}
               onChange={this.handleTableChange}
               onRow={(record, rowIndex) => {
                 return {
-                  onClick: (studentEvent) => {
-                    this.handleStudentRowClick(studentEvent);
+                  onClick: (event) => {
+                    this.handleStudentRowClick(record);
                   }, // click row
                   //onDoubleClick: event => { this.handleRowClick(record) }, // double click row
                   //onContextMenu: event => { }, // right button click row
@@ -1202,6 +1349,7 @@ class EventList extends Component {
       <Table
         loading={loading}
         rowKey={events.id}
+        rowClassName={(record, index) => this.getRowColor(record, index)}
         pagination={pagination}
         bordered
         columns={eventCols}
@@ -1235,39 +1383,13 @@ class EventList extends Component {
     );
   }
 
-  expandedRowRender = (event) => {
-    const students = event.students;
-    const data = [];
-    for (let i = 0; i < students.length; ++i) {
-      data.push({
-        key: i,
-        id: students[i].id,
-        firstName: students[i].firstName,
-        lastName: students[i].lastName,
-        rank: students[i].ranks,
-      });
+  getRowColor(record, index) {
+    if (index % 2 === 0) {
+      return "table-row-light";
+    } else {
+      return "table-row-dark";
     }
-
-    return (
-      <List
-        size="small"
-        header={
-          <Text strong style={{ marginLeft: 10 }}>
-            Students
-          </Text>
-        }
-        bordered
-        dataSource={data}
-        renderItem={(student) => (
-          <List.Item>
-            <Text style={{ textShadow: "0px 1px 0px rgba(255,255,255,1.0)" }}>
-              {student.firstName} {student.lastName} | {student.rank}
-            </Text>
-          </List.Item>
-        )}
-      />
-    );
-  };
+  }
 
   getEventStudentsTable(event) {
     return this.getEventStudentsList(event);
@@ -1282,6 +1404,11 @@ class EventList extends Component {
       date: moment(this.state.date),
       location: this.state.selectedLocation,
       type: this.state.selectedType,
+      price: this.state.price,
+      youngestAge: this.state.youngestAge,
+      oldestAge: this.state.oldestAge,
+      lowestRank: this.state.lowestRank,
+      highestRank: this.state.highestRank,
     });
   };
 
@@ -1289,48 +1416,27 @@ class EventList extends Component {
     this.setState({ type: value });
   };
 
+  Demo() {
+    console.log("test demo");
+    <NewWindow>
+      <h1>Hi 👋</h1>
+    </NewWindow>;
+  }
+
   handleStudentRowClick(student) {
-    //this.showEvent(event);
+    <NewWindow>
+      <h1>Hi 👋</h1>
+    </NewWindow>;
+    //this.Demo();
+    //this.props.history.push(`/students/${student.studentId}`);
   }
 
   handleRowClick(event) {
     this.showEvent(event);
   }
 
-  /* showEvent(event) {
-    const { events } = this.state;
-
-    let e, selectedEvent;
-    for (e of events) {
-      if (e.id == event.id) {
-        selectedEvent = e;
-        break;
-      }
-    }
-
-    this.setState(
-      {
-        selectedEvent: selectedEvent,
-        eventStudents: selectedEvent.students,
-        initialEventStudents: selectedEvent.students,
-        selectedItems: selectedEvent.students,
-        selectedLocation: selectedEvent.location,
-        date: selectedEvent.date,
-        title: selectedEvent.title,
-        eventId: selectedEvent.id,
-        startTime: selectedEvent.startTime,
-        endTime: selectedEvent.endTime,
-        selectedType: selectedEvent.type,
-        loading: false,
-        isSavedEvent: true,
-      },
-      this.onFill
-    );
-  } */
-
   showEvent(event) {
     this.loadStudentsByEventId(event);
-    this.getAllStudentsList(0);
     this.getLocationList(0);
   }
 
@@ -1343,6 +1449,14 @@ class EventList extends Component {
       return;
     }
 
+    let eventRankRange = event.rankRange.split("-");
+    let lowestRank = eventRankRange[0];
+    let highestRank = eventRankRange[1];
+
+    let eventAgeRange = event.ageRange.split("-");
+    let youngestAge = eventAgeRange[0];
+    let oldestAge = eventAgeRange[1];
+
     this.setState({
       loading: true,
     });
@@ -1352,18 +1466,22 @@ class EventList extends Component {
         this.setState(
           {
             event: event,
-            eventStudents: response,
-            initialEventStudents: response,
-            selectedItems: response,
+            signupStudents: response,
             selectedLocation: event.location,
             date: event.date,
             title: event.title,
+            description: event.description,
             eventId: event.id,
+            price: event.price,
             startTime: event.startTime,
             endTime: event.endTime,
             selectedType: event.type,
+            youngestAge: youngestAge,
+            oldestAge: oldestAge,
+            lowestRank: lowestRank,
+            highestRank: highestRank,
           },
-          this.getAllStudentEvents(event)
+          () => this.getAllStudentEvents(event)
         );
       })
       .catch((error) => {
@@ -1397,6 +1515,7 @@ class EventList extends Component {
           },
           this.onFill
         );
+        this.getAllStudentsList(0);
       })
       .catch((error) => {
         this.setState({
@@ -1407,3 +1526,15 @@ class EventList extends Component {
 }
 
 export default withRouter(EventList);
+
+function checkCondition(student, studentEvents) {
+  let se;
+
+  for (se of studentEvents) {
+    if (se.studentId == student.id) {
+      return false;
+    }
+  }
+
+  return true;
+}

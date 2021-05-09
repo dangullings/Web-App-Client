@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import ReactDOM from "react-dom";
+import NewWindow from "react-new-window";
 import {
   Table,
   Typography,
@@ -21,13 +21,20 @@ import {
   Col,
   Button,
   Card,
+  Collapse,
 } from "antd";
 import {
   createSession,
   createClassDate,
   getAllLocations,
+  getAllStudentsByActive,
   getAllSessions,
   getSessionStudents,
+  getAllClassDatesBySessionId,
+  getAllStudentsBySessionId,
+  createStudentSession,
+  getStudentSessionsBySessionId,
+  removeStudentSessionBySessionIdAndStudentId,
 } from "../util/APIUtils";
 import moment from "moment";
 import { STUDENT_LIST_SIZE } from "../constants";
@@ -41,12 +48,15 @@ import {
   CarryOutOutlined,
   PlusCircleOutlined,
   PlusOutlined,
+  CaretRightOutlined,
 } from "@ant-design/icons";
 import "../styles/style.less";
 
+const { Panel } = Collapse;
+
 const ranks = getRanks();
 const { Title, Text } = Typography;
-
+const { TextArea } = Input;
 const Option = Select.Option;
 
 const ages = [];
@@ -64,11 +74,19 @@ const layout = {
 };
 
 class SessionList extends Component {
+  formRef = React.createRef();
+
   constructor(props) {
     super(props);
     this.state = {
       sessions: [],
       sessionStudents: [],
+      session: "",
+      studentSessions: [],
+      selectedStudentId: "",
+      selectedSession: "",
+      classDates: [],
+      signupStudents: [],
       size: STUDENT_LIST_SIZE,
       search: "",
       page: 0,
@@ -87,6 +105,7 @@ class SessionList extends Component {
       date: {
         text: "",
       },
+      sessionModalVisible: false,
       year: "",
       month: "",
       day: "",
@@ -99,11 +118,12 @@ class SessionList extends Component {
       lowestRank: "",
       highestRank: "",
       price: "",
-      locationItems: [],
+      locations: [],
       selectedItems: [],
       expandedRowKeys: [],
       selectedDate: "",
       dates: [],
+      allStudents: [],
       checkboxValues: [],
       selectedDate: moment(),
       startDate: moment(),
@@ -160,6 +180,10 @@ class SessionList extends Component {
         endTime: "",
       },
     };
+
+    this.handleStudentChange = this.handleStudentChange.bind(this);
+    this.signupStudent = this.signupStudent.bind(this);
+
     this.handleSubmit = this.handleSubmit.bind(this);
     this.changeSelectedDate = this.changeSelectedDate.bind(this);
     this.removeSelectedDate = this.removeSelectedDate.bind(this);
@@ -254,16 +278,11 @@ class SessionList extends Component {
     this.resetAllDates = this.resetAllDates.bind(this);
     this.setDates = this.setDates.bind(this);
     this.updateDates = this.updateDates.bind(this);
-    this.expandedRowRender = this.expandedRowRender.bind(this);
   }
 
   componentDidMount() {
     this.getSessionList(this.state.page, this.state.STUDENT_LIST_SIZE);
-    this.getAllLocationsList(0);
-
-    this.setState({
-      selectedLocation: this.state.locationItems[0],
-    });
+    this.getLocationList(0);
   }
 
   isFormInvalid() {
@@ -291,12 +310,8 @@ class SessionList extends Component {
 
     promise
       .then((response) => {
-        let value;
-        for (value of response.content) {
-          this.getSessionStudentsList(value);
-        }
         this.setState({
-          //sessions: response.content,
+          sessions: response.content,
           page: response.page,
           size: response.size,
           totalElements: response.totalElements,
@@ -314,25 +329,14 @@ class SessionList extends Component {
       })
       .catch((error) => {
         this.setState({
-          isLoading: false,
+          loading: false,
         });
       });
   }
 
-  getStudentLists() {
-    const { sessions } = this.state;
-
-    this.state.sessionStudents.length = 0;
-    let session;
-    for (session of sessions) {
-      this.getSessionStudentsList(session.id);
-    }
-  }
-
-  getSessionStudentsList(session) {
-    let promise,
-      students = [];
-    promise = getSessionStudents(session.id);
+  getAllStudentsList() {
+    let promise;
+    promise = getAllStudentsByActive(true);
 
     if (!promise) {
       return;
@@ -344,30 +348,207 @@ class SessionList extends Component {
 
     promise
       .then((response) => {
-        let value;
-        for (value of response) {
-          const student = {
-            id: value.id,
-            firstName: value.firstName,
-            lastName: value.lastName,
-            ranks: value.ranks,
-          };
-
-          students.push(student);
-        }
-
-        const sessionData = {
-          session: session,
-          students: students,
-        };
-
+        this.setState(
+          {
+            allStudents: response.content,
+          },
+          () => this.updateAllStudentList()
+        );
+      })
+      .catch((error) => {
         this.setState({
-          sessions: this.state.sessions.concat(sessionData),
-          sessionStudents: students,
           loading: false,
         });
+      });
+  }
+
+  handleStudentChange(value) {
+    this.setState({
+      selectedStudentId: value,
+    });
+  }
+
+  setFormValues = () => {
+    this.formRef.current.setFieldsValue({
+      title: "",
+      description: "",
+      selectedLocation: this.state.locations[0],
+      startDate: moment(),
+      endDate: moment(),
+    });
+  };
+
+  handleCancel = () => {
+    this.formRef.current.resetFields();
+
+    this.setState({
+      title: "",
+      Session: "",
+      description: "",
+      selectedLocation: "",
+      lowestRank: "",
+      highestRank: "",
+      youngestAge: "",
+      oldestAge: "",
+      price: 0,
+      startDate: moment(),
+      endDate: moment(),
+      signupStudents: [],
+      studentSessions: [],
+      allStudents: [],
+      sessionModalVisible: false,
+      loading: false,
+      isSavedSession: false,
+    });
+  };
+
+  filterOption = (inputValue, students) =>
+    students.lastName.indexOf(inputValue) > -1;
+
+  handleChange = (selectedItems) => {
+    var joined = new Array();
+
+    selectedItems.forEach((item) => {
+      joined.push(
+        this.state.allStudents.find(function (student) {
+          return student.id === item;
+        })
+      );
+    });
+
+    this.setState({
+      selectedItems,
+      signupStudents: joined,
+    });
+  };
+
+  handleDelete = (studentId) => {
+    const { SessionId } = this.state;
+    removeStudentSessionBySessionIdAndStudentId(SessionId, studentId)
+      .then((response) => {
+        message.success("Student removed from signup.");
+        this.handleAfterDeletion(studentId);
       })
-      .catch((error) => {});
+      .catch((error) => {
+        message.error("Error [" + error.message + "]");
+      });
+  };
+
+  handleAfterDeletion(studentId) {
+    this.setState({
+      loading: true,
+    });
+
+    const { studentSessions, signupStudents, allStudents } = this.state;
+
+    let signup, student;
+    let newSignupList = signupStudents;
+    for (signup of signupStudents) {
+      if (signup.id == studentId) {
+        student = signup;
+        newSignupList = signupStudents.filter(function (value) {
+          return value.id != studentId;
+        });
+        break;
+      }
+    }
+
+    var newStudentSessionList = studentSessions.filter(function (value) {
+      return value.studentId != studentId;
+    });
+
+    this.setState({
+      signupStudents: newSignupList,
+      allStudents: this.state.allStudents.concat(student),
+      studentSessions: newStudentSessionList,
+      loading: false,
+    });
+  }
+
+  updateStudentSessionList(studentId) {
+    this.setState({
+      loading: true,
+    });
+
+    var { studentSessions, signupStudents } = this.state;
+
+    var newList = studentSessions.filter(function (value, index, arr) {
+      return value.studentId != studentId;
+    });
+
+    var newSignupList = signupStudents.filter(function (value, index, arr) {
+      return value.id != studentId;
+    });
+
+    this.setState({
+      studentSessions: newList,
+      signupStudents: newSignupList,
+      loading: false,
+    });
+  }
+
+  updateAllStudentList() {
+    var { studentSessions, allStudents } = this.state;
+
+    var newStudentList = allStudents;
+    newStudentList = allStudents.filter(function (value) {
+      return checkCondition(value, studentSessions);
+    });
+
+    this.setState({
+      allStudents: newStudentList,
+      loading: false,
+    });
+  }
+
+  signupStudent() {
+    const { sessionId, selectedStudentId } = this.state;
+
+    this.setState({
+      loading: true,
+    });
+
+    let s, student;
+    for (s of this.state.allStudents) {
+      if (s.id == selectedStudentId) {
+        student = s;
+        break;
+      }
+    }
+
+    const data = {
+      classSessionId: sessionId,
+      studentId: selectedStudentId,
+      charged: this.state.session.price,
+      paid: 0,
+      signupDate: moment().format("YYYY-MM-DD"),
+    };
+
+    createStudentSession(data)
+      .then((response) => {
+        this.setState(
+          {
+            loading: false,
+            selectedStudentId: "",
+            studentSessions: this.state.studentSessions.concat(data),
+            signupStudents: this.state.signupStudents.concat(student),
+          },
+          () => this.updateAllStudentList()
+        );
+        notification.success({
+          message: "Signup Successful!",
+          description: "",
+          duration: 4,
+        });
+      })
+      .catch((error) => {
+        this.setState({
+          loading: false,
+        });
+        if (error.status === 401) {
+        } else {
+        }
+      });
   }
 
   handleTableChange = (pagination, filters, sorter) => {
@@ -381,71 +562,56 @@ class SessionList extends Component {
   };
 
   showModal = () => {
-    this.setState({
-      visible: true,
-    });
+    this.setState(
+      {
+        sessionModalVisible: true,
+        isSavedSession: false,
+        signupStudents: [],
+      },
+      this.setFormValues
+    );
 
-    this.getAllLocationsList(0);
+    this.getAllStudentsList(0);
+    //var today = new Date();
+    //var dd = String(today.getDate()).padStart(2, "0");
+    //var mm = String(today.getMonth() + 1).padStart(2, "0");
+    //var yyyy = today.getFullYear();
+    //today = yyyy + "-" + mm + "-" + dd;
   };
 
-  handleOk = () => {
+  handleSubmit(Session) {
+    let title = this.formRef.current.getFieldValue("title");
+    let description = this.formRef.current.getFieldValue("description");
+    let location = this.formRef.current.getFieldValue("location");
+    let startDate = this.formRef.current.getFieldValue("start date");
+    let endDate = this.formRef.current.getFieldValue("end date");
+    let youngestAge = this.formRef.current.getFieldValue("youngestAge");
+    let oldestAge = this.formRef.current.getFieldValue("oldestAge");
+    let lowestRank = this.formRef.current.getFieldValue("lowestRank");
+    let highestRank = this.formRef.current.getFieldValue("highestRank");
+    let price = this.formRef.current.getFieldValue("price");
+
     this.setState({ loading: true });
-    setTimeout(() => {
-      this.setState({ loading: false, visible: false });
-    }, 3000);
-  };
 
-  handleCancel = () => {
-    this.setState({ visible: false });
-  };
-
-  handleSubmit(event) {
-    event.preventDefault();
-
-    const {
-      youngestAge,
-      oldestAge,
-      lowestRank,
-      highestRank,
-      monday,
-      tuesday,
-      wednesday,
-      thursday,
-      friday,
-      saturday,
-    } = this.state;
+    let formattedStartDate = startDate.format("YYYY-MM-DD");
+    let formattedEndDate = endDate.format("YYYY-MM-DD");
+    //let parts = formattedDate.split("-");
+    //let month = parts[1];
+    //let year = parts[0];
 
     let ageRange = youngestAge + "-" + oldestAge;
     let rankRange = lowestRank + "-" + highestRank;
     var days = "";
-    if (monday.isSelected) {
-      days += "mon,";
-    }
-    if (tuesday.isSelected) {
-      days += "tue,";
-    }
-    if (wednesday.isSelected) {
-      days += "wed,";
-    }
-    if (thursday.isSelected) {
-      days += "thu,";
-    }
-    if (friday.isSelected) {
-      days += "fri,";
-    }
-    if (saturday.isSelected) {
-      days += "sat,";
-    }
 
     const SessionData = {
-      location: this.state.selectedLocation,
-      startDate: this.state.startDate,
-      endDate: this.state.endDate,
-      title: this.state.title,
-      description: this.state.description,
+      title: title,
+      description: description,
+      location: location,
+      startDate: formattedStartDate,
+      endDate: formattedEndDate,
       ageRange: ageRange,
       rankRange: rankRange,
-      price: this.state.price,
+      price: price,
       days: days,
     };
 
@@ -473,7 +639,7 @@ class SessionList extends Component {
           this.props.handleLogout(
             "/login",
             "error",
-            "You have been logged out. Please login create poll."
+            "You have been logged out. Please login."
           );
         } else {
           notification.error({
@@ -799,7 +965,7 @@ class SessionList extends Component {
     this.setState({ selectedLocation: value });
   };
 
-  getAllLocationsList(page) {
+  getLocationList(page) {
     let promise;
     promise = getAllLocations(page, 1000);
 
@@ -807,27 +973,18 @@ class SessionList extends Component {
       return;
     }
 
-    this.setState({
-      isLoading: true,
-    });
-
     promise
       .then((response) => {
         this.setState({
-          locationItems: response.content,
+          locations: response.content,
           page: response.page,
           size: response.size,
           totalElements: response.totalElements,
           totalPages: response.totalPages,
           last: response.last,
-          isLoading: false,
         });
       })
-      .catch((error) => {
-        this.setState({
-          isLoading: false,
-        });
-      });
+      .catch((error) => {});
   }
 
   onSpecificSecondHourCheckboxChange() {
@@ -1264,22 +1421,22 @@ class SessionList extends Component {
     }));
   }
 
-  handleTitleChange(event) {
-    const value = event.target.value;
+  handleTitleChange(Session) {
+    const value = Session.target.value;
     this.setState({
       title: value,
     });
   }
 
-  handleDescriptionChange(event) {
-    const value = event.target.value;
+  handleDescriptionChange(Session) {
+    const value = Session.target.value;
     this.setState({
       description: value,
     });
   }
 
-  handlePriceChange(event) {
-    const value = event.target.value;
+  handlePriceChange(Session) {
+    const value = Session.target.value;
     this.setState({
       price: value,
     });
@@ -1323,32 +1480,110 @@ class SessionList extends Component {
 
   render() {
     const {
-      selectedLocation,
-      locationItems,
       selectedDate,
       specific,
-      startDate,
-      endDate,
       dates,
+      classDates,
       sessions,
-      sessionStudents,
       monday,
       tuesday,
       wednesday,
       thursday,
       friday,
       saturday,
-      title,
-      description,
-      ageRange,
-      rankRange,
-      youngestAge,
-      oldestAge,
-      lowestRank,
-      highestRank,
-      price,
+      signupStudents,
+      studentSessions,
+      allStudents,
+      selectedStudentId,
+      locations,
+      isSavedSession,
+      sessionModalVisible,
     } = this.state;
     const { pagination, visible, loading, size } = this.state;
+
+    var studentSessionList = [];
+    let student, ss, studSession;
+    for (student of signupStudents) {
+      for (ss of studentSessions) {
+        if (ss.studentId == student.id) {
+          studSession = ss;
+          break;
+        }
+      }
+
+      let balance = 0,
+        date = "";
+      if (studSession) {
+        balance = "$" + (studSession.charged - studSession.paid);
+        date = studSession.signupDate;
+      }
+
+      const studentSession = {
+        studentId: student.id,
+        studentName:
+          student.firstName + " " + student.lastName.substring(0, 1) + ".",
+        studentRank: student.ranks,
+        date: date,
+        balance: balance,
+      };
+
+      studentSessionList.push(studentSession);
+    }
+
+    const studentCols = [
+      {
+        title: "Name",
+        dataIndex: "studentName",
+        key: "studentName",
+        ellipsis: true,
+        sorter: true,
+        render: (text, record) => (
+          <a
+            href={"/students/" + record.studentId}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {text}
+          </a>
+        ),
+      },
+      {
+        title: "Rank",
+        dataIndex: "studentRank",
+        key: "studentRank",
+        ellipsis: true,
+      },
+      {
+        title: "Balance",
+        dataIndex: "balance",
+        key: "balance",
+        align: "right",
+        width: 70,
+        ellipsis: true,
+      },
+      {
+        title: "Date",
+        dataIndex: "date",
+        key: "date",
+        ellipsis: true,
+      },
+      {
+        title: "",
+        key: "action",
+        align: "center",
+        ellipsis: true,
+        fixed: "right",
+        width: 35,
+        render: (text, record) => (
+          <Popconfirm
+            title="Remove Student?"
+            onConfirm={() => this.handleDelete(record.studentId)}
+          >
+            <DeleteOutlined style={{ color: "red" }} />
+          </Popconfirm>
+        ),
+      },
+    ];
 
     let { datesSet } = this.state;
     const renderButton = () => {
@@ -1358,9 +1593,6 @@ class SessionList extends Component {
             icon={<CarryOutOutlined />}
             disabled
             style={{
-              boxShadow:
-                "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
-
               width: "60%",
             }}
             onClick={this.setDates}
@@ -1375,9 +1607,6 @@ class SessionList extends Component {
           <Button
             icon={<CarryOutOutlined />}
             style={{
-              boxShadow:
-                "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
-
               width: "60%",
             }}
             onClick={this.setDates}
@@ -1392,10 +1621,12 @@ class SessionList extends Component {
 
     var d;
     var selectDates = [];
-    for (d of dates) {
+    for (d of classDates) {
       let date = d.date;
       let time =
-        d.startTime.format("hh:mm a") + "-" + d.endTime.format("hh:mm a");
+        moment(d.startTime, "h:mm a").format("hh:mm a") +
+        "-" +
+        moment(d.endTime, "h:mm a").format("hh:mm a");
       let secondHour;
       if (d.hasSecondHour) {
         secondHour = "2nd";
@@ -1408,11 +1639,11 @@ class SessionList extends Component {
     }
 
     const addSpecificDate = [
-      <Row style={{ marginTop: 0, marginLeft: 10 }}>
+      <Row style={{ marginTop: 0, marginLeft: 0 }}>
         <Col>
           <DatePicker
             inputReadOnly="true"
-            style={{ marginBottom: 10, marginLeft: 0 }}
+            style={{ marginBottom: 6, marginLeft: 0 }}
             align="center"
             size={"default"}
             defaultValue={moment()}
@@ -1428,7 +1659,7 @@ class SessionList extends Component {
           </Checkbox> */}
         </Col>
       </Row>,
-      <Row style={{ marginTop: 0, marginLeft: 10, marginBottom: 20 }}>
+      <Row style={{ marginTop: 0, marginLeft: 0, marginBottom: 10 }}>
         <Col>
           <TimePicker
             inputReadOnly="true"
@@ -1459,7 +1690,7 @@ class SessionList extends Component {
     ];
 
     const dayCheckboxes = [
-      <Row style={{ marginTop: 0, marginLeft: 20 }}>
+      <Row style={{ marginTop: 0 }}>
         <Col>
           <Checkbox
             style={{ width: "65px" }}
@@ -1471,7 +1702,7 @@ class SessionList extends Component {
 
           <TimePicker
             inputReadOnly="true"
-            style={{ width: "30%" }}
+            style={{ width: "35%" }}
             use12Hours
             size={"small"}
             format="h:mm a"
@@ -1483,7 +1714,7 @@ class SessionList extends Component {
           />
           <TimePicker
             inputReadOnly="true"
-            style={{ width: "30%" }}
+            style={{ width: "35%" }}
             use12Hours
             size={"small"}
             format="h:mm a"
@@ -1504,7 +1735,7 @@ class SessionList extends Component {
         </Col>
         <Divider style={{ marginTop: 8, marginBottom: 8 }} />
       </Row>,
-      <Row style={{ marginTop: 0, marginLeft: 20 }}>
+      <Row style={{ marginTop: 0 }}>
         <Col>
           <Checkbox
             style={{ width: "65px" }}
@@ -1516,7 +1747,7 @@ class SessionList extends Component {
 
           <TimePicker
             inputReadOnly="true"
-            style={{ width: "30%" }}
+            style={{ width: "35%" }}
             use12Hours
             size={"small"}
             format="h:mm a"
@@ -1528,7 +1759,7 @@ class SessionList extends Component {
           />
           <TimePicker
             inputReadOnly="true"
-            style={{ width: "30%" }}
+            style={{ width: "35%" }}
             use12Hours
             size={"small"}
             format="h:mm a"
@@ -1549,7 +1780,7 @@ class SessionList extends Component {
         </Col>
         <Divider style={{ marginTop: 8, marginBottom: 8 }} />
       </Row>,
-      <Row style={{ marginTop: 0, marginLeft: 20 }}>
+      <Row style={{ marginTop: 0 }}>
         <Col>
           <Checkbox
             style={{ width: "65px" }}
@@ -1561,7 +1792,7 @@ class SessionList extends Component {
 
           <TimePicker
             inputReadOnly="true"
-            style={{ width: "30%" }}
+            style={{ width: "35%" }}
             use12Hours
             size={"small"}
             format="h:mm a"
@@ -1573,7 +1804,7 @@ class SessionList extends Component {
           />
           <TimePicker
             inputReadOnly="true"
-            style={{ width: "30%" }}
+            style={{ width: "35%" }}
             use12Hours
             size={"small"}
             format="h:mm a"
@@ -1594,7 +1825,7 @@ class SessionList extends Component {
         </Col>
         <Divider style={{ marginTop: 8, marginBottom: 8 }} />
       </Row>,
-      <Row style={{ marginTop: 0, marginLeft: 20 }}>
+      <Row style={{ marginTop: 0 }}>
         <Col>
           <Checkbox
             style={{ width: "65px" }}
@@ -1606,7 +1837,7 @@ class SessionList extends Component {
 
           <TimePicker
             inputReadOnly="true"
-            style={{ width: "30%" }}
+            style={{ width: "35%" }}
             use12Hours
             size={"small"}
             format="h:mm a"
@@ -1618,7 +1849,7 @@ class SessionList extends Component {
           />
           <TimePicker
             inputReadOnly="true"
-            style={{ width: "30%" }}
+            style={{ width: "35%" }}
             use12Hours
             size={"small"}
             format="h:mm a"
@@ -1639,7 +1870,7 @@ class SessionList extends Component {
         </Col>
         <Divider style={{ marginTop: 8, marginBottom: 8 }} />
       </Row>,
-      <Row style={{ marginTop: 0, marginLeft: 20 }}>
+      <Row style={{ marginTop: 0 }}>
         <Col>
           <Checkbox
             style={{ width: "65px" }}
@@ -1651,7 +1882,7 @@ class SessionList extends Component {
 
           <TimePicker
             inputReadOnly="true"
-            style={{ width: "30%" }}
+            style={{ width: "35%" }}
             use12Hours
             size={"small"}
             format="h:mm a"
@@ -1663,7 +1894,7 @@ class SessionList extends Component {
           />
           <TimePicker
             inputReadOnly="true"
-            style={{ width: "30%" }}
+            style={{ width: "35%" }}
             use12Hours
             size={"small"}
             format="h:mm a"
@@ -1684,7 +1915,7 @@ class SessionList extends Component {
         </Col>
         <Divider style={{ marginTop: 8, marginBottom: 8 }} />
       </Row>,
-      <Row style={{ marginTop: 0, marginBottom: 20, marginLeft: 20 }}>
+      <Row style={{ marginTop: 0, marginBottom: 20 }}>
         <Col>
           <Checkbox
             style={{ width: "65px" }}
@@ -1696,7 +1927,7 @@ class SessionList extends Component {
 
           <TimePicker
             inputReadOnly="true"
-            style={{ width: "30%" }}
+            style={{ width: "35%" }}
             use12Hours
             size={"small"}
             format="h:mm a"
@@ -1708,7 +1939,7 @@ class SessionList extends Component {
           />
           <TimePicker
             inputReadOnly="true"
-            style={{ width: "30%" }}
+            style={{ width: "35%" }}
             use12Hours
             size={"small"}
             format="h:mm a"
@@ -1736,7 +1967,6 @@ class SessionList extends Component {
         dataIndex: "title",
         key: "title",
         width: 50,
-        render: (text, row) => <a>{text}</a>,
       },
       {
         title: "Location",
@@ -1758,25 +1988,13 @@ class SessionList extends Component {
       },
     ];
 
-    const sessionList = [];
-    for (let i = 0; i < sessions.length; ++i) {
-      sessionList.push({
-        key: i,
-        id: sessions[i].session.id,
-        title: sessions[i].session.title,
-        location: sessions[i].session.location,
-        startDate: sessions[i].session.startDate,
-        endDate: sessions[i].session.endDate,
-        students: sessions[i].students,
-      });
+    var ModalTitle;
+    if (isSavedSession) {
+      ModalTitle = <Title level={2}>Edit Session</Title>;
+    } else {
+      ModalTitle = <Title level={2}>New Session</Title>;
     }
-
-    const ModalTitle = <Title level={2}>New Session</Title>;
     const TableTitle = <Title level={3}>Session List</Title>;
-
-    const tableProps = {
-      expandedRowRender: (record) => this.expandedRowRender(record),
-    };
 
     const contentList = [
       <Button
@@ -1796,321 +2014,526 @@ class SessionList extends Component {
         New Session
       </Button>,
 
-      <Form {...layout} onFinish={this.handleSubmit} ref={this.formRef}>
-        <Modal
-          className="sessionList"
-          visible={visible}
-          title={ModalTitle}
-          closable={false}
-          style={{ top: 0 }}
-          bodyStyle={{ padding: 20, marginBottom: 20 }}
-          onOk={this.handleOk}
-          onCancel={this.handleCancel}
-          footer={[
-            <Button
-              key="back"
-              type="secondary"
-              onClick={this.handleCancel}
-              style={{
-                boxShadow:
-                  "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
-              }}
-            >
-              Cancel
-            </Button>,
-            <Button
-              key="submit"
-              type="primary"
-              icon={<SaveOutlined />}
-              disabled={this.isFormInvalid()}
-              loading={loading}
-              onClick={this.handleSubmit}
-              style={{
-                boxShadow:
-                  "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
-              }}
-            >
-              Save
-            </Button>,
-          ]}
+      <Modal
+        className="session-list"
+        visible={sessionModalVisible}
+        title={ModalTitle}
+        closable={false}
+        style={{ top: 0 }}
+        bodyStyle={{ padding: 20, marginBottom: 20 }}
+        onOk={this.handleOk}
+        onCancel={this.handleCancel}
+        footer={[
+          <Button
+            key="back"
+            type="secondary"
+            onClick={this.handleCancel}
+            style={{
+              boxShadow:
+                "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
+            }}
+          >
+            Cancel
+          </Button>,
+          <Button
+            key="submit"
+            type="primary"
+            icon={<SaveOutlined />}
+            disabled={this.isFormInvalid()}
+            loading={loading}
+            onClick={this.handleSubmit}
+            style={{
+              boxShadow:
+                "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
+            }}
+          >
+            Save
+          </Button>,
+        ]}
+      >
+        <Form
+          initialValues={{
+            title: this.state.title,
+            description: this.state.description,
+            location: this.state.selectedLocation,
+            startDate: moment(this.state.startDate),
+            endDate: moment(this.state.endDate),
+            lowestRank: "Gold Stripe",
+            highestRank: "Fifth Degree",
+            youngestAge: 0,
+            oldestAge: 99,
+            price: 0,
+          }}
+          layout="vertical"
+          onFinish={this.handleSubmit}
+          ref={this.formRef}
         >
-          <Divider style={{ marginTop: 10 }} orientation="left">
-            {<Title level={4}>name and description</Title>}
-          </Divider>
-          <Form.Item
-            name="title"
-            style={{ marginLeft: 20 }}
-            label={
-              <Title style={{ marginTop: 14 }} level={5}>
-                {"Title"}
-              </Title>
-            }
-            hasFeedback
-            rules={[
-              {
-                required: true,
-                message: "Please enter the session title.",
-              },
-            ]}
+          <Collapse
+            bordered={false}
+            defaultActiveKey={["4"]}
+            className="site-collapse-custom-collapse"
           >
-            <Input
-              placeholder="Session Title"
-              style={{ fontSize: "16px" }}
-              autosize={{ minRows: 1, maxRows: 1 }}
-              value={title.text}
-              onChange={this.handleTitleChange}
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="description"
-            style={{ marginLeft: 20 }}
-            label={
-              <Title style={{ marginTop: 14 }} level={5}>
-                {"Desc"}
-              </Title>
-            }
-            hasFeedback
-            rules={[
-              {
-                required: true,
-                message: "Please enter the session description.",
-              },
-            ]}
-          >
-            <Input
-              placeholder="Session Description"
-              style={{ fontSize: "16px" }}
-              autosize={{ minRows: 1, maxRows: 3 }}
-              value={description.text}
-              onChange={this.handleDescriptionChange}
-            />
-          </Form.Item>
-
-          <Divider style={{ marginTop: 10 }} orientation="left">
-            {<Title level={4}>student requirements/limits</Title>}
-          </Divider>
-          <Form.Item
-            name="price"
-            style={{ marginLeft: 20 }}
-            label={
-              <Title style={{ marginTop: 14 }} level={5}>
-                {"Price"}
-              </Title>
-            }
-            hasFeedback
-            rules={[
-              {
-                required: true,
-                message: "Please enter the session price.",
-              },
-            ]}
-          >
-            <Input
-              placeholder="US$"
-              style={{ fontSize: "16px" }}
-              autosize={{ minRows: 1, maxRows: 1 }}
-              value={price.text}
-              onChange={this.handlePriceChange}
-            />
-          </Form.Item>
-
-          <Form.Item label="lowest">
-            <Select
-              align="left"
-              style={{ width: "100%" }}
-              placeholder={"select a lowest rank"}
-              defaultValue={"Gold Stripe"}
-              onChange={this.handleLowestRankChange}
+            <Panel
+              header={
+                <Title style={{ marginBottom: 0 }} level={4}>
+                  {"Info"}
+                </Title>
+              }
+              key="4"
+              className="site-collapse-custom-panel"
             >
-              {ranks.map((rank) => (
-                <Select.Option value={rank} key={rank}>
-                  {rank}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-          <Form.Item label="highest">
-            <Select
-              align="left"
-              style={{ width: "100%" }}
-              placeholder={"select a highest rank"}
-              defaultValue={"Fifth Degree"}
-              onChange={this.handleHighestRankChange}
+              <Form.Item
+                name="title"
+                label={
+                  <Title style={{ marginBottom: 0 }} level={5}>
+                    {"Title"}
+                  </Title>
+                }
+                hasFeedback
+                rules={[
+                  {
+                    required: true,
+                    message: "Please enter the session title.",
+                  },
+                ]}
+              >
+                <Input
+                  placeholder="Title"
+                  autosize={{ minRows: 1, maxRows: 1 }}
+                />
+              </Form.Item>
+
+              <Form.Item
+                name="description"
+                label={
+                  <Title style={{ marginBottom: 0 }} level={5}>
+                    {"Description"}
+                  </Title>
+                }
+                hasFeedback
+                rules={[
+                  {
+                    required: true,
+                    message: "Please enter the session description.",
+                  },
+                ]}
+              >
+                <TextArea
+                  placeholder="describe the session in detail"
+                  rows={3}
+                  autosize={{ minRows: 1, maxRows: 3 }}
+                />
+              </Form.Item>
+
+              <Form.Item
+                name="location"
+                label={
+                  <Title style={{ marginBottom: 0 }} level={5}>
+                    {"Location"}
+                  </Title>
+                }
+                hasFeedback
+                rules={[
+                  {
+                    required: true,
+                    message: "Please select the session location.",
+                  },
+                ]}
+              >
+                <Select
+                  align="center"
+                  Key={locations.id}
+                  placeholder={"select location"}
+                  onChange={this.handleLocationDropdownChange}
+                >
+                  {locations.map((item) => (
+                    <Select.Option value={item.name} key={item.id}>
+                      {item.name}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Panel>
+            <Panel
+              header={
+                <Title style={{ marginBottom: 0 }} level={4}>
+                  {"Student Requirements"}
+                </Title>
+              }
+              key="1"
+              className="site-collapse-custom-panel"
             >
-              {ranks.map((rank) => (
-                <Select.Option value={rank} key={rank}>
-                  {rank}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
+              <Form.Item
+                name="price"
+                style={{ marginLeft: 0 }}
+                label={
+                  <Title style={{ marginBottom: 0 }} level={5}>
+                    {"Price"}
+                  </Title>
+                }
+                hasFeedback
+                rules={[
+                  {
+                    required: true,
+                    message: "Please enter the session price.",
+                  },
+                ]}
+              >
+                <Input
+                  placeholder="US$"
+                  autosize={{ minRows: 1, maxRows: 1 }}
+                />
+              </Form.Item>
 
-          <Form.Item label="youngest">
-            <Select
-              align="left"
-              style={{ width: "100%" }}
-              placeholder={"select a youngest age"}
-              defaultValue={0}
-              onChange={this.handleYoungestAgeChange}
+              <Form.Item
+                name="lowestRank"
+                label={
+                  <Title style={{ marginBottom: 0 }} level={5}>
+                    {"Lowest Rank"}
+                  </Title>
+                }
+                style={{
+                  display: "inline-block",
+                  width: "calc(50%)",
+                }}
+              >
+                <Select
+                  align="center"
+                  style={{ width: "100%" }}
+                  placeholder={"select a lowest rank"}
+                  defaultValue={"Gold Stripe"}
+                  onChange={this.handleLowestRankChange}
+                >
+                  {ranks.map((rank) => (
+                    <Select.Option value={rank} key={rank}>
+                      {rank}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+              <Form.Item
+                name="highestRank"
+                label={
+                  <Title style={{ marginBottom: 0 }} level={5}>
+                    {"Highest Rank"}
+                  </Title>
+                }
+                style={{
+                  display: "inline-block",
+                  width: "calc(50%)",
+                }}
+              >
+                <Select
+                  align="center"
+                  style={{ width: "100%" }}
+                  placeholder={"select a highest rank"}
+                  defaultValue={"Fifth Degree"}
+                  onChange={this.handleHighestRankChange}
+                >
+                  {ranks.map((rank) => (
+                    <Select.Option value={rank} key={rank}>
+                      {rank}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+
+              <Form.Item
+                name="youngestAge"
+                label={
+                  <Title style={{ marginBottom: 0 }} level={5}>
+                    {"Youngest Age"}
+                  </Title>
+                }
+                style={{
+                  display: "inline-block",
+                  width: "calc(50%)",
+                }}
+              >
+                <Select
+                  align="center"
+                  style={{ width: "100%" }}
+                  placeholder={"select a youngest age"}
+                  defaultValue={0}
+                  onChange={this.handleYoungestAgeChange}
+                >
+                  {ages}
+                </Select>
+              </Form.Item>
+              <Form.Item
+                name="oldestAge"
+                label={
+                  <Title style={{ marginBottom: 0 }} level={5}>
+                    {"Oldest Age"}
+                  </Title>
+                }
+                style={{
+                  display: "inline-block",
+                  width: "calc(50%)",
+                }}
+              >
+                <Select
+                  align="center"
+                  style={{ width: "100%" }}
+                  placeholder={"select an oldest age"}
+                  defaultValue={99}
+                  onChange={this.handleOldestAgeChange}
+                >
+                  {ages}
+                </Select>
+              </Form.Item>
+            </Panel>
+            <Panel
+              header={
+                <Title style={{ marginBottom: 0 }} level={4}>
+                  {"Duration and Dates"}
+                </Title>
+              }
+              key="2"
+              className="site-collapse-custom-panel"
             >
-              {ages}
-            </Select>
-          </Form.Item>
-          <Form.Item label="oldest">
-            <Select
-              align="left"
-              style={{ width: "100%" }}
-              placeholder={"select an oldest age"}
-              defaultValue={99}
-              onChange={this.handleOldestAgeChange}
+              <Form.Item
+                name="startDate"
+                label={
+                  <Title style={{ marginBottom: 0 }} level={5}>
+                    {"Start Date"}
+                  </Title>
+                }
+                style={{
+                  display: "inline-block",
+                  width: "calc(50%)",
+                }}
+                hasFeedback
+                rules={[
+                  {
+                    required: true,
+                    message: "Please select the session start date.",
+                  },
+                ]}
+              >
+                <DatePicker
+                  inputReadOnly="true"
+                  align="center"
+                  placeholder={"select start date"}
+                  style={{
+                    width: "100%",
+                  }}
+                />
+              </Form.Item>
+
+              <Form.Item
+                name="endDate"
+                label={
+                  <Title style={{ marginBottom: 0 }} level={5}>
+                    {"End Date"}
+                  </Title>
+                }
+                style={{
+                  display: "inline-block",
+                  width: "calc(50%)",
+                }}
+                hasFeedback
+                rules={[
+                  {
+                    required: true,
+                    message: "Please select the session end date.",
+                  },
+                ]}
+              >
+                <DatePicker
+                  inputReadOnly="true"
+                  align="center"
+                  placeholder={"select end date"}
+                  style={{
+                    width: "100%",
+                  }}
+                />
+              </Form.Item>
+
+              {dayCheckboxes}
+              {renderButton()}
+              <Button
+                icon={<ReloadOutlined />}
+                style={{
+                  marginTop: 10,
+                  marginLeft: 10,
+                  width: "30%",
+                }}
+                onClick={this.resetAllDates.bind()}
+                shape="round"
+                type="primary"
+              >
+                Reset
+              </Button>
+              <Divider
+                style={{ marginTop: 30, marginBottom: 0 }}
+                orientation="left"
+              >
+                {<Title level={4}>Remove</Title>}
+              </Divider>
+              <Row>
+                <Select
+                  align="center"
+                  style={{ width: "100%" }}
+                  placeholder="Dates"
+                  optionFilterProp="children"
+                  onChange={this.changeSelectedDate}
+                  Key={selectDates.index}
+                >
+                  {selectDates.map((date) => (
+                    <Select.Option value={date.date_time} key={date}>
+                      {date.toString()}
+                    </Select.Option>
+                  ))}
+                </Select>
+
+                <Button
+                  icon={<DeleteOutlined />}
+                  danger
+                  style={{
+                    marginTop: 10,
+                    width: "100%",
+                  }}
+                  onClick={this.removeSelectedDate.bind(this, selectedDate)}
+                  shape="round"
+                  type="primary"
+                >
+                  Remove
+                </Button>
+              </Row>
+              <Divider
+                style={{ marginTop: 30, marginBottom: 0 }}
+                orientation="left"
+              >
+                {<Title level={4}>Specific</Title>}
+              </Divider>
+              {addSpecificDate}
+              <Button
+                icon={<PlusCircleOutlined />}
+                style={{
+                  marginBottom: 15,
+                }}
+                onClick={this.addSpecificDate}
+                shape="round"
+                type="primary"
+              >
+                Add
+              </Button>
+            </Panel>
+            <Panel
+              header={
+                <Title style={{ marginBottom: 0 }} level={4}>
+                  {"Student Signup"}
+                </Title>
+              }
+              key="3"
+              className="site-collapse-custom-panel"
             >
-              {ages}
-            </Select>
-          </Form.Item>
+              <Form.Item
+                label={
+                  <Title style={{ marginBottom: 0, marginTop: 0 }} level={5}>
+                    {"Signup Student"}
+                  </Title>
+                }
+              >
+                <Select
+                  showSearch
+                  align="center"
+                  style={{ width: "100%" }}
+                  optionFilterProp="children"
+                  Key={allStudents.id}
+                  onChange={this.handleStudentChange}
+                  placeholder={"select student"}
+                  filterOption={(input, option) =>
+                    option.children
+                      .toLowerCase()
+                      .indexOf(input.toLowerCase()) >= 0
+                  }
+                >
+                  {allStudents.map((student) => (
+                    <Select.Option value={student.id} key={student.id}>
+                      {student.firstName +
+                        " " +
+                        student.lastName +
+                        " | " +
+                        student.ranks}
+                    </Select.Option>
+                  ))}
+                </Select>
 
-          <Divider style={{ marginTop: 10 }} orientation="left">
-            {<Title level={4}>location</Title>}
-          </Divider>
-          <Form.Item label="">
-            <Select
-              align="left"
-              style={{ width: "100%" }}
-              Key={locationItems.id}
-              defaultValue={selectedLocation}
-              placeholder={"select a location"}
-              onChange={this.handleLocationDropdownChange}
-            >
-              {locationItems.map((item) => (
-                <Select.Option value={item.name} key={item.id}>
-                  {item.name}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
+                <Button
+                  type="primary"
+                  loading={loading}
+                  icon={<PlusCircleOutlined />}
+                  onClick={this.signupStudent}
+                  disabled={selectedStudentId == ""}
+                  size={"default"}
+                  block={true}
+                  style={{ marginTop: 10 }}
+                >
+                  Signup
+                </Button>
+              </Form.Item>
 
-          <Divider style={{ marginTop: 30 }} orientation="left">
-            {<Title level={4}>duration / days</Title>}
-          </Divider>
-          <Form.Item
-            label="Start Date"
-            style={{ marginLeft: "40px" }}
-            hasFeedback
-            rules={[
-              {
-                required: true,
-                message: "Please select the session start date.",
-              },
-            ]}
-          >
-            <DatePicker
-              inputReadOnly="true"
-              align="center"
-              placeholder={"select start date"}
-              value={startDate}
-              onChange={this.handleStartDateChange}
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="End Date"
-            style={{ marginLeft: "40px" }}
-            hasFeedback
-            rules={[
-              {
-                required: true,
-                message: "Please select the session end date.",
-              },
-            ]}
-          >
-            <DatePicker
-              inputReadOnly="true"
-              align="center"
-              placeholder={"select end date"}
-              value={endDate}
-              onChange={this.handleEndDateChange}
-            />
-          </Form.Item>
-
-          {dayCheckboxes}
-          {renderButton()}
-          <Button
-            icon={<ReloadOutlined />}
-            style={{
-              boxShadow:
-                "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
-              marginTop: 10,
-              marginLeft: 10,
-              width: "30%",
-            }}
-            onClick={this.resetAllDates.bind()}
-            shape="round"
-            type="primary"
-          >
-            Reset
-          </Button>
-          <Divider style={{ marginTop: 30 }} orientation="left">
-            {<Title level={4}>view / select dates to remove</Title>}
-          </Divider>
-          <Row style={{ marginLeft: 10 }}>
-            <Select
-              align="center"
-              style={{ width: "80%" }}
-              placeholder="Dates"
-              optionFilterProp="children"
-              onChange={this.changeSelectedDate}
-              Key={selectDates.index}
-            >
-              {selectDates.map((date) => (
-                <Select.Option value={date.date_time} key={date}>
-                  {date.toString()}
-                </Select.Option>
-              ))}
-            </Select>
-
-            <Button
-              icon={<DeleteOutlined />}
-              style={{
-                boxShadow:
-                  "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
-                marginLeft: 10,
-              }}
-              onClick={this.removeSelectedDate.bind(this, selectedDate)}
-              shape="round"
-              type="primary"
-            ></Button>
-          </Row>
-          <Divider style={{ marginTop: 30 }} orientation="left">
-            {<Title level={4}>add specific date</Title>}
-          </Divider>
-          {addSpecificDate}
-          <Button
-            icon={<PlusCircleOutlined />}
-            style={{
-              boxShadow:
-                "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
-              marginLeft: 10,
-            }}
-            onClick={this.addSpecificDate}
-            shape="round"
-            type="primary"
-          >
-            Add
-          </Button>
-        </Modal>
-      </Form>,
+              <Form.Item
+                label={
+                  <Title style={{ marginBottom: 0 }} level={5}>
+                    {"Students Signed Up"}
+                  </Title>
+                }
+                hasFeedback
+                rules={[
+                  {
+                    required: true,
+                    message: "Please select the students.",
+                    type: "array",
+                  },
+                ]}
+              >
+                <Table
+                  loading={loading}
+                  rowKey={studentSessionList.studentId}
+                  rowClassName={(record, index) =>
+                    this.getRowColor(record, index)
+                  }
+                  pagination={false}
+                  bordered
+                  columns={studentCols}
+                  dataSource={studentSessionList}
+                  size="small"
+                  style={{ width: "100%" }}
+                  scroll={{ x: 400 }}
+                  onChange={this.handleTableChange}
+                  onRow={(record, rowIndex) => {
+                    return {
+                      onClick: (event) => {
+                        this.handleStudentRowClick(record);
+                      }, // click row
+                      //onDoubleClick: event => { this.handleRowClick(record) }, // double click row
+                      //onContextMenu: event => { }, // right button click row
+                      //onMouseEnter: event => { }, // mouse enter row
+                      //onMouseLeave: event => { }, // mouse leave row
+                    };
+                  }}
+                />
+              </Form.Item>
+            </Panel>
+          </Collapse>
+        </Form>
+      </Modal>,
 
       <Table
         loading={loading}
         rowKey={sessions.id}
+        rowClassName={(record, index) => this.getRowColor(record, index)}
         pagination={pagination}
         bordered
         columns={sessionCols}
-        dataSource={sessionList}
+        dataSource={sessions}
         size="small"
         scroll={{ y: 350 }}
         onChange={this.handleTableChange}
-        /* onRow={(record, rowIndex) => {
+        onRow={(record, rowIndex) => {
           return {
             onClick: (event) => {
               this.handleRowClick(record);
@@ -2120,15 +2543,13 @@ class SessionList extends Component {
             //onMouseEnter: event => { }, // mouse enter row
             //onMouseLeave: event => { }, // mouse leave row
           };
-        }} */
-
-        {...tableProps}
+        }}
       />,
     ];
 
     return (
       <Card
-        className="sessionList"
+        className="session-list"
         bordered={false}
         bodyStyle={{ padding: 0 }}
         title={TableTitle}
@@ -2138,39 +2559,249 @@ class SessionList extends Component {
     );
   }
 
-  expandedRowRender = (session) => {
-    const students = session.students;
-    const data = [];
-    for (let i = 0; i < students.length; ++i) {
-      data.push({
-        key: i,
-        id: students[i].id,
-        firstName: students[i].firstName,
-        lastName: students[i].lastName,
-        rank: students[i].ranks,
-      });
+  handleStudentRowClick(student) {
+    <NewWindow>
+      <h1>Hi 👋</h1>
+    </NewWindow>;
+    //this.Demo();
+    //this.props.history.push(`/students/${student.studentId}`);
+  }
+
+  getRowColor(record, index) {
+    if (index % 2 === 0) {
+      return "table-row-light";
+    } else {
+      return "table-row-dark";
+    }
+  }
+
+  onFill = () => {
+    this.formRef.current.setFieldsValue({
+      title: this.state.title,
+      description: this.state.description,
+      startDate: moment(this.state.startDate),
+      endDate: moment(this.state.endDate),
+      location: this.state.selectedLocation,
+      price: this.state.price,
+      youngestAge: this.state.youngestAge,
+      oldestAge: this.state.oldestAge,
+      lowestRank: this.state.lowestRank,
+      highestRank: this.state.highestRank,
+    });
+
+    this.setState({
+      loading: false,
+    });
+  };
+
+  handleRowClick(session) {
+    this.showSession(session);
+  }
+
+  showSession(session) {
+    this.loadClassDatesBySessionId(session);
+    this.getLocationList(0);
+  }
+
+  loadClassDatesBySessionId(session) {
+    let promise;
+
+    promise = getAllClassDatesBySessionId(session.id);
+
+    if (!promise) {
+      return;
     }
 
-    return (
-      <List
-        size="small"
-        header={
-          <Text strong style={{ marginLeft: 10 }}>
-            Students
-          </Text>
-        }
-        bordered
-        dataSource={data}
-        renderItem={(student) => (
-          <List.Item>
-            <Text style={{ textShadow: "0px 1px 0px rgba(255,255,255,1.0)" }}>
-              {student.firstName} {student.lastName} | {student.rank}
-            </Text>
-          </List.Item>
-        )}
-      />
+    this.setState({
+      loading: true,
+    });
+
+    promise
+      .then((response) => {
+        this.setState(
+          {
+            classDates: response,
+          },
+          () => this.setupDates(session, response)
+        );
+      })
+      .catch((error) => {
+        this.setState({
+          loading: false,
+        });
+      });
+  }
+
+  setupDates(session, classDates) {
+    const {
+      monday,
+      tuesday,
+      wednesday,
+      thursday,
+      friday,
+      saturday,
+    } = this.state;
+    let mon = monday,
+      tue = tuesday,
+      wed = wednesday,
+      thu = thursday,
+      fri = friday,
+      sat = saturday;
+    let dates = [];
+    let days = session.days.split(",");
+
+    let classDate;
+    for (classDate of classDates) {
+      dates.push(classDates.date);
+
+      let date = moment(classDate.date).day();
+
+      if (date == 1 && !mon.isSelected) {
+        let day = {
+          isSelected: true,
+          hasSecondHour: classDate.secondHour,
+          startTime: moment(classDate.startTime, "h:mm a"),
+          endTime: moment(classDate.endTime, "h:mm a"),
+        };
+        mon = day;
+      }
+      if (date == 2 && !tue.isSelected) {
+        let day = {
+          isSelected: true,
+          hasSecondHour: classDate.secondHour,
+          startTime: moment(classDate.startTime, "h:mm a"),
+          endTime: moment(classDate.endTime, "h:mm a"),
+        };
+        tue = day;
+      }
+      if (date == 3 && !wed.isSelected) {
+        let day = {
+          isSelected: true,
+          hasSecondHour: classDate.secondHour,
+          startTime: moment(classDate.startTime, "h:mm a"),
+          endTime: moment(classDate.endTime, "h:mm a"),
+        };
+        wed = day;
+      }
+      if (date == 4 && !thu.isSelected) {
+        let day = {
+          isSelected: true,
+          hasSecondHour: classDate.secondHour,
+          startTime: moment(classDate.startTime, "h:mm a"),
+          endTime: moment(classDate.endTime, "h:mm a"),
+        };
+        thu = day;
+      }
+      if (date == 5 && !fri.isSelected) {
+        let day = {
+          isSelected: true,
+          hasSecondHour: classDate.secondHour,
+          startTime: moment(classDate.startTime, "h:mm a"),
+          endTime: moment(classDate.endTime, "h:mm a"),
+        };
+        fri = day;
+      }
+      if (date == 6 && !sat.isSelected) {
+        let day = {
+          isSelected: true,
+          hasSecondHour: classDate.secondHour,
+          startTime: moment(classDate.startTime, "h:mm a"),
+          endTime: moment(classDate.endTime, "h:mm a"),
+        };
+        sat = day;
+      }
+    }
+
+    this.setState(
+      {
+        monday: mon,
+        tuesday: tue,
+        wednesday: wed,
+        thursday: thu,
+        friday: fri,
+        saturday: sat,
+        dates: dates,
+      },
+      () => this.loadStudentsBySessionId(session)
     );
-  };
+  }
+
+  loadStudentsBySessionId(session) {
+    let promise;
+
+    promise = getAllStudentsBySessionId(session.id);
+
+    if (!promise) {
+      return;
+    }
+
+    let sessionRankRange = session.rankRange.split("-");
+    let lowestRank = sessionRankRange[0];
+    let highestRank = sessionRankRange[1];
+
+    let sessionAgeRange = session.ageRange.split("-");
+    let youngestAge = sessionAgeRange[0];
+    let oldestAge = sessionAgeRange[1];
+
+    promise
+      .then((response) => {
+        this.setState(
+          {
+            session: session,
+            startDate: session.startDate,
+            endDate: session.endDate,
+            signupStudents: response,
+            selectedLocation: session.location,
+            date: session.date,
+            title: session.title,
+            description: session.description,
+            sessionId: session.id,
+            price: session.price,
+            startTime: session.startTime,
+            endTime: session.endTime,
+            selectedType: session.type,
+            youngestAge: youngestAge,
+            oldestAge: oldestAge,
+            lowestRank: lowestRank,
+            highestRank: highestRank,
+          },
+          () => this.getAllStudentSessions(session)
+        );
+      })
+      .catch((error) => {
+        this.setState({
+          loading: false,
+        });
+      });
+  }
+
+  getAllStudentSessions(session) {
+    let promise;
+
+    promise = getStudentSessionsBySessionId(session.id);
+
+    if (!promise) {
+      return;
+    }
+
+    promise
+      .then((response) => {
+        this.setState(
+          {
+            studentSessions: response,
+            isSavedSession: true,
+            sessionModalVisible: true,
+          },
+          this.onFill
+        );
+        this.getAllStudentsList(0);
+      })
+      .catch((error) => {
+        this.setState({
+          loading: false,
+        });
+      });
+  }
 
   getSessionStudentsTable(session) {
     return this.getSessionStudentsList(session);
@@ -2178,3 +2809,15 @@ class SessionList extends Component {
 }
 
 export default withRouter(SessionList);
+
+function checkCondition(student, studentSessions) {
+  let ss;
+
+  for (ss of studentSessions) {
+    if (ss.studentId == student.id) {
+      return false;
+    }
+  }
+
+  return true;
+}

@@ -439,6 +439,7 @@ class OrderList extends Component {
       <Table
         loading={loading}
         rowKey={orderList.id}
+        rowClassName={(record, index) => this.getRowColor(record, index)}
         pagination={paginations}
         bordered
         columns={orderCols}
@@ -521,6 +522,14 @@ class OrderList extends Component {
         {orderModal}
       </Card>
     );
+  }
+
+  getRowColor(record, index) {
+    if (index % 2 === 0) {
+      return "table-row-light";
+    } else {
+      return "table-row-dark";
+    }
   }
 
   handleRowClick(order) {

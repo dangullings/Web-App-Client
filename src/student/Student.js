@@ -197,7 +197,6 @@ class Student extends Component {
         );
       })
       .catch((error) => {
-        console.log("fail");
         if (error.status === 404) {
           this.setState({
             notFound: true,
@@ -765,6 +764,7 @@ class Student extends Component {
     const contentTests = [
       <Table
         rowKey={key}
+        rowClassName={(record, index) => this.getRowColor(record, index)}
         pagination={true}
         bordered
         columns={testCols}
@@ -814,6 +814,14 @@ class Student extends Component {
         </Card>
       </div>
     );
+  }
+
+  getRowColor(record, index) {
+    if (index % 2 === 0) {
+      return "table-row-light";
+    } else {
+      return "table-row-dark";
+    }
   }
 
   removeStudent() {

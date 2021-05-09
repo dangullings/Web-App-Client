@@ -1396,6 +1396,7 @@ class TestList extends Component {
       <Table
         loading={this.state.loading}
         rowKey={tests.id}
+        rowClassName={(record, index) => this.getRowColor(record, index)}
         pagination={pagination}
         bordered
         columns={testCols}
@@ -1427,6 +1428,14 @@ class TestList extends Component {
         {contentList}
       </Card>
     );
+  }
+
+  getRowColor(record, index) {
+    if (index % 2 === 0) {
+      return "table-row-light";
+    } else {
+      return "table-row-dark";
+    }
   }
 
   failStudent(student) {

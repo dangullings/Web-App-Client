@@ -410,6 +410,35 @@ export function removeStudentEventByStudentId(studentId) {
   });
 }
 
+export function removeStudentEventByEventIdAndStudentId(eventId, studentId) {
+  return request({
+    url:
+      API_BASE_URL +
+      "/studentevents/event/" +
+      eventId +
+      "/student/" +
+      studentId,
+    method: "DELETE",
+    body: JSON.stringify(studentId),
+  });
+}
+
+export function removeStudentSessionBySessionIdAndStudentId(
+  sessionId,
+  studentId
+) {
+  return request({
+    url:
+      API_BASE_URL +
+      "/studentsessions/session/" +
+      sessionId +
+      "/student/" +
+      studentId,
+    method: "DELETE",
+    body: JSON.stringify(studentId),
+  });
+}
+
 export function removeStudentSessionByStudentId(studentId) {
   return request({
     url: API_BASE_URL + "/studentsessions/student/" + studentId,
@@ -463,6 +492,14 @@ export function removeStudentTestScore(testId, studentId) {
   });
 }
 
+export function removeStudentEventsByEventId(eventId) {
+  return request({
+    url: API_BASE_URL + "/studentevents/event/" + eventId,
+    method: "DELETE",
+    body: JSON.stringify(eventId),
+  });
+}
+
 export function removeStudentEvent(eventId, studentId) {
   return request({
     url:
@@ -473,6 +510,14 @@ export function removeStudentEvent(eventId, studentId) {
       studentId,
     method: "DELETE",
     body: JSON.stringify(eventId),
+  });
+}
+
+export function removeEventById(id) {
+  return request({
+    url: API_BASE_URL + "/schedule/events/" + id,
+    method: "DELETE",
+    body: JSON.stringify(id),
   });
 }
 
@@ -504,6 +549,13 @@ export function getAllTestScoresByStudentId(page, size, studentId) {
 export function getStudentEventsByEventId(eventId) {
   return request({
     url: API_BASE_URL + "/studentevents/event/" + eventId,
+    method: "GET",
+  });
+}
+
+export function getStudentSessionsBySessionId(sessionId) {
+  return request({
+    url: API_BASE_URL + "/studentsessions/session/" + sessionId,
     method: "GET",
   });
 }
@@ -609,6 +661,13 @@ export function getEventStudents(eventId) {
 export function getAllStudentsByEventId(eventId) {
   return request({
     url: API_BASE_URL + "/studentevents/" + eventId + "/students/",
+    method: "GET",
+  });
+}
+
+export function getAllStudentsBySessionId(sessionId) {
+  return request({
+    url: API_BASE_URL + "/studentsessions/" + sessionId + "/students/",
     method: "GET",
   });
 }

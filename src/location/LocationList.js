@@ -338,6 +338,7 @@ class LocationList extends Component {
       <Table
         style={{ padding: 2 }}
         loading={this.state.loading}
+        rowClassName={(record, index) => this.getRowColor(record, index)}
         rowKey={locations.id}
         bordered
         columns={columns}
@@ -376,6 +377,14 @@ class LocationList extends Component {
 
   handleRowClick(location) {
     this.showLocation(location);
+  }
+
+  getRowColor(record, index) {
+    if (index % 2 === 0) {
+      return "table-row-light";
+    } else {
+      return "table-row-dark";
+    }
   }
 
   showLocation(location) {

@@ -335,7 +335,9 @@ class Events extends Component {
       const data = {
         calendarEventId: selectedEvent.id,
         studentId: peep,
-        isAttending: true,
+        charged: selectedEvent.price,
+        paid: 0,
+        signupDate: moment().format("YYYY-MM-DD"),
       };
 
       createStudentEvent(data)

@@ -533,7 +533,11 @@ class StudentList extends Component {
         paginations.totalPages
     );
 
-    const title = [<Title level={3}>Students</Title>];
+    const title = [
+      <Title style={{ marginLeft: 6, marginRight: 6 }} level={3}>
+        Students
+      </Title>,
+    ];
     const newStudentTitle = [<Title level={2}>New Student</Title>];
 
     const newHeader = [
@@ -542,15 +546,13 @@ class StudentList extends Component {
         <Divider style={{ height: 35, marginLeft: 5 }} type="vertical" />
         <Search
           size={"small"}
-          placeholder="search name"
+          placeholder="name"
           onSearch={this.onSearch}
           onChange={this.onChangeSearch}
           style={{
             marginLeft: 5,
             width: 120,
             height: 32,
-            boxShadow:
-              "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
           }}
         />
         <Text type="secondary" style={{ marginTop: 5, marginLeft: 8 }}>
@@ -562,8 +564,6 @@ class StudentList extends Component {
           style={{
             marginTop: 5,
             marginLeft: 5,
-            boxShadow:
-              "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
           }}
           onChange={this.toggleActive}
         ></Switch>
@@ -798,6 +798,7 @@ class StudentList extends Component {
       <Table
         loading={this.state.loading}
         rowKey={students.id}
+        rowClassName={(record, index) => this.getRowColor(record, index)}
         pagination={paginations}
         bordered
         columns={columns}
@@ -829,6 +830,14 @@ class StudentList extends Component {
         <Spin spinning={loading}>{contentList}</Spin>
       </Card>
     );
+  }
+
+  getRowColor(record, index) {
+    if (index % 2 === 0) {
+      return "table-row-light";
+    } else {
+      return "table-row-dark";
+    }
   }
 
   handleRowClick(student) {
