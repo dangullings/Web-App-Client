@@ -10,6 +10,7 @@ import Home from "../common/Home";
 import MyGroup from "../user_role/MyGroup";
 import Sessions from "../user_role/Sessions";
 import Events from "../user_role/Events";
+import EventDetail from "../user_role/EventDetail";
 import OrderList from "../inventory/OrderList";
 import Order from "../inventory/Order";
 import EventCalendar from "../schedule/EventCalendar";
@@ -374,6 +375,16 @@ class App extends Component {
                 path="/students/:id"
                 render={(props) => (
                   <Student
+                    isAuthenticated={this.state.isAuthenticated}
+                    currentUser={this.state.currentUser}
+                    {...props}
+                  />
+                )}
+              ></Route>
+              <Route
+                path="/user/events/:id"
+                render={(props) => (
+                  <EventDetail
                     isAuthenticated={this.state.isAuthenticated}
                     currentUser={this.state.currentUser}
                     {...props}

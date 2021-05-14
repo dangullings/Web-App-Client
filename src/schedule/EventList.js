@@ -17,9 +17,13 @@ import {
   Card,
   Space,
   Popconfirm,
+  Image,
+  Upload,
+  Collapse,
 } from "antd";
 import {
   createEvent,
+  createImage,
   getAllLocations,
   getAllEvents,
   getAllStudentsByEventId,
@@ -30,6 +34,7 @@ import {
   getStudentEventsByEventId,
   removeStudentEventByEventIdAndStudentId,
   removeStudentEventsByEventId,
+  getImage,
 } from "../util/APIUtils";
 import moment from "moment";
 import { STUDENT_LIST_SIZE } from "../constants";
@@ -39,6 +44,7 @@ import { withRouter } from "react-router-dom";
 import {
   SaveOutlined,
   DeleteOutlined,
+  UploadOutlined,
   ReloadOutlined,
   CarryOutOutlined,
   PlusCircleOutlined,
@@ -46,10 +52,14 @@ import {
 } from "@ant-design/icons";
 import "../styles/style.less";
 
+const Compress = require("compress.js");
+const compress = new Compress();
+
 const ranks = getRanks();
 const { Title, Text } = Typography;
 const { TextArea } = Input;
 const Option = Select.Option;
+const { Panel } = Collapse;
 
 const ages = [];
 for (let i = 0; i < 100; i++) {
@@ -90,6 +100,10 @@ class EventList extends Component {
       locations: [],
       selectedLocation: "select a location",
       type: "Camp",
+
+      photo: "",
+      imageId: "",
+      image: "",
     };
 
     this.handleAgeRangeChange = this.handleAgeRangeChange.bind(this);
@@ -113,6 +127,8 @@ class EventList extends Component {
       this
     );
     this.handleTypeChange = this.handleTypeChange.bind(this);
+    this.handleUpload = this.handleUpload.bind(this);
+    this.resizeImageFn = this.resizeImageFn.bind(this);
   }
 
   componentDidMount() {
@@ -322,6 +338,37 @@ class EventList extends Component {
   };
 
   handleEventSubmit(event) {
+    var data = new FormData();
+    data.append("file", this.state.photo);
+
+    this.setState({
+      loading: true,
+    });
+
+    let imageId;
+    if (this.state.isSavedEvent) {
+      imageId = this.state.event.imageId;
+    } else {
+      imageId = 0;
+    }
+
+    createImage(data, imageId)
+      .then((response) => {
+        this.setState(
+          {
+            imageId: response.id,
+          },
+          () => this.saveEvent(event)
+        );
+      })
+      .catch((error) => {
+        this.setState({
+          loading: false,
+        });
+      });
+  }
+
+  saveEvent(event) {
     let title = this.formRef.current.getFieldValue("title");
     let type = this.formRef.current.getFieldValue("type");
     let description = this.formRef.current.getFieldValue("description");
@@ -371,7 +418,15 @@ class EventList extends Component {
         price
     );
 
+    let eventId;
+    if (this.state.isSavedEvent) {
+      eventId = this.state.event.id;
+    } else {
+      eventId = 0;
+    }
+
     const EventData = {
+      id: eventId,
       title: title,
       type: type,
       description: description,
@@ -384,6 +439,7 @@ class EventList extends Component {
       ageRange: ageRange,
       rankRange: rankRange,
       price: price,
+      imageId: this.state.imageId,
     };
 
     createEvent(EventData)
@@ -393,7 +449,7 @@ class EventList extends Component {
           description: "Event was saved.",
           duration: 2,
         });
-        this.props.history.push("/schedule/calendar");
+        this.props.history.push("/events");
         this.setState({ loading: false, eventModalVisible: false });
         this.handleCancel();
       })
@@ -560,6 +616,10 @@ class EventList extends Component {
       highestRank: "",
       youngestAge: "",
       oldestAge: "",
+      sessionId: "",
+      photo: "",
+      imageId: "",
+      image: "",
       price: 0,
       date: moment(),
       startTime: startTime,
@@ -754,6 +814,7 @@ class EventList extends Component {
       locations,
       isSavedEvent,
       eventModalVisible,
+      image,
     } = this.state;
     const { pagination, loading } = this.state;
 
@@ -862,6 +923,61 @@ class EventList extends Component {
       },
     ];
 
+    const warningText = [
+      <Text type="warning">*save event before signing up students</Text>,
+    ];
+
+    var signupStudentsView = [];
+    if (this.state.isSavedEvent) {
+      signupStudentsView = [
+        <Form.Item
+          label={
+            <Title style={{ marginBottom: 0, marginTop: 0 }} level={5}>
+              {"Signup Student"}
+            </Title>
+          }
+        >
+          <Select
+            showSearch
+            align="center"
+            style={{ width: "100%" }}
+            optionFilterProp="children"
+            Key={allStudents.id}
+            onChange={this.handleStudentChange}
+            placeholder={"select student"}
+            filterOption={(input, option) =>
+              option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }
+          >
+            {allStudents.map((student) => (
+              <Select.Option value={student.id} key={student.id}>
+                {student.firstName +
+                  " " +
+                  student.lastName +
+                  " | " +
+                  student.ranks}
+              </Select.Option>
+            ))}
+          </Select>
+
+          <Button
+            type="primary"
+            loading={loading}
+            icon={<PlusCircleOutlined />}
+            onClick={this.signupStudent}
+            disabled={selectedStudentId == ""}
+            size={"default"}
+            block={true}
+            style={{ marginTop: 10 }}
+          >
+            Signup
+          </Button>
+        </Form.Item>,
+      ];
+    } else {
+      signupStudentsView = [warningText];
+    }
+
     var ModalTitle;
     if (isSavedEvent) {
       ModalTitle = <Title level={2}>Edit Event</Title>;
@@ -912,7 +1028,7 @@ class EventList extends Component {
 
       <Modal
         closable={false}
-        className="eventCalendar"
+        className="session-list"
         visible={eventModalVisible}
         title={ModalTitle}
         onCancel={this.handleCancel}
@@ -953,397 +1069,429 @@ class EventList extends Component {
           onFinish={this.handleEventSubmit}
           ref={this.formRef}
         >
-          <Form.Item
-            name="title"
-            label={
-              <Title style={{ marginBottom: 0 }} level={5}>
-                {"Title"}
-              </Title>
-            }
-            hasFeedback
-            rules={[
-              {
-                required: true,
-                message: "Please enter the event title.",
-              },
-            ]}
+          <Collapse
+            bordered={false}
+            defaultActiveKey={["1"]}
+            className="site-collapse-custom-collapse"
           >
-            <Input placeholder="Title" autosize={{ minRows: 1, maxRows: 1 }} />
-          </Form.Item>
-
-          <Form.Item
-            name="description"
-            label={
-              <Title style={{ marginBottom: 0 }} level={5}>
-                {"Description"}
-              </Title>
-            }
-            hasFeedback
-            rules={[
-              {
-                required: true,
-                message: "Please enter the event description.",
-              },
-            ]}
-          >
-            <TextArea
-              placeholder="describe the event in detail"
-              rows={3}
-              autosize={{ minRows: 1, maxRows: 3 }}
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="type"
-            label={
-              <Title style={{ marginBottom: 0 }} level={5}>
-                {"Type"}
-              </Title>
-            }
-            hasFeedback
-            rules={[
-              {
-                required: true,
-                message: "Please select the event type.",
-              },
-            ]}
-          >
-            <Select
-              align="center"
-              placeholder={"select type"}
-              onChange={this.handleTypeChange}
-            >
-              <Option value="Camp">Camp</Option>
-              <Option value="Misc">Misc</Option>
-            </Select>
-          </Form.Item>
-
-          <Form.Item
-            name="location"
-            label={
-              <Title style={{ marginBottom: 0 }} level={5}>
-                {"Location"}
-              </Title>
-            }
-            hasFeedback
-            rules={[
-              {
-                required: true,
-                message: "Please select the event location.",
-              },
-            ]}
-          >
-            <Select
-              align="center"
-              Key={locations.id}
-              placeholder={"select location"}
-              onChange={this.handleLocationDropdownChange}
-            >
-              {locations.map((item) => (
-                <Select.Option value={item.name} key={item.id}>
-                  {item.name}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-
-          <Form.Item
-            name="date"
-            label={
-              <Title style={{ marginBottom: 0 }} level={5}>
-                {"Date"}
-              </Title>
-            }
-            hasFeedback
-            rules={[
-              {
-                required: true,
-                message: "Please select the event date.",
-              },
-            ]}
-          >
-            <DatePicker
-              inputReadOnly="true"
-              align="center"
-              placeholder={"select date"}
-              style={{
-                width: "100%",
-              }}
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="startTime"
-            label={
-              <Title style={{ marginBottom: 0 }} level={5}>
-                {"Start Time"}
-              </Title>
-            }
-            style={{
-              display: "inline-block",
-              width: "calc(50%)",
-            }}
-            hasFeedback
-            rules={[
-              {
-                required: true,
-                message: "Please select the event start time.",
-              },
-            ]}
-          >
-            <TimePicker
-              inputReadOnly="true"
-              use12Hours
-              format="h:mm a"
-              align="center"
-              placeholder={"select start time"}
-              minuteStep={15}
-              style={{ marginLeft: 0, width: "100%" }}
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="endTime"
-            label={
-              <Title style={{ marginBottom: 0 }} level={5}>
-                {"End Time"}
-              </Title>
-            }
-            style={{
-              display: "inline-block",
-              width: "calc(50%)",
-            }}
-            hasFeedback
-            rules={[
-              {
-                required: true,
-                message: "Please select the event end time.",
-              },
-            ]}
-          >
-            <TimePicker
-              inputReadOnly="true"
-              use12Hours
-              format="h:mm a"
-              align="center"
-              placeholder={"select end time"}
-              minuteStep={15}
-              style={{ marginLeft: 0, width: "100%" }}
-            />
-          </Form.Item>
-
-          <Divider style={{ marginTop: 10 }} orientation="left">
-            {
-              <Title style={{ marginBottom: 0 }} level={4}>
-                price
-              </Title>
-            }
-          </Divider>
-          <Form.Item
-            name="price"
-            style={{ marginLeft: 0 }}
-            label={
-              <Title style={{ marginTop: 14, marginBottom: 0 }} level={5}>
-                {"Price"}
-              </Title>
-            }
-            hasFeedback
-            rules={[
-              {
-                required: true,
-                message: "Please enter the event price.",
-              },
-            ]}
-          >
-            <Input
-              placeholder="US$"
-              style={{ fontSize: "16px" }}
-              autosize={{ minRows: 1, maxRows: 1 }}
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="lowestRank"
-            label={
-              <Title style={{ marginBottom: 0 }} level={5}>
-                {"Lowest Rank"}
-              </Title>
-            }
-            style={{
-              display: "inline-block",
-              width: "calc(50%)",
-            }}
-          >
-            <Select
-              align="center"
-              style={{ width: "100%" }}
-              placeholder={"select a lowest rank"}
-              defaultValue={"Gold Stripe"}
-              onChange={this.handleLowestRankChange}
-            >
-              {ranks.map((rank) => (
-                <Select.Option value={rank} key={rank}>
-                  {rank}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-          <Form.Item
-            name="highestRank"
-            label={
-              <Title style={{ marginBottom: 0 }} level={5}>
-                {"Highest Rank"}
-              </Title>
-            }
-            style={{
-              display: "inline-block",
-              width: "calc(50%)",
-            }}
-          >
-            <Select
-              align="center"
-              style={{ width: "100%" }}
-              placeholder={"select a highest rank"}
-              defaultValue={"Fifth Degree"}
-              onChange={this.handleHighestRankChange}
-            >
-              {ranks.map((rank) => (
-                <Select.Option value={rank} key={rank}>
-                  {rank}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-
-          <Form.Item
-            name="youngestAge"
-            label={
-              <Title style={{ marginBottom: 0 }} level={5}>
-                {"Youngest Age"}
-              </Title>
-            }
-            style={{
-              display: "inline-block",
-              width: "calc(50%)",
-            }}
-          >
-            <Select
-              align="center"
-              style={{ width: "100%" }}
-              placeholder={"select a youngest age"}
-              defaultValue={0}
-              onChange={this.handleYoungestAgeChange}
-            >
-              {ages}
-            </Select>
-          </Form.Item>
-          <Form.Item
-            name="oldestAge"
-            label={
-              <Title style={{ marginBottom: 0 }} level={5}>
-                {"Oldest Age"}
-              </Title>
-            }
-            style={{
-              display: "inline-block",
-              width: "calc(50%)",
-            }}
-          >
-            <Select
-              align="center"
-              style={{ width: "100%" }}
-              placeholder={"select an oldest age"}
-              defaultValue={99}
-              onChange={this.handleOldestAgeChange}
-            >
-              {ages}
-            </Select>
-          </Form.Item>
-
-          <Form.Item
-            label={
-              <Title style={{ marginBottom: 0 }} level={5}>
-                {"Signup Student"}
-              </Title>
-            }
-          >
-            <Select
-              showSearch
-              align="center"
-              style={{ width: "100%" }}
-              optionFilterProp="children"
-              Key={allStudents.id}
-              onChange={this.handleStudentChange}
-              placeholder={"select student"}
-              filterOption={(input, option) =>
-                option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            <Panel
+              header={
+                <Title style={{ marginBottom: 0 }} level={4}>
+                  {"Info"}
+                </Title>
               }
+              key="1"
+              className="site-collapse-custom-panel"
             >
-              {allStudents.map((student) => (
-                <Select.Option value={student.id} key={student.id}>
-                  {student.firstName +
-                    " " +
-                    student.lastName +
-                    " | " +
-                    student.ranks}
-                </Select.Option>
-              ))}
-            </Select>
+              <Form.Item
+                name="title"
+                label={
+                  <Title style={{ marginBottom: 0 }} level={5}>
+                    {"Title"}
+                  </Title>
+                }
+                hasFeedback
+                rules={[
+                  {
+                    required: true,
+                    message: "Please enter the event title.",
+                  },
+                ]}
+              >
+                <Input
+                  placeholder="Title"
+                  autosize={{ minRows: 1, maxRows: 1 }}
+                />
+              </Form.Item>
 
-            <Button
-              type="primary"
-              loading={loading}
-              icon={<PlusCircleOutlined />}
-              onClick={this.signupStudent}
-              disabled={selectedStudentId == ""}
-              size={"default"}
-              block={true}
-              style={{ marginTop: 6 }}
-            >
-              Signup
-            </Button>
-          </Form.Item>
+              <Form.Item
+                name="description"
+                label={
+                  <Title style={{ marginBottom: 0 }} level={5}>
+                    {"Description"}
+                  </Title>
+                }
+                hasFeedback
+                rules={[
+                  {
+                    required: true,
+                    message: "Please enter the event description.",
+                  },
+                ]}
+              >
+                <TextArea
+                  placeholder="describe the event in detail"
+                  rows={3}
+                  autosize={{ minRows: 1, maxRows: 3 }}
+                />
+              </Form.Item>
 
-          <Form.Item
-            label={
-              <Title style={{ marginBottom: 0 }} level={5}>
-                {"Students Signed Up"}
+              <Form.Item
+                name="type"
+                label={
+                  <Title style={{ marginBottom: 0 }} level={5}>
+                    {"Type"}
+                  </Title>
+                }
+                hasFeedback
+                rules={[
+                  {
+                    required: true,
+                    message: "Please select the event type.",
+                  },
+                ]}
+              >
+                <Select
+                  align="center"
+                  placeholder={"select type"}
+                  onChange={this.handleTypeChange}
+                >
+                  <Option value="Camp">Camp</Option>
+                  <Option value="Misc">Misc</Option>
+                </Select>
+              </Form.Item>
+
+              <Form.Item
+                name="location"
+                label={
+                  <Title style={{ marginBottom: 0 }} level={5}>
+                    {"Location"}
+                  </Title>
+                }
+                hasFeedback
+                rules={[
+                  {
+                    required: true,
+                    message: "Please select the event location.",
+                  },
+                ]}
+              >
+                <Select
+                  align="center"
+                  Key={locations.id}
+                  placeholder={"select location"}
+                  onChange={this.handleLocationDropdownChange}
+                >
+                  {locations.map((item) => (
+                    <Select.Option value={item.name} key={item.id}>
+                      {item.name}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+
+              <Title style={{ marginBottom: 8 }} level={5}>
+                Current Image
               </Title>
-            }
-            hasFeedback
-            rules={[
-              {
-                required: true,
-                message: "Please select the students.",
-                type: "array",
-              },
-            ]}
-          >
-            <Table
-              loading={loading}
-              rowKey={studentEventList.studentId}
-              rowClassName={(record, index) => this.getRowColor(record, index)}
-              pagination={false}
-              bordered
-              columns={studentCols}
-              dataSource={studentEventList}
-              size="small"
-              style={{ width: "100%" }}
-              scroll={{ x: 400 }}
-              onChange={this.handleTableChange}
-              onRow={(record, rowIndex) => {
-                return {
-                  onClick: (event) => {
-                    this.handleStudentRowClick(record);
-                  }, // click row
-                  //onDoubleClick: event => { this.handleRowClick(record) }, // double click row
-                  //onContextMenu: event => { }, // right button click row
-                  //onMouseEnter: event => { }, // mouse enter row
-                  //onMouseLeave: event => { }, // mouse leave row
-                };
-              }}
-            />
-          </Form.Item>
+              <Image
+                width={"100%"}
+                height={"100%"}
+                src={`data:image/jpeg;base64,${image.photo}`}
+                placeholder={
+                  <Image
+                    preview={false}
+                    src="../img/TestImage.png"
+                    width={10}
+                  />
+                }
+              />
+
+              <Upload
+                listType="picture"
+                maxCount={1}
+                onChange={this.handleUpload}
+                beforeUpload={() => false}
+              >
+                <Button
+                  style={{ marginTop: 20, marginBottom: 10 }}
+                  icon={<UploadOutlined />}
+                >
+                  Upload Image (Max: 1)
+                </Button>
+              </Upload>
+            </Panel>
+
+            <Panel
+              header={
+                <Title style={{ marginBottom: 0 }} level={4}>
+                  {"Date and Time"}
+                </Title>
+              }
+              key="2"
+              className="site-collapse-custom-panel"
+            >
+              <Form.Item
+                name="date"
+                label={
+                  <Title style={{ marginBottom: 0 }} level={5}>
+                    {"Date"}
+                  </Title>
+                }
+                hasFeedback
+                rules={[
+                  {
+                    required: true,
+                    message: "Please select the event date.",
+                  },
+                ]}
+              >
+                <DatePicker
+                  inputReadOnly="true"
+                  align="center"
+                  placeholder={"select date"}
+                  style={{
+                    width: "100%",
+                  }}
+                />
+              </Form.Item>
+
+              <Form.Item
+                name="startTime"
+                label={
+                  <Title style={{ marginBottom: 0 }} level={5}>
+                    {"Start Time"}
+                  </Title>
+                }
+                style={{
+                  display: "inline-block",
+                  width: "calc(50%)",
+                }}
+                hasFeedback
+                rules={[
+                  {
+                    required: true,
+                    message: "Please select the event start time.",
+                  },
+                ]}
+              >
+                <TimePicker
+                  inputReadOnly="true"
+                  use12Hours
+                  format="h:mm a"
+                  align="center"
+                  placeholder={"select start time"}
+                  minuteStep={15}
+                  style={{ marginLeft: 0, width: "100%" }}
+                />
+              </Form.Item>
+
+              <Form.Item
+                name="endTime"
+                label={
+                  <Title style={{ marginBottom: 0 }} level={5}>
+                    {"End Time"}
+                  </Title>
+                }
+                style={{
+                  display: "inline-block",
+                  width: "calc(50%)",
+                }}
+                hasFeedback
+                rules={[
+                  {
+                    required: true,
+                    message: "Please select the event end time.",
+                  },
+                ]}
+              >
+                <TimePicker
+                  inputReadOnly="true"
+                  use12Hours
+                  format="h:mm a"
+                  align="center"
+                  placeholder={"select end time"}
+                  minuteStep={15}
+                  style={{ marginLeft: 0, width: "100%" }}
+                />
+              </Form.Item>
+            </Panel>
+
+            <Panel
+              header={
+                <Title style={{ marginBottom: 0 }} level={4}>
+                  {"Student Requirements"}
+                </Title>
+              }
+              key="3"
+              className="site-collapse-custom-panel"
+            >
+              <Form.Item
+                name="price"
+                style={{ marginLeft: 0 }}
+                label={
+                  <Title style={{ marginTop: 14, marginBottom: 0 }} level={5}>
+                    {"Price"}
+                  </Title>
+                }
+                hasFeedback
+                rules={[
+                  {
+                    required: true,
+                    message: "Please enter the event price.",
+                  },
+                ]}
+              >
+                <Input
+                  placeholder="US$"
+                  style={{ fontSize: "16px" }}
+                  autosize={{ minRows: 1, maxRows: 1 }}
+                />
+              </Form.Item>
+
+              <Form.Item
+                name="lowestRank"
+                label={
+                  <Title style={{ marginBottom: 0 }} level={5}>
+                    {"Lowest Rank"}
+                  </Title>
+                }
+                style={{
+                  display: "inline-block",
+                  width: "calc(50%)",
+                }}
+              >
+                <Select
+                  align="center"
+                  style={{ width: "100%" }}
+                  placeholder={"select a lowest rank"}
+                  defaultValue={"Gold Stripe"}
+                  onChange={this.handleLowestRankChange}
+                >
+                  {ranks.map((rank) => (
+                    <Select.Option value={rank} key={rank}>
+                      {rank}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+              <Form.Item
+                name="highestRank"
+                label={
+                  <Title style={{ marginBottom: 0 }} level={5}>
+                    {"Highest Rank"}
+                  </Title>
+                }
+                style={{
+                  display: "inline-block",
+                  width: "calc(50%)",
+                }}
+              >
+                <Select
+                  align="center"
+                  style={{ width: "100%" }}
+                  placeholder={"select a highest rank"}
+                  defaultValue={"Fifth Degree"}
+                  onChange={this.handleHighestRankChange}
+                >
+                  {ranks.map((rank) => (
+                    <Select.Option value={rank} key={rank}>
+                      {rank}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+
+              <Form.Item
+                name="youngestAge"
+                label={
+                  <Title style={{ marginBottom: 0 }} level={5}>
+                    {"Youngest Age"}
+                  </Title>
+                }
+                style={{
+                  display: "inline-block",
+                  width: "calc(50%)",
+                }}
+              >
+                <Select
+                  align="center"
+                  style={{ width: "100%" }}
+                  placeholder={"select a youngest age"}
+                  defaultValue={0}
+                  onChange={this.handleYoungestAgeChange}
+                >
+                  {ages}
+                </Select>
+              </Form.Item>
+              <Form.Item
+                name="oldestAge"
+                label={
+                  <Title style={{ marginBottom: 0 }} level={5}>
+                    {"Oldest Age"}
+                  </Title>
+                }
+                style={{
+                  display: "inline-block",
+                  width: "calc(50%)",
+                }}
+              >
+                <Select
+                  align="center"
+                  style={{ width: "100%" }}
+                  placeholder={"select an oldest age"}
+                  defaultValue={99}
+                  onChange={this.handleOldestAgeChange}
+                >
+                  {ages}
+                </Select>
+              </Form.Item>
+            </Panel>
+
+            <Panel
+              header={
+                <Title style={{ marginBottom: 0 }} level={4}>
+                  {"Student Signup"}
+                </Title>
+              }
+              key="4"
+              className="site-collapse-custom-panel"
+            >
+              {signupStudentsView}
+
+              <Form.Item
+                label={
+                  <Title style={{ marginBottom: 0 }} level={5}>
+                    {"Students Signed Up"}
+                  </Title>
+                }
+                hasFeedback
+                rules={[
+                  {
+                    required: true,
+                    message: "Please select the students.",
+                    type: "array",
+                  },
+                ]}
+              >
+                <Table
+                  loading={loading}
+                  rowKey={studentEventList.studentId}
+                  rowClassName={(record, index) =>
+                    this.getRowColor(record, index)
+                  }
+                  pagination={false}
+                  bordered
+                  columns={studentCols}
+                  dataSource={studentEventList}
+                  size="small"
+                  style={{ width: "100%" }}
+                  scroll={{ x: 400 }}
+                  onChange={this.handleTableChange}
+                  onRow={(record, rowIndex) => {
+                    return {
+                      onClick: (event) => {
+                        this.handleStudentRowClick(record);
+                      }, // click row
+                      //onDoubleClick: event => { this.handleRowClick(record) }, // double click row
+                      //onContextMenu: event => { }, // right button click row
+                      //onMouseEnter: event => { }, // mouse enter row
+                      //onMouseLeave: event => { }, // mouse leave row
+                    };
+                  }}
+                />
+              </Form.Item>
+            </Panel>
+          </Collapse>
         </Form>
       </Modal>,
       <Table
@@ -1436,8 +1584,37 @@ class EventList extends Component {
   }
 
   showEvent(event) {
-    this.loadStudentsByEventId(event);
+    this.loadImage(event);
     this.getLocationList(0);
+  }
+
+  loadImage(event) {
+    let promise;
+    promise = getImage(event.imageId);
+
+    if (!promise) {
+      return;
+    }
+
+    this.setState({
+      loading: true,
+    });
+
+    promise
+      .then((response) => {
+        this.setState(
+          {
+            image: response,
+            loading: false,
+          },
+          this.loadStudentsByEventId(event)
+        );
+      })
+      .catch((error) => {
+        this.setState({
+          loading: false,
+        });
+      });
   }
 
   loadStudentsByEventId(event) {
@@ -1519,6 +1696,37 @@ class EventList extends Component {
       })
       .catch((error) => {
         this.setState({
+          loading: false,
+        });
+      });
+  }
+
+  handleUpload(info) {
+    if (info.file instanceof File) {
+      this.resizeImageFn(info.file);
+    } else {
+      this.setState({
+        photo: "",
+      });
+    }
+  }
+
+  resizeImageFn(file) {
+    compress
+      .compress([file], {
+        size: 0.1, // the max size in MB, defaults to 2MB
+        quality: 1, // the quality of the image, max is 1,
+        maxWidth: 200, // the max width of the output image, defaults to 1920px
+        maxHeight: 200, // the max height of the output image, defaults to 1920px
+        resize: true, // defaults to true, set false if you do not want to resize the image width and height
+      })
+      .then((data) => {
+        const img = data[0];
+        const base64str = img.data;
+        const imgExt = img.ext;
+
+        this.setState({
+          photo: Compress.convertBase64ToFile(base64str, imgExt),
           loading: false,
         });
       });

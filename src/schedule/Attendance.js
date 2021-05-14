@@ -636,8 +636,7 @@ class Attendance extends Component {
         onChange={this.onChange}
         picker="month"
         style={{
-          boxShadow:
-            "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
+          marginLeft: 6,
         }}
       />,
     ];
@@ -730,8 +729,6 @@ class Attendance extends Component {
             style={{
               width: 240,
               marginLeft: 8,
-              boxShadow:
-                "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
             }}
             Key={sessionList.id}
             onChange={this.handleSessionChange}

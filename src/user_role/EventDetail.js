@@ -20,13 +20,13 @@ import {
   List,
 } from "antd";
 import {
-  getAllEventsByDate,
   getMyPeeps,
   createStudentEvent,
-  getStudentEvents,
+  getEvent,
   getImage,
+  getLocationByName,
 } from "../util/APIUtils";
-import { Link, withRouter, Route } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 import StripeContainer from "../stripe/StripeContainer";
 import {
   SaveOutlined,
@@ -36,8 +36,6 @@ import {
   PlusCircleOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
-
-import EventDetail from "../user_role/EventDetail";
 
 import bg from "../img/Session.png";
 //import bg from "../img/MainBackground.jpg";
@@ -52,34 +50,24 @@ import {
 
 const { Meta } = Card;
 
-const layout = {
-  labelCol: {
-    span: 6,
-  },
-  wrapperCol: {
-    span: 12,
-  },
-};
-
 const ranks = getRanks();
 const { Title, Text } = Typography;
 const Option = Select.Option;
 
-class Events extends Component {
+class EventDetail extends Component {
   constructor(props) {
     super(props);
     this.state = {
       currentUser: this.props.currentUser,
       loading: false,
-      visible: false,
-      events: [],
+
+      event: "",
       myPeeps: [],
-      peepEvents: [],
+      image: "",
+      location: "",
       signedUpPeeps: [],
-      Images: [],
       eventSignupPrice: "0",
       eventSignupVisible: false,
-      selectedEvent: "",
     };
 
     this.onChange = this.onChange.bind(this);
@@ -87,31 +75,20 @@ class Events extends Component {
   }
 
   componentDidMount() {
-    this.getEventList();
+    this.loadEvent(this.props.match.params.id);
     //this.getMyPeepsList();
   }
 
-  getEventList() {
-    let promise;
+  loadEvent(id) {
+    console.log("id " + id);
 
-    promise = getAllEventsByDate();
-
-    if (!promise) {
-      return;
-    }
-
-    this.setState({
-      loading: true,
-    });
-
-    promise
+    getEvent(id)
       .then((response) => {
         this.setState(
           {
-            events: response,
-            loading: false,
+            event: response,
           },
-          () => this.getImages()
+          () => this.loadImage(response)
         );
       })
       .catch((error) => {
@@ -134,13 +111,10 @@ class Events extends Component {
 
     promise
       .then((response) => {
-        this.setState(
-          {
-            myPeeps: response,
-            loading: false,
-          },
-          () => this.cycleThruPeeps(response)
-        );
+        this.setState({
+          myPeeps: response,
+          loading: false,
+        });
       })
       .catch((error) => {
         this.setState({
@@ -149,58 +123,32 @@ class Events extends Component {
       });
   }
 
-  getImages() {
-    const { events } = this.state;
+  loadImage(event) {
+    let promise = getImage(event.imageId);
 
-    var value,
-      promises = [],
-      imageList = [];
-
-    let event;
-    for (event of events) {
-      let promise = getImage(event.imageId);
-      promises.push(promise);
-    }
-
-    let con;
-    Promise.all(promises).then((values) => {
-      for (value of values) {
-        console.log("value " + value.name);
-        imageList.push(value);
-        //for (con of value.content) {
-        //  imageList.push(con);
-        //}
-      }
-      this.setState({
-        Images: imageList,
-        loading: false,
+    promise
+      .then((response) => {
+        this.setState({
+          image: response,
+          loading: false,
+        });
+      })
+      .catch((error) => {
+        this.setState({
+          loading: false,
+        });
       });
-    });
-  }
-
-  getEventImage(id) {
-    const { Images } = this.state;
-    let img;
-    for (img of Images) {
-      if (img.id == id) {
-        return img.photo;
-      }
-    }
   }
 
   eventCard(event) {
+    const { image } = this.state;
+
     var date = moment(event.date, "YYYY-MM-DD");
 
-    const title = [
-      <Title
-        style={{ marginLeft: 0, marginTop: 10, marginBottom: 0 }}
-        level={5}
-      >
-        {event.title}
-      </Title>,
-    ];
+    const title = [event.title];
 
     const dateView = [date.format("dddd, MMMM Do YYYY")];
+    const time = [event.startTime + " - " + event.endTime];
     const ages = [
       <Row>
         <Space size="small">
@@ -237,29 +185,8 @@ class Events extends Component {
         </Space>
       </Row>,
     ];
-    const description = [
-      <Text strong style={{ textShadow: "0px 1px 0px rgba(255,255,255,0.9)" }}>
-        {event.description}
-      </Text>,
-    ];
-    const location = [
-      <Row>
-        <Space size="small">
-          <Text
-            style={{ textShadow: "0px 1px 0px rgba(255,255,255,0.9)" }}
-            type="secondary"
-          >
-            location:{" "}
-          </Text>
-          <Text
-            style={{ textShadow: "0px 1px 0px rgba(255,255,255,0.9)" }}
-            strong
-          >
-            {event.location}
-          </Text>
-        </Space>
-      </Row>,
-    ];
+    const description = [event.description];
+    const location = [event.location];
     const price = [<Text strong>${event.price}</Text>];
     const signupBtn = [
       <Button
@@ -282,38 +209,37 @@ class Events extends Component {
     // {description}
     // {signupBtn}
 
-    ///mypeeps/${this.state.myPeeps}
-    //this.props.history.push(`/students/${student.id}`);
-
-    //<Link to={`/user/events/${event}`}></Link>
     const eventCard = [
-      //<div onClick={(event) => this.selectEvent(event)}>
-      <Link to={`/user/events/${event.id}`}>
-        <Card
-          className="event"
-          hoverable
-          bordered={false}
-          key={event.id}
-          headStyle={{ backgroundColor: "#fafafa" }}
-          bodyStyle={{ backgroundColor: "#fafafa" }}
-          style={{ marginBottom: 50 }}
-          cover={
-            <Image
-              preview={false}
-              style={{ "pointer-events": "all" }}
-              width={"100%"}
-              height={"100%"}
-              src={`data:image/jpeg;base64,${this.getEventImage(
-                event.imageId
-              )}`}
-            />
-          }
-        >
-          <Meta title={title} description={dateView} />
-        </Card>
-      </Link>,
-      //</div>,
+      <Card
+        className="event-detail"
+        hoverable
+        bordered={false}
+        key={event.id}
+        headStyle={{ backgroundColor: "#fafafa" }}
+        bodyStyle={{ backgroundColor: "#fafafa" }}
+        style={{ marginBottom: 40 }}
+        cover={
+          <Image
+            width={"100%"}
+            height={"100%"}
+            src={`data:image/jpeg;base64,${image.photo}`}
+          />
+        }
+      >
+        <div className="event-detail title">{title}</div>
+        <div className="event-detail title-gray">DATE</div>
+        <div className="event-detail sub-title">
+          <div>{dateView}</div>
+          <div>{time}</div>
+        </div>
+        <div className="event-detail title-gray">LOCATION</div>
+        <div className="event-detail sub-title">{location}</div>
+        <div className="event-detail title-black">Details</div>
+        <div className="event-detail details">{description}</div>
+      </Card>,
     ];
+
+    console.log("event " + event.title);
 
     return eventCard;
   }
@@ -338,34 +264,6 @@ class Events extends Component {
     this.setState({
       signedUpPeeps: checkedValues,
       eventSignupPrice: this.state.selectedEvent.price * checkedValues.length,
-    });
-  }
-
-  cycleThruPeeps(peeps) {
-    let peep;
-    for (peep of peeps) {
-      this.getAllPeepEvents(peep);
-    }
-  }
-
-  getAllPeepEvents(peep) {
-    this.state.peepEvents.length = 0;
-    var peepEvents = [];
-
-    let promise = getStudentEvents(peep.id);
-
-    promise.then((response) => {
-      let value;
-      for (value of response) {
-        const peepEvent = {
-          peepId: peep.id,
-          eventId: value.id,
-        };
-        peepEvents.push(peepEvent);
-      }
-      this.setState({
-        peepEvents: this.state.peepEvents.concat(peepEvents),
-      });
     });
   }
 
@@ -503,8 +401,8 @@ class Events extends Component {
     });
   };
 
-  handleSubmit(event) {
-    const { signedUpPeeps, selectedEvent } = this.state;
+  handleSubmit() {
+    const { signedUpPeeps, event } = this.state;
     this.setState({
       loading: true,
     });
@@ -512,9 +410,9 @@ class Events extends Component {
     let peep;
     for (peep of signedUpPeeps) {
       const data = {
-        calendarEventId: selectedEvent.id,
+        calendarEventId: event.id,
         studentId: peep,
-        charged: selectedEvent.price,
+        charged: event.price,
         paid: 0,
         signupDate: moment().format("YYYY-MM-DD"),
       };
@@ -525,14 +423,13 @@ class Events extends Component {
             loading: false,
             eventSignupVisible: false,
             signedUpPeeps: [],
-            selectedEvent: "",
+            event: "",
           });
           notification.success({
             message: "Signup Successful!",
             description: "",
             duration: 4,
           });
-          this.cycleThruPeeps(this.state.myPeeps);
         })
         .catch((error) => {
           this.setState({
@@ -559,17 +456,16 @@ class Events extends Component {
       visible,
       loading,
       currentUser,
-      events,
+      event,
       eventSignupVisible,
-      selectedEvent,
       myPeeps,
+      image,
     } = this.state;
 
-    var eventCards = [];
-    if (events) {
-      events.forEach((event) => {
-        eventCards.push(this.eventCard(event));
-      });
+    var eventCard = ["Nothing to see here."];
+
+    if (event && image) {
+      eventCard = this.eventCard(event);
     }
 
     const stripeView = [
@@ -578,89 +474,7 @@ class Events extends Component {
       </div>,
     ];
 
-    const title = [
-      <Title level={3}>
-        <div>Events</div>
-      </Title>,
-    ];
-
-    const eventModalTitle = [<Title level={2}>{selectedEvent.title}</Title>];
-
-    return (
-      <div>
-        <Card
-          bordered={false}
-          bodyStyle={{ padding: 25 }}
-          style={{
-            width: "100%",
-          }}
-          title={title}
-        >
-          <List
-            grid={{
-              gutter: 16,
-              xs: 1,
-              sm: 2,
-              md: 3,
-              lg: 4,
-              xl: 5,
-              xxl: 6,
-            }}
-            dataSource={eventCards}
-            renderItem={(item) => <List.Item>{item}</List.Item>}
-          />
-        </Card>
-        <Modal
-          className="event"
-          visible={eventSignupVisible}
-          title={eventModalTitle}
-          style={{ top: 0 }}
-          bodyStyle={{ padding: 4, marginBottom: 0 }}
-          footer={[
-            <Button
-              key="back"
-              type="secondary"
-              onClick={this.handleCancel}
-              style={{
-                boxShadow: "0px 0px 5px rgba(0,0,0,0.2)",
-              }}
-            >
-              Cancel
-            </Button>,
-            <Button
-              key="submit"
-              type="primary"
-              icon={<SaveOutlined />}
-              disabled={this.isFormInvalid()}
-              loading={loading}
-              onClick={this.handleSubmit}
-              style={{
-                boxShadow: "0px 0px 5px rgba(0,0,0,0.2)",
-              }}
-            >
-              Submit
-            </Button>,
-          ]}
-        >
-          {this.getEventSignupForm(selectedEvent)}
-          <Divider orientation="left">Payment</Divider>
-          {stripeView}
-        </Modal>
-      </div>
-    );
-  }
-
-  selectEvent(event) {
-    console.log(" event detail " + event.id);
-    this.props.history.push(`/user/events/${event.id}`);
-  }
-
-  loadEvent(event) {
-    const { selectedEvent } = this.state;
-
-    console.log(" event detail " + event.id);
-    this.props.history.push(`/user/events/${event.id}`);
-    //<Link to={`/user/events/${event}`}></Link>;
+    return eventCard;
   }
 
   handleToken(token, addresses) {
@@ -668,4 +482,4 @@ class Events extends Component {
   }
 }
 
-export default withRouter(Events);
+export default withRouter(EventDetail);

@@ -588,6 +588,13 @@ export function getStudent(id) {
   });
 }
 
+export function getEvent(id) {
+  return request({
+    url: API_BASE_URL + "/schedule/events/" + id,
+    method: "GET",
+  });
+}
+
 export function getAllStudents(page, size, active) {
   //page = page || 0;
   //--page;
@@ -829,6 +836,14 @@ export function getAllItemsByActive() {
   });
 }
 
+export function createImage(file, id) {
+  return requestImage({
+    url: API_BASE_URL + "/images/saveImage/" + id,
+    method: "POST",
+    body: file,
+  });
+}
+
 export function createItemImage(file, id) {
   return requestImage({
     url: API_BASE_URL + "/items/saveItemImage/" + id,
@@ -871,6 +886,13 @@ export function removeItemImage(id) {
 export function getImageByItem(id) {
   return request({
     url: API_BASE_URL + "/items/image/" + id,
+    method: "GET",
+  });
+}
+
+export function getImage(id) {
+  return request({
+    url: API_BASE_URL + "/images/image/" + id,
     method: "GET",
   });
 }

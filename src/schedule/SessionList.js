@@ -22,6 +22,8 @@ import {
   Button,
   Card,
   Collapse,
+  Image,
+  Upload,
 } from "antd";
 import {
   createSession,
@@ -35,6 +37,8 @@ import {
   createStudentSession,
   getStudentSessionsBySessionId,
   removeStudentSessionBySessionIdAndStudentId,
+  getImage,
+  createImage,
 } from "../util/APIUtils";
 import moment from "moment";
 import { STUDENT_LIST_SIZE } from "../constants";
@@ -44,6 +48,7 @@ import { withRouter } from "react-router-dom";
 import {
   SaveOutlined,
   DeleteOutlined,
+  UploadOutlined,
   ReloadOutlined,
   CarryOutOutlined,
   PlusCircleOutlined,
@@ -51,6 +56,9 @@ import {
   CaretRightOutlined,
 } from "@ant-design/icons";
 import "../styles/style.less";
+
+const Compress = require("compress.js");
+const compress = new Compress();
 
 const { Panel } = Collapse;
 
@@ -127,9 +135,13 @@ class SessionList extends Component {
       checkboxValues: [],
       selectedDate: moment(),
       startDate: moment(),
-      endDate: moment().add(1, "M"),
+      endDate: moment().add(2, "M"),
       datesSet: false,
       sessionId: "",
+
+      photo: "",
+      imageId: "",
+      image: "",
 
       specific: {
         date: "",
@@ -278,6 +290,8 @@ class SessionList extends Component {
     this.resetAllDates = this.resetAllDates.bind(this);
     this.setDates = this.setDates.bind(this);
     this.updateDates = this.updateDates.bind(this);
+    this.handleUpload = this.handleUpload.bind(this);
+    this.resizeImageFn = this.resizeImageFn.bind(this);
   }
 
   componentDidMount() {
@@ -392,10 +406,68 @@ class SessionList extends Component {
       oldestAge: "",
       price: 0,
       startDate: moment(),
-      endDate: moment(),
+      endDate: moment().add(2, "M"),
       signupStudents: [],
       studentSessions: [],
       allStudents: [],
+      dates: [],
+      classDates: [],
+      datesSet: false,
+      sessionId: "",
+
+      photo: "",
+      imageId: "",
+      image: "",
+
+      specific: {
+        date: "",
+        hasSecondHour: false,
+        startTime: "",
+        endTime: "",
+      },
+
+      monday: {
+        isSelected: false,
+        hasSecondHour: false,
+        startTime: "",
+        endTime: "",
+      },
+
+      tuesday: {
+        isSelected: false,
+        hasSecondHour: false,
+        startTime: "",
+        endTime: "",
+      },
+
+      wednesday: {
+        isSelected: false,
+        hasSecondHour: false,
+        startTime: "",
+        endTime: "",
+      },
+
+      thursday: {
+        isSelected: false,
+        hasSecondHour: false,
+        startTime: "",
+        endTime: "",
+      },
+
+      friday: {
+        isSelected: false,
+        hasSecondHour: false,
+        startTime: "",
+        endTime: "",
+      },
+
+      saturday: {
+        isSelected: false,
+        hasSecondHour: false,
+        startTime: "",
+        endTime: "",
+      },
+
       sessionModalVisible: false,
       loading: false,
       isSavedSession: false,
@@ -502,7 +574,7 @@ class SessionList extends Component {
   }
 
   signupStudent() {
-    const { sessionId, selectedStudentId } = this.state;
+    const { sessionId, selectedStudentId, session } = this.state;
 
     this.setState({
       loading: true,
@@ -517,9 +589,9 @@ class SessionList extends Component {
     }
 
     const data = {
-      classSessionId: sessionId,
+      session: sessionId,
       studentId: selectedStudentId,
-      charged: this.state.session.price,
+      charged: session.price,
       paid: 0,
       signupDate: moment().format("YYYY-MM-DD"),
     };
@@ -579,12 +651,43 @@ class SessionList extends Component {
     //today = yyyy + "-" + mm + "-" + dd;
   };
 
-  handleSubmit(Session) {
+  handleSubmit(session) {
+    var data = new FormData();
+    data.append("file", this.state.photo);
+
+    this.setState({
+      loading: true,
+    });
+
+    let imageId;
+    if (this.state.isSavedSession) {
+      imageId = this.state.session.imageId;
+    } else {
+      imageId = 0;
+    }
+
+    createImage(data, imageId)
+      .then((response) => {
+        this.setState(
+          {
+            imageId: response.id,
+          },
+          () => this.saveSession(session)
+        );
+      })
+      .catch((error) => {
+        this.setState({
+          loading: false,
+        });
+      });
+  }
+
+  saveSession(session) {
     let title = this.formRef.current.getFieldValue("title");
     let description = this.formRef.current.getFieldValue("description");
     let location = this.formRef.current.getFieldValue("location");
-    let startDate = this.formRef.current.getFieldValue("start date");
-    let endDate = this.formRef.current.getFieldValue("end date");
+    let startDate = this.formRef.current.getFieldValue("startDate");
+    let endDate = this.formRef.current.getFieldValue("endDate");
     let youngestAge = this.formRef.current.getFieldValue("youngestAge");
     let oldestAge = this.formRef.current.getFieldValue("oldestAge");
     let lowestRank = this.formRef.current.getFieldValue("lowestRank");
@@ -603,7 +706,40 @@ class SessionList extends Component {
     let rankRange = lowestRank + "-" + highestRank;
     var days = "";
 
+    let sessionId;
+    if (this.state.isSavedEvent) {
+      sessionId = this.state.session.id;
+    } else {
+      sessionId = 0;
+    }
+
+    console.log(
+      "sessionId" +
+        sessionId +
+        " title" +
+        title +
+        " des" +
+        description +
+        " location" +
+        location +
+        " startDate" +
+        formattedStartDate +
+        " endDate" +
+        formattedEndDate +
+        " ageRange" +
+        ageRange +
+        " rankRange" +
+        rankRange +
+        " price" +
+        price +
+        " days" +
+        days +
+        " imageId" +
+        this.state.imageId
+    );
+
     const SessionData = {
+      id: sessionId,
       title: title,
       description: description,
       location: location,
@@ -613,6 +749,7 @@ class SessionList extends Component {
       rankRange: rankRange,
       price: price,
       days: days,
+      imageId: this.state.imageId,
     };
 
     this.setState({
@@ -652,10 +789,12 @@ class SessionList extends Component {
   }
 
   saveClassDates(sessionId) {
-    const { dates } = this.state;
+    const { classDates } = this.state;
+    let promises = [];
     var date;
     var month, year;
-    for (date of dates) {
+
+    for (date of classDates) {
       let parts = date.date.split("-");
       let y = parts[0];
       let m = parts[1];
@@ -675,19 +814,14 @@ class SessionList extends Component {
         year: year,
       };
 
-      createClassDate(ClassDateData)
-        .then((response) => {
-          this.setState({
-            loading: false,
-          });
-          this.props.history.push("schedule/sessions");
-        })
-        .catch((error) => {
-          this.setState({
-            loading: false,
-          });
-        });
+      let promise = createClassDate(ClassDateData);
+      promises.push(promise);
     }
+
+    Promise.all(promises).then((values) => {
+      this.handleCancel();
+      this.props.history.push("/sessions");
+    });
   }
 
   resetAllDates() {
@@ -951,7 +1085,7 @@ class SessionList extends Component {
       }
     }
 
-    this.setState({ dates: days });
+    this.setState({ dates: days, classDates: days });
 
     message.success({
       content: "Class dates confirmed.",
@@ -1498,6 +1632,7 @@ class SessionList extends Component {
       locations,
       isSavedSession,
       sessionModalVisible,
+      image,
     } = this.state;
     const { pagination, visible, loading, size } = this.state;
 
@@ -1988,6 +2123,61 @@ class SessionList extends Component {
       },
     ];
 
+    const warningText = [
+      <Text type="warning">*save session before signing up students</Text>,
+    ];
+
+    var signupStudentsView = [];
+    if (this.state.isSavedSession) {
+      signupStudentsView = [
+        <Form.Item
+          label={
+            <Title style={{ marginBottom: 0, marginTop: 0 }} level={5}>
+              {"Signup Student"}
+            </Title>
+          }
+        >
+          <Select
+            showSearch
+            align="center"
+            style={{ width: "100%" }}
+            optionFilterProp="children"
+            Key={allStudents.id}
+            onChange={this.handleStudentChange}
+            placeholder={"select student"}
+            filterOption={(input, option) =>
+              option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }
+          >
+            {allStudents.map((student) => (
+              <Select.Option value={student.id} key={student.id}>
+                {student.firstName +
+                  " " +
+                  student.lastName +
+                  " | " +
+                  student.ranks}
+              </Select.Option>
+            ))}
+          </Select>
+
+          <Button
+            type="primary"
+            loading={loading}
+            icon={<PlusCircleOutlined />}
+            onClick={this.signupStudent}
+            disabled={selectedStudentId == ""}
+            size={"default"}
+            block={true}
+            style={{ marginTop: 10 }}
+          >
+            Signup
+          </Button>
+        </Form.Item>,
+      ];
+    } else {
+      signupStudentsView = [warningText];
+    }
+
     var ModalTitle;
     if (isSavedSession) {
       ModalTitle = <Title level={2}>Edit Session</Title>;
@@ -2153,6 +2343,36 @@ class SessionList extends Component {
                   ))}
                 </Select>
               </Form.Item>
+
+              <Title style={{ marginBottom: 8 }} level={5}>
+                Current Image
+              </Title>
+              <Image
+                width={"100%"}
+                height={"100%"}
+                src={`data:image/jpeg;base64,${image.photo}`}
+                placeholder={
+                  <Image
+                    preview={false}
+                    src="../img/TestImage.png"
+                    width={10}
+                  />
+                }
+              />
+
+              <Upload
+                listType="picture"
+                maxCount={1}
+                onChange={this.handleUpload}
+                beforeUpload={() => false}
+              >
+                <Button
+                  style={{ marginTop: 20, marginBottom: 10 }}
+                  icon={<UploadOutlined />}
+                >
+                  Upload Image (Max: 1)
+                </Button>
+              </Upload>
             </Panel>
             <Panel
               header={
@@ -2369,7 +2589,7 @@ class SessionList extends Component {
                 style={{ marginTop: 30, marginBottom: 0 }}
                 orientation="left"
               >
-                {<Title level={4}>Remove</Title>}
+                {<Title level={5}>Remove</Title>}
               </Divider>
               <Row>
                 <Select
@@ -2405,7 +2625,7 @@ class SessionList extends Component {
                 style={{ marginTop: 30, marginBottom: 0 }}
                 orientation="left"
               >
-                {<Title level={4}>Specific</Title>}
+                {<Title level={5}>Specific</Title>}
               </Divider>
               {addSpecificDate}
               <Button
@@ -2429,52 +2649,7 @@ class SessionList extends Component {
               key="3"
               className="site-collapse-custom-panel"
             >
-              <Form.Item
-                label={
-                  <Title style={{ marginBottom: 0, marginTop: 0 }} level={5}>
-                    {"Signup Student"}
-                  </Title>
-                }
-              >
-                <Select
-                  showSearch
-                  align="center"
-                  style={{ width: "100%" }}
-                  optionFilterProp="children"
-                  Key={allStudents.id}
-                  onChange={this.handleStudentChange}
-                  placeholder={"select student"}
-                  filterOption={(input, option) =>
-                    option.children
-                      .toLowerCase()
-                      .indexOf(input.toLowerCase()) >= 0
-                  }
-                >
-                  {allStudents.map((student) => (
-                    <Select.Option value={student.id} key={student.id}>
-                      {student.firstName +
-                        " " +
-                        student.lastName +
-                        " | " +
-                        student.ranks}
-                    </Select.Option>
-                  ))}
-                </Select>
-
-                <Button
-                  type="primary"
-                  loading={loading}
-                  icon={<PlusCircleOutlined />}
-                  onClick={this.signupStudent}
-                  disabled={selectedStudentId == ""}
-                  size={"default"}
-                  block={true}
-                  style={{ marginTop: 10 }}
-                >
-                  Signup
-                </Button>
-              </Form.Item>
-
+              {signupStudentsView}
               <Form.Item
                 label={
                   <Title style={{ marginBottom: 0 }} level={5}>
@@ -2599,8 +2774,37 @@ class SessionList extends Component {
   }
 
   showSession(session) {
-    this.loadClassDatesBySessionId(session);
+    this.loadImage(session);
     this.getLocationList(0);
+  }
+
+  loadImage(session) {
+    let promise;
+    promise = getImage(session.imageId);
+
+    if (!promise) {
+      return;
+    }
+
+    this.setState({
+      loading: true,
+    });
+
+    promise
+      .then((response) => {
+        this.setState(
+          {
+            image: response,
+            loading: false,
+          },
+          this.loadClassDatesBySessionId(session)
+        );
+      })
+      .catch((error) => {
+        this.setState({
+          loading: false,
+        });
+      });
   }
 
   loadClassDatesBySessionId(session) {
@@ -2652,7 +2856,7 @@ class SessionList extends Component {
 
     let classDate;
     for (classDate of classDates) {
-      dates.push(classDates.date);
+      dates.push(classDate.date);
 
       let date = moment(classDate.date).day();
 
@@ -2805,6 +3009,37 @@ class SessionList extends Component {
 
   getSessionStudentsTable(session) {
     return this.getSessionStudentsList(session);
+  }
+
+  handleUpload(info) {
+    if (info.file instanceof File) {
+      this.resizeImageFn(info.file);
+    } else {
+      this.setState({
+        photo: "",
+      });
+    }
+  }
+
+  resizeImageFn(file) {
+    compress
+      .compress([file], {
+        size: 0.1, // the max size in MB, defaults to 2MB
+        quality: 1, // the quality of the image, max is 1,
+        maxWidth: 200, // the max width of the output image, defaults to 1920px
+        maxHeight: 200, // the max height of the output image, defaults to 1920px
+        resize: true, // defaults to true, set false if you do not want to resize the image width and height
+      })
+      .then((data) => {
+        const img = data[0];
+        const base64str = img.data;
+        const imgExt = img.ext;
+
+        this.setState({
+          photo: Compress.convertBase64ToFile(base64str, imgExt),
+          loading: false,
+        });
+      });
   }
 }
 
