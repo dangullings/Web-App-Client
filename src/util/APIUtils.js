@@ -213,6 +213,22 @@ export function getAllEventsByDate() {
   });
 }
 
+export function getAllSessionsByDateAsc() {
+  // most current limit 10
+  return request({
+    url: API_BASE_URL + "/attendance/sessions/date/asc",
+    method: "GET",
+  });
+}
+
+export function getAllEventsByDateAsc() {
+  // most current limit 10
+  return request({
+    url: API_BASE_URL + "/schedule/events/date/asc",
+    method: "GET",
+  });
+}
+
 export function getAllTestsBySearch(search, page, size) {
   page = page || 0;
   size = size || STUDENT_LIST_SIZE;
@@ -591,6 +607,13 @@ export function getStudent(id) {
 export function getEvent(id) {
   return request({
     url: API_BASE_URL + "/schedule/events/" + id,
+    method: "GET",
+  });
+}
+
+export function getSession(id) {
+  return request({
+    url: API_BASE_URL + "/attendance/sessions/" + id,
     method: "GET",
   });
 }

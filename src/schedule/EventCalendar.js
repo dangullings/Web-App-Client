@@ -98,9 +98,8 @@ class EventCalendar extends Component {
     this.getClassDatesByMonthYear = this.getClassDatesByMonthYear.bind(this);
     this.getTestsByMonthYear = this.getTestsByMonthYear.bind(this);
     this.changeSelectedEvent = this.changeSelectedEvent.bind(this);
-    this.handleLocationDropdownChange = this.handleLocationDropdownChange.bind(
-      this
-    );
+    this.handleLocationDropdownChange =
+      this.handleLocationDropdownChange.bind(this);
     this.handleTypeChange = this.handleTypeChange.bind(this);
   }
 
@@ -541,17 +540,15 @@ class EventCalendar extends Component {
         {renderButton()}
       </Row>,
 
-      <Spin spinning={loading}>
-        <Calendar
-          style={{ marginTop: 10 }}
-          loading={loading}
-          headerRender={headerRender}
-          mode={"month"}
-          value={selectedMoment}
-          onSelect={this.handleDateClick}
-          dateCellRender={this.dateCellRender}
-        ></Calendar>
-      </Spin>,
+      <Calendar
+        style={{ marginTop: 10 }}
+        loading={loading}
+        headerRender={headerRender}
+        mode={"month"}
+        value={selectedMoment}
+        onSelect={this.handleDateClick}
+        dateCellRender={this.dateCellRender}
+      ></Calendar>,
 
       <Modal
         className="eventCalendar"

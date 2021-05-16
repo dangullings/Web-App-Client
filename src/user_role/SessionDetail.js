@@ -22,11 +22,12 @@ import {
 } from "antd";
 import {
   getMyPeeps,
-  createStudentEvent,
-  getEvent,
+  createStudentSession,
+  getSession,
   getImage,
   getLocationByName,
-  getStudentEvents,
+  getAllClassDatesBySessionId,
+  getStudentSessions,
 } from "../util/APIUtils";
 import { Link, withRouter } from "react-router-dom";
 import StripeContainer from "../stripe/StripeContainer";
@@ -38,39 +39,40 @@ const ranks = getRanks();
 const { Title, Text } = Typography;
 const Option = Select.Option;
 
-class EventDetail extends Component {
+class SessionDetail extends Component {
   constructor(props) {
     super(props);
     this.state = {
       currentUser: this.props.currentUser,
       loading: false,
 
-      event: "",
+      session: "",
+      classDates: [],
       myPeeps: [],
-      peepEvents: [],
+      peepSessions: [],
       image: "",
       location: "",
       signedUpPeeps: [],
-      eventSignupPrice: "0",
-      eventSignupVisible: false,
+      sessionSignupPrice: "0",
+      sessionSignupVisible: false,
     };
 
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   componentDidMount() {
-    this.loadEvent(this.props.match.params.id);
+    this.loadSession(this.props.match.params.id);
     this.getMyPeepsList();
   }
 
-  loadEvent(id) {
+  loadSession(id) {
     console.log("id " + id);
 
-    getEvent(id)
+    getSession(id)
       .then((response) => {
         this.setState(
           {
-            event: response,
+            session: response,
           },
           () => this.loadImage(response)
         );
@@ -101,8 +103,8 @@ class EventDetail extends Component {
       .catch((error) => {});
   }
 
-  loadImage(event) {
-    let promise = getImage(event.imageId);
+  loadImage(session) {
+    let promise = getImage(session.imageId);
 
     promise
       .then((response) => {
@@ -110,7 +112,7 @@ class EventDetail extends Component {
           {
             image: response,
           },
-          () => this.loadLocation(event)
+          () => this.loadLocation(session)
         );
       })
       .catch((error) => {
@@ -120,13 +122,32 @@ class EventDetail extends Component {
       });
   }
 
-  loadLocation(event) {
-    let promise = getLocationByName(event.location);
+  loadLocation(session) {
+    let promise = getLocationByName(session.location);
+
+    promise
+      .then((response) => {
+        this.setState(
+          {
+            location: response,
+          },
+          () => this.loadClassDates(session)
+        );
+      })
+      .catch((error) => {
+        this.setState({
+          loading: false,
+        });
+      });
+  }
+
+  loadClassDates(session) {
+    let promise = getAllClassDatesBySessionId(session.id);
 
     promise
       .then((response) => {
         this.setState({
-          location: response,
+          classDates: response,
           loading: false,
         });
       })
@@ -137,35 +158,131 @@ class EventDetail extends Component {
       });
   }
 
-  eventCard(event) {
-    const { image, location } = this.state;
+  getDayAndTime(day, dayTimes) {
+    let dt;
+    for (dt of dayTimes) {
+      if (day == dt.slice(0, 3)) {
+        let dayFormat = day.slice(0, 1).toUpperCase() + " ";
+        return dayFormat.concat(dt.slice(4));
+      }
+    }
+  }
+
+  sessionCard(session) {
+    const { image, location, classDates } = this.state;
     let requirementList = [];
+    let dayTimes = [];
+    let dayHistory = [];
 
-    var date = moment(event.date, "YYYY-MM-DD");
+    let cd;
+    for (cd = 0; cd < classDates.length && cd < 7; cd++) {
+      let dt = moment(classDates[cd].date, "YYYY-MM-DD HH:mm:ss");
+      let day = dt.format("ddd").toLowerCase();
 
-    const title = [event.title];
+      let start = classDates[cd].startTime;
+      let end = classDates[cd].endTime;
 
-    const dateView = [date.format("dddd, MMMM Do YYYY")];
-    const time = [event.startTime + " - " + event.endTime];
+      //let day = d.format("d");
 
-    let ageRange = event.ageRange.split("-");
+      let time = day + " " + start + " - " + end;
+
+      if (dayHistory.includes(day)) {
+        break;
+      } else {
+        dayTimes.push(time);
+        dayHistory.push(day);
+      }
+    }
+
+    var startDate = moment(session.startDate, "YYYY-MM-DD");
+    var endDate = moment(session.endDate, "YYYY-MM-DD");
+
+    const dateView = [
+      startDate.format("MMMM Do YYYY") + " - " + endDate.format("MMMM Do YYYY"),
+    ];
+
+    const title = [session.title];
+
+    let days = session.days.split(",");
+
+    let mon = [<div className="grid-item">M</div>];
+    if (days.includes("mon")) {
+      mon = [
+        <div className="grid-item-highlight">
+          {this.getDayAndTime("mon", dayTimes)}
+        </div>,
+      ];
+    }
+    let tue = [<div className="grid-item">T</div>];
+    if (days.includes("tue")) {
+      tue = [
+        <div className="grid-item-highlight">
+          {this.getDayAndTime("tue", dayTimes)}
+        </div>,
+      ];
+    }
+    let wed = [<div className="grid-item">W</div>];
+    if (days.includes("wed")) {
+      wed = [
+        <div className="grid-item-highlight">
+          {this.getDayAndTime("wed", dayTimes)}
+        </div>,
+      ];
+    }
+    let thu = [<div className="grid-item">T</div>];
+    if (days.includes("thu")) {
+      thu = [
+        <div className="grid-item-highlight">
+          {this.getDayAndTime("thu", dayTimes)}
+        </div>,
+      ];
+    }
+    let fri = [<div className="grid-item">F</div>];
+    if (days.includes("fri")) {
+      fri = [
+        <div className="grid-item-highlight">
+          {this.getDayAndTime("fri", dayTimes)}
+        </div>,
+      ];
+    }
+    let sat = [<div className="grid-item">S</div>];
+    if (days.includes("sat")) {
+      sat = [
+        <div className="grid-item-highlight">
+          {this.getDayAndTime("sat", dayTimes)}
+        </div>,
+      ];
+    }
+
+    const daysGrid = [
+      <div className="grid-container">
+        {mon}
+        {tue}
+        {wed}
+        {thu}
+        {fri}
+        {sat}
+      </div>,
+    ];
+
+    let ageRange = session.ageRange.split("-");
     if (ageRange[0] != "0" || ageRange[1] != "99") {
-      requirementList.push(event.ageRange + " yrs");
+      requirementList.push(session.ageRange + " yrs");
     }
-    //const ages = [event.ageRange];
+    //const ages = [session.ageRange];
 
-    let rankRange = event.rankRange.split("-");
+    let rankRange = session.rankRange.split("-");
     if (rankRange[0] != "Gold Stripe" || rankRange[1] != "Fifth Degree") {
-      requirementList.push(event.rankRange);
+      requirementList.push(session.rankRange);
     }
-    //const ranks = [event.rankRange];
+    //const ranks = [session.rankRange];
 
-    if (event.price > 0) {
-      requirementList.push("$" + event.price);
+    if (session.price > 0) {
+      requirementList.push("$" + session.price);
     }
-    //const price = [event.price];
+    //const price = [session.price];
 
-    const description = [event.description];
+    const description = [session.description];
     const locationName = [location.name];
     const locationAddress = [location.address];
 
@@ -173,36 +290,36 @@ class EventDetail extends Component {
       <Button
         icon={<DollarOutlined />}
         type="primary"
-        onClick={this.showEventSignupModal(event)}
+        onClick={this.showSessionSignupModal(session)}
       >
         Signup
       </Button>,
     ];
 
     const back = [
-      <Link to={"/user/events"}>
+      <Link to={"/user/sessions"}>
         {
           <Button
             style={{ marginTop: 10, marginBottom: 10 }}
             type="secondary"
             icon={<LeftOutlined />}
           >
-            event list
+            session list
           </Button>
         }
       </Link>,
     ];
 
-    //<div className="event-detail sub-title">{ages} yrs old</div>
-    //<div className="event-detail sub-title">{ranks}</div>
-    //<div className="event-detail sub-title">${price}</div>
+    //<div className="session-detail sub-title">{ages} yrs old</div>
+    //<div className="session-detail sub-title">{ranks}</div>
+    //<div className="session-detail sub-title">${price}</div>
 
-    const eventCard = [
+    const sessionCard = [
       <Card
-        className="event-detail"
+        className="session-detail"
         hoverable
         bordered={false}
-        key={event.id}
+        key={session.id}
         cover={
           <Image
             width={"100%"}
@@ -211,93 +328,93 @@ class EventDetail extends Component {
           />
         }
       >
-        <div className="event-detail title">{title}</div>
-        <div className="event-detail title-gray">DATE</div>
-        <div className="event-detail sub-title">
-          <div>{dateView}</div>
-          <div>{time}</div>
-        </div>
-        <div className="event-detail title-gray">LOCATION</div>
-        <div className="event-detail sub-title">{locationName}</div>
-        <div className="event-detail sub-title">{locationAddress}</div>
-        <div className="event-detail title-gray">REQUIREMENTS</div>
+        <div className="session-detail title">{title}</div>
+        <div className="session-detail title-gray">DATE</div>
+        <div className="session-detail sub-title">{dateView}</div>
+
+        <div className="session-detail title-gray">DAYS</div>
+        <div className="session-detail sub-title">{daysGrid}</div>
+
+        <div className="session-detail title-gray">LOCATION</div>
+        <div className="session-detail sub-title">{locationName}</div>
+        <div className="session-detail sub-title">{locationAddress}</div>
+        <div className="session-detail title-gray">REQUIREMENTS</div>
         {requirementList.map((element) => (
-          <div className="event-detail sub-title">{element}</div>
+          <div className="session-detail sub-title">{element}</div>
         ))}
 
-        <div className="event-detail title-black">Details</div>
-        <div className="event-detail details">{description}</div>
+        <div className="session-detail title-black">Details</div>
+        <div className="session-detail details">{description}</div>
         <div style={{ marginBottom: "20px" }} />
         {signupBtn}
         {back}
       </Card>,
     ];
 
-    return eventCard;
+    return sessionCard;
   }
 
   handleOk = () => {
     this.setState({
       loading: false,
-      eventSignupVisible: false,
+      sessionSignupVisible: false,
     });
   };
 
   handleCancel = () => {
     this.setState({
       loading: false,
-      eventSignupVisible: false,
+      sessionSignupVisible: false,
       signedUpPeeps: [],
-      eventSignupPrice: 0,
+      sessionSignupPrice: 0,
     });
   };
 
   onChange(checkedValues) {
     this.setState({
       signedUpPeeps: checkedValues,
-      eventSignupPrice: this.state.selectedEvent.price * checkedValues.length,
+      sessionSignupPrice:
+        this.state.selectedSession.price * checkedValues.length,
     });
   }
 
   cycleThruPeeps(peeps) {
     let peep;
     for (peep of peeps) {
-      this.getAllPeepEvents(peep);
+      this.getAllPeepSessions(peep);
     }
   }
 
-  getAllPeepEvents(peep) {
-    this.state.peepEvents.length = 0;
-    var peepEvents = [];
+  getAllPeepSessions(peep) {
+    this.state.peepSessions.length = 0;
+    var peepSessions = [];
 
-    let promise = getStudentEvents(peep.id);
+    let promise = getStudentSessions(peep.id);
 
     promise.then((response) => {
       let value;
       for (value of response) {
-        const peepEvent = {
+        const peepSession = {
           peepId: peep.id,
-          eventId: value.id,
+          sessionId: value.id,
         };
-        peepEvents.push(peepEvent);
+        peepSessions.push(peepSession);
       }
       this.setState({
-        peepEvents: this.state.peepEvents.concat(peepEvents),
+        peepSessions: this.state.peepSessions.concat(peepSessions),
       });
     });
   }
 
-  getEventSignupForm(event) {
-    const { peepEvents } = this.state;
-
-    if (!event) {
+  getSessionSignupForm(session) {
+    if (!session) {
       return;
     }
 
     var rank, age;
-    let eventRankRange = event.rankRange.split("-");
-    let low = eventRankRange[0];
-    let high = eventRankRange[1];
+    let sessionRankRange = session.rankRange.split("-");
+    let low = sessionRankRange[0];
+    let high = sessionRankRange[1];
     let ranksAllowed = [];
     let blip = false;
     for (rank of ranks) {
@@ -318,9 +435,9 @@ class EventDetail extends Component {
     for (let i = 0; i < 100; i++) {
       ages.push(i);
     }
-    let eventAgeRange = event.ageRange.split("-");
-    let lowAge = eventAgeRange[0];
-    let highAge = eventAgeRange[1];
+    let sessionAgeRange = session.ageRange.split("-");
+    let lowAge = sessionAgeRange[0];
+    let highAge = sessionAgeRange[1];
     let agesAllowed = [];
     blip = false;
     for (age of ages) {
@@ -366,17 +483,6 @@ class EventDetail extends Component {
         notAllowed = true;
       }
 
-      let pe;
-      for (pe of peepEvents) {
-        console.log("pe " + pe.peepId + " " + pe.eventId);
-        if (pe.eventId == event.id) {
-          if (pe.peepId == peep.id) {
-            notAllowed = true;
-            break;
-          }
-        }
-      }
-
       let lastLetter = peep.lastName.split("");
       let p = {
         label:
@@ -406,23 +512,23 @@ class EventDetail extends Component {
         <Space>{myPeepOptions}</Space>
       </Checkbox.Group>,
       <Text strong style={{ marginLeft: 5 }}>
-        TOTAL: ${this.state.eventSignupPrice}
+        TOTAL: ${this.state.sessionSignupPrice}
       </Text>,
     ];
 
     return signupForm;
   }
 
-  showEventSignupModal = (event) => (e) => {
+  showSessionSignupModal = (session) => (e) => {
     this.setState({
-      eventSignupVisible: true,
-      selectedEvent: event,
+      sessionSignupVisible: true,
+      selectedsSession: session,
       signedUpPeeps: [],
     });
   };
 
   handleSubmit() {
-    const { signedUpPeeps, event } = this.state;
+    const { signedUpPeeps, session } = this.state;
     this.setState({
       loading: true,
     });
@@ -430,20 +536,20 @@ class EventDetail extends Component {
     let peep;
     for (peep of signedUpPeeps) {
       const data = {
-        calendarEventId: event.id,
+        sessionId: session.id,
         studentId: peep,
-        charged: event.price,
+        charged: session.price,
         paid: 0,
         signupDate: moment().format("YYYY-MM-DD"),
       };
 
-      createStudentEvent(data)
+      createStudentSession(data)
         .then((response) => {
           this.setState({
             loading: false,
-            eventSignupVisible: false,
+            sessionSignupVisible: false,
             signedUpPeeps: [],
-            event: "",
+            session: "",
           });
           notification.success({
             message: "Signup Successful!",
@@ -471,16 +577,22 @@ class EventDetail extends Component {
   }
 
   render() {
-    const { loading, currentUser, event, eventSignupVisible, myPeeps, image } =
-      this.state;
+    const {
+      loading,
+      currentUser,
+      session,
+      sessionSignupVisible,
+      myPeeps,
+      image,
+    } = this.state;
 
-    var eventCard = [<Spin spinning={loading} />];
+    var sessionCard = [<Spin spinning={loading} />];
 
-    if (event && image) {
-      eventCard = this.eventCard(event);
+    if (session && image) {
+      sessionCard = this.sessionCard(session);
     }
 
-    const eventModalTitle = [<Title level={2}>{event.title}</Title>];
+    const sessionModalTitle = [<Title level={2}>{session.title}</Title>];
 
     const stripeView = [
       <div className="session" style={{ paddingLeft: 15, paddingRight: 15 }}>
@@ -489,14 +601,14 @@ class EventDetail extends Component {
     ];
 
     return (
-      <div className="event-detail">
-        {eventCard}
+      <div className="session-detail">
+        {sessionCard}
         <Modal
           className="event-detail"
           bordered={false}
           loading={loading}
-          visible={eventSignupVisible}
-          title={eventModalTitle}
+          visible={sessionSignupVisible}
+          title={sessionModalTitle}
           footer={[
             <Button
               key="back"
@@ -523,7 +635,7 @@ class EventDetail extends Component {
             </Button>,
           ]}
         >
-          {this.getEventSignupForm(event)}
+          {this.getSessionSignupForm(session)}
           <Divider orientation="left">Payment</Divider>
           {stripeView}
         </Modal>
@@ -536,4 +648,4 @@ class EventDetail extends Component {
   }
 }
 
-export default withRouter(EventDetail);
+export default withRouter(SessionDetail);

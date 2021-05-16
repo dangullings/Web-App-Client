@@ -17,39 +17,16 @@ import {
   Col,
   Button,
   Card,
+  List,
 } from "antd";
-import {
-  getAllSessionsByDate,
-  getMyPeeps,
-  createStudentSession,
-} from "../util/APIUtils";
-import { withRouter } from "react-router-dom";
-import StripeContainer from "../stripe/StripeContainer";
-import {
-  SaveOutlined,
-  DeleteOutlined,
-  ReloadOutlined,
-  CarryOutOutlined,
-  PlusCircleOutlined,
-  PlusOutlined,
-} from "@ant-design/icons";
+import { getAllSessionsByDateAsc, getImage } from "../util/APIUtils";
+import { withRouter, Link } from "react-router-dom";
 
-import bg from "../img/Session.png";
-//import bg from "../img/MainBackground.jpg";
 import "../styles/style.less";
 
-const layout = {
-  labelCol: {
-    span: 6,
-  },
-  wrapperCol: {
-    span: 12,
-  },
-};
+const { Meta } = Card;
 
-const ranks = getRanks();
 const { Title, Text } = Typography;
-const Option = Select.Option;
 
 class Sessions extends Component {
   constructor(props) {
@@ -57,28 +34,19 @@ class Sessions extends Component {
     this.state = {
       currentUser: this.props.currentUser,
       loading: false,
-      visible: false,
       sessions: [],
-      myPeeps: [],
-      signedUpPeeps: [],
-      sessionSignupPrice: "0",
-      sessionSignupVisible: false,
-      selectedSession: "",
+      Images: [],
     };
-
-    this.onChange = this.onChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   componentDidMount() {
     this.getSessionList();
-    this.getMyPeepsList();
   }
 
   getSessionList() {
     let promise;
 
-    promise = getAllSessionsByDate();
+    promise = getAllSessionsByDateAsc();
 
     if (!promise) {
       return;
@@ -90,10 +58,12 @@ class Sessions extends Component {
 
     promise
       .then((response) => {
-        this.setState({
-          sessions: response,
-          loading: false,
-        });
+        this.setState(
+          {
+            sessions: response,
+          },
+          () => this.getImages()
+        );
       })
       .catch((error) => {
         this.setState({
@@ -102,468 +72,121 @@ class Sessions extends Component {
       });
   }
 
-  getMyPeepsList() {
-    let promise;
-    promise = getMyPeeps(this.state.currentUser.id);
-    if (!promise) {
-      return;
-    }
+  getImages() {
+    const { sessions } = this.state;
 
-    this.setState({
-      loading: true,
-    });
-
-    promise
-      .then((response) => {
-        this.setState({
-          myPeeps: response,
-          loading: false,
-        });
-      })
-      .catch((error) => {
-        this.setState({
-          loading: false,
-        });
-      });
-  }
-
-  handleOk = () => {
-    this.setState({
-      loading: false,
-      sessionSignupVisible: false,
-    });
-  };
-
-  handleCancel = () => {
-    this.setState({
-      loading: false,
-      sessionSignupVisible: false,
-      signedUpPeeps: [],
-      sessionSignupPrice: 0,
-    });
-  };
-
-  onChange(checkedValues) {
-    this.setState({
-      signedUpPeeps: checkedValues,
-      sessionSignupPrice:
-        this.state.selectedSession.price * checkedValues.length,
-    });
-  }
-
-  getSessionSignupForm(session) {
-    if (!session) {
-      return;
-    }
-
-    var rank, age;
-    let sessionRankRange = session.rankRange.split("-");
-    let low = sessionRankRange[0];
-    let high = sessionRankRange[1];
-    let ranksAllowed = [];
-    let blip = false;
-    for (rank of ranks) {
-      if (rank == low) {
-        blip = true;
-      }
-
-      if (blip) {
-        ranksAllowed.push(rank);
-      }
-
-      if (rank == high) {
-        blip = false;
-      }
-    }
-
-    let ages = [];
-    for (let i = 0; i < 100; i++) {
-      ages.push(i);
-    }
-    let sessionAgeRange = session.ageRange.split("-");
-    let lowAge = sessionAgeRange[0];
-    let highAge = sessionAgeRange[1];
-    let agesAllowed = [];
-    blip = false;
-    for (age of ages) {
-      if (age == lowAge) {
-        blip = true;
-      }
-
-      if (blip) {
-        agesAllowed.push(age);
-      }
-
-      if (age == highAge) {
-        blip = false;
-      }
-    }
-
-    const { myPeeps } = this.state;
-
-    var myPeepOptions = [];
-    let peep,
-      notAllowedRank = true,
-      notAllowedAge = true;
-    for (peep of myPeeps) {
-      let peepAge = moment().diff(peep.birthDate, "years");
-      notAllowedRank = true;
-      notAllowedAge = true;
-      for (rank of ranksAllowed) {
-        if (peep.ranks == rank) {
-          notAllowedRank = false;
-          break;
-        }
-      }
-
-      for (age of agesAllowed) {
-        if (peepAge == age) {
-          notAllowedAge = false;
-          break;
-        }
-      }
-
-      let notAllowed = false;
-      if (notAllowedAge || notAllowedRank) {
-        notAllowed = true;
-      }
-
-      let lastLetter = peep.lastName.split("");
-
-      let p = {
-        label:
-          peep.firstName +
-          " " +
-          lastLetter[0] +
-          ".   |   " +
-          peepAge +
-          " yrs old   |   " +
-          peep.ranks +
-          "",
-        value: peep.id,
-        disabled: notAllowed,
-      };
-
-      myPeepOptions.push(p);
-    }
-
-    const signupForm = [
-      <Divider orientation="left">Select signups</Divider>,
-      <Checkbox.Group
-        style={{ marginLeft: 15, marginBottom: 15 }}
-        options={myPeepOptions}
-        onChange={this.onChange}
-        value={this.state.signedUpPeeps}
-      >
-        <Space>{myPeepOptions}</Space>
-      </Checkbox.Group>,
-      <Text strong style={{ marginLeft: 5 }}>
-        TOTAL: ${this.state.sessionSignupPrice}
-      </Text>,
-    ];
-
-    return signupForm;
-  }
-
-  showSessionSignupModal = (session) => (e) => {
-    this.setState({
-      sessionSignupVisible: true,
-      selectedSession: session,
-      signedUpPeeps: [],
-    });
-  };
-
-  handleSubmit(event) {
-    const { signedUpPeeps, selectedSession } = this.state;
-    this.setState({
-      loading: true,
-    });
-
-    let peep;
-    for (peep of signedUpPeeps) {
-      const data = {
-        classSessionId: selectedSession.id,
-        studentId: peep,
-      };
-
-      createStudentSession(data)
-        .then((response) => {
-          this.setState({
-            loading: false,
-            sessionSignupVisible: false,
-          });
-          message.success("Signed up selected students.");
-        })
-        .catch((error) => {
-          this.setState({
-            loading: false,
-          });
-          if (error.status === 401) {
-          } else {
-          }
-        });
-    }
-  }
-
-  isFormInvalid() {
-    if (this.state.signedUpPeeps.length == 0) {
-      return true;
-    }
-
-    return false;
-  }
-
-  render() {
-    // <Image className="card-content-image" src={bg} />
-    const {
-      visible,
-      loading,
-      currentUser,
-      sessions,
-      sessionSignupVisible,
-      selectedSession,
-      myPeeps,
-    } = this.state;
-
-    const stripeView = [
-      <div className="session" style={{ paddingLeft: 15, paddingRight: 15 }}>
-        <StripeContainer />
-      </div>,
-    ];
-
-    let sessionCards = [];
-    sessionCards.length = 0;
+    var value,
+      promises = [],
+      imageList = [];
 
     let session;
-    if (sessions) {
-      for (session of sessions) {
-        var startDate = moment(session.startDate, "YYYY-MM-DD");
-        var endDate = moment(session.endDate, "YYYY-MM-DD");
-
-        const title = [
-          <Title
-            style={{ marginLeft: 15, marginTop: 10, color: "white" }}
-            level={4}
-          >
-            {session.title}
-          </Title>,
-        ];
-
-        const date = [
-          <Row>
-            <Space size="small">
-              <Text
-                style={{
-                  textShadow: "0px 1px 0px rgba(255,255,255,0.9)",
-                }}
-                type="secondary"
-              >
-                start date:{" "}
-              </Text>
-              <Text
-                style={{ textShadow: "0px 1px 0px rgba(255,255,255,0.9)" }}
-                strong
-              >
-                {startDate.format("dddd, MMMM Do YYYY")}
-              </Text>
-            </Space>
-          </Row>,
-          <Row>
-            <Space size="small">
-              <Text
-                style={{ textShadow: "0px 1px 0px rgba(255,255,255,0.9)" }}
-                type="secondary"
-              >
-                end date:{" "}
-              </Text>
-              <Text
-                style={{ textShadow: "0px 1px 0px rgba(255,255,255,0.9)" }}
-                strong
-              >
-                {endDate.format("dddd, MMMM Do YYYY")}
-              </Text>
-            </Space>
-          </Row>,
-        ];
-        const ages = [
-          <Row>
-            <Space size="small">
-              <Text
-                style={{ textShadow: "0px 1px 0px rgba(255,255,255,0.9)" }}
-                type="secondary"
-              >
-                ages:{" "}
-              </Text>
-              <Text
-                style={{ textShadow: "0px 1px 0px rgba(255,255,255,0.9)" }}
-                strong
-              >
-                {session.ageRange}
-              </Text>
-            </Space>
-          </Row>,
-        ];
-        const ranks = [
-          <Row>
-            <Space size="small">
-              <Text
-                style={{ textShadow: "0px 1px 0px rgba(255,255,255,0.9)" }}
-                type="secondary"
-              >
-                rank range:{" "}
-              </Text>
-              <Text
-                style={{ textShadow: "0px 1px 0px rgba(255,255,255,0.9)" }}
-                strong
-              >
-                {session.rankRange}
-              </Text>
-            </Space>
-          </Row>,
-        ];
-        const description = [
-          <Text
-            strong
-            style={{ textShadow: "0px 1px 0px rgba(255,255,255,0.9)" }}
-          >
-            {session.description}
-          </Text>,
-        ];
-        const location = [
-          <Row>
-            <Space size="small">
-              <Text
-                style={{ textShadow: "0px 1px 0px rgba(255,255,255,0.9)" }}
-                type="secondary"
-              >
-                location:{" "}
-              </Text>
-              <Text
-                style={{ textShadow: "0px 1px 0px rgba(255,255,255,0.9)" }}
-                strong
-              >
-                {session.location}
-              </Text>
-            </Space>
-          </Row>,
-        ];
-        const price = [<Text strong>${session.price}</Text>];
-
-        const sessionCard = [
-          <Card
-            className="session"
-            title={title}
-            headStyle={{
-              padding: 8,
-              backgroundColor: "#4694b4",
-              borderRadius: "10px 10px 0px 0px",
-            }}
-            bodyStyle={{ backgroundColor: "white", padding: 8 }}
-            style={{
-              backgroundColor: "white",
-              width: "100%",
-              textShadow: "1px 1px 1px rgba(0,0,0,0.1)",
-              borderRadius: "10px",
-              boxShadow:
-                "0 4px 8px 0 rgba(0, 0, 0, 0.4), 0 6px 20px 0 rgba(0, 0, 0, 0.39)",
-              padding: 4,
-            }}
-          >
-            <Space size="small" direction="vertical">
-              {location}
-              {date}
-              {ages}
-              <Space size="large" direction="vertical">
-                {ranks}
-                {description}
-              </Space>
-              {price}
-            </Space>
-            <Button
-              type="primary"
-              size="large"
-              onClick={this.showSessionSignupModal(session)}
-              style={{
-                borderRadius: "6px",
-                marginTop: "20px",
-                width: "100%",
-              }}
-            >
-              Signup
-            </Button>
-          </Card>,
-        ];
-
-        sessionCards.push(
-          <div
-            style={{
-              marginLeft: 10,
-              marginRight: 10,
-              marginBottom: 20,
-              marginTop: 0,
-            }}
-          >
-            {sessionCard}
-          </div>
-        );
-      }
+    for (session of sessions) {
+      let promise = getImage(session.imageId);
+      promises.push(promise);
     }
 
-    const content = [sessionCards];
+    let con;
+    Promise.all(promises).then((values) => {
+      for (value of values) {
+        imageList.push(value);
+      }
+      this.setState({
+        Images: imageList,
+        loading: false,
+      });
+    });
+  }
 
-    const mainTitle = [
-      <Title style={{ marginBottom: 0, marginLeft: 15 }} level={3}>
-        <div>Sessions</div>
+  getSessionImage(id) {
+    const { Images } = this.state;
+    let img;
+    for (img of Images) {
+      if (img.id == id) {
+        return img.photo;
+      }
+    }
+  }
+
+  sessionCard(session) {
+    var startDate = moment(session.startDate, "YYYY-MM-DD");
+    var endDate = moment(session.endDate, "YYYY-MM-DD");
+
+    const title = [
+      <Title
+        style={{ marginLeft: 0, marginTop: 10, marginBottom: 0 }}
+        level={5}
+      >
+        {session.title}
       </Title>,
     ];
 
-    const sessionModalTitle = [
-      <Title level={2}>{selectedSession.title}</Title>,
+    const dateView = [
+      startDate.format("MMMM Do YYYY") + " - " + endDate.format("MMMM Do YYYY"),
     ];
 
-    return (
-      <div>
+    const sessionCard = [
+      <Link to={`/user/sessions/${session.id}`}>
         <Card
           className="session"
+          hoverable
           bordered={false}
-          headStyle={{ marginBottom: 8 }}
-          bodyStyle={{ padding: 0 }}
-          style={{
-            width: "100%",
-            borderRadius: "6px",
-            padding: 0,
-          }}
-          title={mainTitle}
+          key={session.id}
+          headStyle={{ backgroundColor: "#fafafa" }}
+          bodyStyle={{ backgroundColor: "#fafafa" }}
+          style={{ marginBottom: 50 }}
+          cover={
+            <Image
+              preview={false}
+              style={{ "pointer-events": "all" }}
+              width={"100%"}
+              height={"100%"}
+              src={`data:image/jpeg;base64,${this.getSessionImage(
+                session.imageId
+              )}`}
+            />
+          }
         >
-          {content}
+          <Meta title={title} description={dateView} />
         </Card>
-        <Modal
-          className="session"
-          visible={sessionSignupVisible}
-          title={sessionModalTitle}
-          style={{ top: 0 }}
-          bodyStyle={{ padding: 4, marginBottom: 0 }}
-          footer={[
-            <Button key="back" type="secondary" onClick={this.handleCancel}>
-              Cancel
-            </Button>,
-            <Button
-              key="submit"
-              type="primary"
-              icon={<SaveOutlined />}
-              disabled={this.isFormInvalid()}
-              loading={loading}
-              onClick={this.handleSubmit}
-            >
-              Signup
-            </Button>,
-          ]}
-        >
-          {this.getSessionSignupForm(selectedSession)}
-          <Divider orientation="left">Payment</Divider>
-          {stripeView}
-        </Modal>
-      </div>
+      </Link>,
+    ];
+
+    return sessionCard;
+  }
+
+  render() {
+    const { loading, currentUser, sessions } = this.state;
+
+    var sessionCards = [];
+    if (sessions) {
+      sessions.forEach((session) => {
+        sessionCards.push(this.sessionCard(session));
+      });
+    }
+
+    return (
+      <Card
+        bordered={false}
+        loading={loading}
+        bodyStyle={{ padding: 25 }}
+        style={{
+          width: "100%",
+        }}
+      >
+        <List
+          grid={{
+            gutter: 16,
+            xs: 1,
+            sm: 2,
+            md: 3,
+            lg: 4,
+            xl: 5,
+            xxl: 6,
+          }}
+          dataSource={sessionCards}
+          renderItem={(item) => <List.Item>{item}</List.Item>}
+        />
+      </Card>
     );
   }
 }

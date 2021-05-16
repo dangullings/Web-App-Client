@@ -199,20 +199,16 @@ class SessionList extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.changeSelectedDate = this.changeSelectedDate.bind(this);
     this.removeSelectedDate = this.removeSelectedDate.bind(this);
-    this.handleLocationDropdownChange = this.handleLocationDropdownChange.bind(
-      this
-    );
+    this.handleLocationDropdownChange =
+      this.handleLocationDropdownChange.bind(this);
     this.addSpecificDate = this.addSpecificDate.bind(this);
     this.changeSpecificDate = this.changeSpecificDate.bind(this);
-    this.handleSpecificStartTimeChange = this.handleSpecificStartTimeChange.bind(
-      this
-    );
-    this.handleSpecificEndTimeChange = this.handleSpecificEndTimeChange.bind(
-      this
-    );
-    this.onSpecificSecondHourCheckboxChange = this.onSpecificSecondHourCheckboxChange.bind(
-      this
-    );
+    this.handleSpecificStartTimeChange =
+      this.handleSpecificStartTimeChange.bind(this);
+    this.handleSpecificEndTimeChange =
+      this.handleSpecificEndTimeChange.bind(this);
+    this.onSpecificSecondHourCheckboxChange =
+      this.onSpecificSecondHourCheckboxChange.bind(this);
     this.handleTitleChange = this.handleTitleChange.bind(this);
     this.handleDescriptionChange = this.handleDescriptionChange.bind(this);
     this.handleAgeRangeChange = this.handleAgeRangeChange.bind(this);
@@ -227,65 +223,49 @@ class SessionList extends Component {
     this.handleStartDateChange = this.handleStartDateChange.bind(this);
     this.handleEndDateChange = this.handleEndDateChange.bind(this);
     this.onMondayCheckboxChange = this.onMondayCheckboxChange.bind(this);
-    this.onMondaySecondHourCheckboxChange = this.onMondaySecondHourCheckboxChange.bind(
-      this
-    );
-    this.handleMondayStartTimeChange = this.handleMondayStartTimeChange.bind(
-      this
-    );
+    this.onMondaySecondHourCheckboxChange =
+      this.onMondaySecondHourCheckboxChange.bind(this);
+    this.handleMondayStartTimeChange =
+      this.handleMondayStartTimeChange.bind(this);
     this.handleMondayEndTimeChange = this.handleMondayEndTimeChange.bind(this);
     this.onTuesdayCheckboxChange = this.onTuesdayCheckboxChange.bind(this);
-    this.onTuesdaySecondHourCheckboxChange = this.onTuesdaySecondHourCheckboxChange.bind(
-      this
-    );
-    this.handleTuesdayStartTimeChange = this.handleTuesdayStartTimeChange.bind(
-      this
-    );
-    this.handleTuesdayEndTimeChange = this.handleTuesdayEndTimeChange.bind(
-      this
-    );
+    this.onTuesdaySecondHourCheckboxChange =
+      this.onTuesdaySecondHourCheckboxChange.bind(this);
+    this.handleTuesdayStartTimeChange =
+      this.handleTuesdayStartTimeChange.bind(this);
+    this.handleTuesdayEndTimeChange =
+      this.handleTuesdayEndTimeChange.bind(this);
 
     this.onWednesdayCheckboxChange = this.onWednesdayCheckboxChange.bind(this);
-    this.onWednesdaySecondHourCheckboxChange = this.onWednesdaySecondHourCheckboxChange.bind(
-      this
-    );
-    this.handleWednesdayStartTimeChange = this.handleWednesdayStartTimeChange.bind(
-      this
-    );
-    this.handleWednesdayEndTimeChange = this.handleWednesdayEndTimeChange.bind(
-      this
-    );
+    this.onWednesdaySecondHourCheckboxChange =
+      this.onWednesdaySecondHourCheckboxChange.bind(this);
+    this.handleWednesdayStartTimeChange =
+      this.handleWednesdayStartTimeChange.bind(this);
+    this.handleWednesdayEndTimeChange =
+      this.handleWednesdayEndTimeChange.bind(this);
 
     this.onThursdayCheckboxChange = this.onThursdayCheckboxChange.bind(this);
-    this.onThursdaySecondHourCheckboxChange = this.onThursdaySecondHourCheckboxChange.bind(
-      this
-    );
-    this.handleThursdayStartTimeChange = this.handleThursdayStartTimeChange.bind(
-      this
-    );
-    this.handleThursdayEndTimeChange = this.handleThursdayEndTimeChange.bind(
-      this
-    );
+    this.onThursdaySecondHourCheckboxChange =
+      this.onThursdaySecondHourCheckboxChange.bind(this);
+    this.handleThursdayStartTimeChange =
+      this.handleThursdayStartTimeChange.bind(this);
+    this.handleThursdayEndTimeChange =
+      this.handleThursdayEndTimeChange.bind(this);
 
     this.onFridayCheckboxChange = this.onFridayCheckboxChange.bind(this);
-    this.onFridaySecondHourCheckboxChange = this.onFridaySecondHourCheckboxChange.bind(
-      this
-    );
-    this.handleFridayStartTimeChange = this.handleFridayStartTimeChange.bind(
-      this
-    );
+    this.onFridaySecondHourCheckboxChange =
+      this.onFridaySecondHourCheckboxChange.bind(this);
+    this.handleFridayStartTimeChange =
+      this.handleFridayStartTimeChange.bind(this);
     this.handleFridayEndTimeChange = this.handleFridayEndTimeChange.bind(this);
 
     this.onSaturdayCheckboxChange = this.onSaturdayCheckboxChange.bind(this);
-    this.onSaturdaySecondHourCheckboxChange = this.onSaturdaySecondHourCheckboxChange.bind(
-      this
-    );
-    this.handleSaturdayStartTimeChange = this.handleSaturdayStartTimeChange.bind(
-      this
-    );
-    this.handleSaturdayEndTimeChange = this.handleSaturdayEndTimeChange.bind(
-      this
-    );
+    this.onSaturdaySecondHourCheckboxChange =
+      this.onSaturdaySecondHourCheckboxChange.bind(this);
+    this.handleSaturdayStartTimeChange =
+      this.handleSaturdayStartTimeChange.bind(this);
+    this.handleSaturdayEndTimeChange =
+      this.handleSaturdayEndTimeChange.bind(this);
 
     this.resetAllDates = this.resetAllDates.bind(this);
     this.setDates = this.setDates.bind(this);
@@ -694,6 +674,9 @@ class SessionList extends Component {
     let highestRank = this.formRef.current.getFieldValue("highestRank");
     let price = this.formRef.current.getFieldValue("price");
 
+    const { monday, tuesday, wednesday, thursday, friday, saturday } =
+      this.state;
+
     this.setState({ loading: true });
 
     let formattedStartDate = startDate.format("YYYY-MM-DD");
@@ -704,7 +687,26 @@ class SessionList extends Component {
 
     let ageRange = youngestAge + "-" + oldestAge;
     let rankRange = lowestRank + "-" + highestRank;
-    var days = "";
+    let days = "";
+
+    if (monday.isSelected) {
+      days.concat("mon,");
+    }
+    if (tuesday.isSelected) {
+      days.concat("tue,");
+    }
+    if (wednesday.isSelected) {
+      days.concat("wed,");
+    }
+    if (thursday.isSelected) {
+      days.concat("thu,");
+    }
+    if (friday.isSelected) {
+      days.concat("fri,");
+    }
+    if (saturday.isSelected) {
+      days.concat("sat,");
+    }
 
     let sessionId;
     if (this.state.isSavedEvent) {
@@ -2837,14 +2839,8 @@ class SessionList extends Component {
   }
 
   setupDates(session, classDates) {
-    const {
-      monday,
-      tuesday,
-      wednesday,
-      thursday,
-      friday,
-      saturday,
-    } = this.state;
+    const { monday, tuesday, wednesday, thursday, friday, saturday } =
+      this.state;
     let mon = monday,
       tue = tuesday,
       wed = wednesday,

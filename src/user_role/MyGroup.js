@@ -8,7 +8,7 @@ import {
   Tag,
   Select,
   Icon,
-  Space,
+  Popover,
   notification,
   Row,
   Form,
@@ -216,6 +216,8 @@ class MyGroup extends Component {
       visible: false,
 
       peepContentSelected: [],
+
+      peepDayHeaders: [],
     };
 
     this.getMyPeepsList = this.getMyPeepsList.bind(this);
@@ -267,7 +269,7 @@ class MyGroup extends Component {
 
   getMyPeepsList() {
     let promise;
-    promise = getMyPeeps(this.state.currentUser.id); //this.state.currentUser.id
+    promise = getMyPeeps(4); //this.state.currentUser.id
     if (!promise) {
       return;
     }
@@ -348,13 +350,15 @@ class MyGroup extends Component {
     Promise.all(promises).then((values) => {
       for (value of values) {
         for (innerValue of value) {
-          sessions.push(innerValue);
+          if (moment(innerValue.endDate).isSameOrAfter(moment())) {
+            sessions.push(innerValue);
 
-          const peepSessionId = {
-            peepId: peeps[peepInc].id,
-            sessionId: innerValue.id,
-          };
-          peepSessionIds.push(peepSessionId);
+            const peepSessionId = {
+              peepId: peeps[peepInc].id,
+              sessionId: innerValue.id,
+            };
+            peepSessionIds.push(peepSessionId);
+          }
         }
         peepInc++;
       }
@@ -394,15 +398,19 @@ class MyGroup extends Component {
       for (value of values) {
         if (value != "null") {
           for (innerValue of value) {
-            classDates.push(innerValue);
+            if (moment(innerValue.date).isSameOrAfter(moment())) {
+              classDates.push(innerValue);
+            }
           }
         }
       }
-      this.setState({
-        myPeepSessionClassDates: this.state.myPeepSessionClassDates.concat(
-          classDates
-        ),
-      });
+      this.setState(
+        {
+          myPeepSessionClassDates:
+            this.state.myPeepSessionClassDates.concat(classDates),
+        },
+        () => this.createPeepDayHeaders()
+      );
     });
   }
 
@@ -518,12 +526,14 @@ class MyGroup extends Component {
     Promise.all(promises).then((values) => {
       for (value of values) {
         for (innerValue of value) {
-          tests.push(innerValue);
-          const peepTestId = {
-            peepId: peeps[peepInc].id,
-            testId: innerValue.id,
-          };
-          peepTestIds.push(peepTestId);
+          if (moment(innerValue.date).isSameOrAfter(moment())) {
+            tests.push(innerValue);
+            const peepTestId = {
+              peepId: peeps[peepInc].id,
+              testId: innerValue.id,
+            };
+            peepTestIds.push(peepTestId);
+          }
         }
         peepInc++;
       }
@@ -585,13 +595,15 @@ class MyGroup extends Component {
     Promise.all(promises).then((values) => {
       for (value of values) {
         for (innerValue of value) {
-          events.push(innerValue);
+          if (moment(innerValue.date).isSameOrAfter(moment())) {
+            events.push(innerValue);
 
-          const peepEventId = {
-            peepId: peeps[peepInc].id,
-            eventId: innerValue.id,
-          };
-          peepEventIds.push(peepEventId);
+            const peepEventId = {
+              peepId: peeps[peepInc].id,
+              eventId: innerValue.id,
+            };
+            peepEventIds.push(peepEventId);
+          }
         }
         peepInc++;
       }
@@ -660,6 +672,121 @@ class MyGroup extends Component {
 
     //this.getPeepAttendance(peep);
   };
+
+  getUpcomingEvents(peep) {
+    const { myPeepEvents, myPeepEventIds, locations } = this.state;
+
+    let peepsEvents = [];
+    let event, peepEventId, loc;
+    for (event of myPeepEvents) {
+      for (peepEventId of myPeepEventIds) {
+        if (peepEventId.eventId == event.id && peepEventId.peepId == peep.id) {
+          peepsEvents.push(event);
+        }
+      }
+    }
+
+    var eventsWithLocation = [];
+    let pe, peAddress;
+    for (pe of peepsEvents) {
+      for (loc of locations) {
+        if (loc.name == pe.location) {
+          peAddress = loc.address;
+          break;
+        }
+      }
+      const eventWithLocation = {
+        key: pe.id,
+        id: pe.id,
+        title: pe.title,
+        description: pe.description,
+        date: pe.date,
+        startTime: pe.startTime,
+        endTime: pe.endTime,
+        location: pe.location,
+        address: peAddress,
+      };
+      eventsWithLocation.push(eventWithLocation);
+    }
+
+    return eventsWithLocation;
+  }
+
+  getUpcomingClasses(peep) {
+    const {
+      myPeepSessions,
+      myPeepSessionClassDates,
+      myPeepSessionIds,
+      locations,
+    } = this.state;
+
+    let sessions = myPeepSessions;
+
+    sessions = sessions.filter(
+      (sessions, index, self) =>
+        index === self.findIndex((t) => t.id === sessions.id)
+    );
+
+    let classDate, session, peepSessionId;
+    let peepsClassDates = [],
+      peepsSessions = [];
+
+    for (session of sessions) {
+      for (peepSessionId of myPeepSessionIds) {
+        if (
+          peepSessionId.sessionId == session.id &&
+          peepSessionId.peepId == peep.id
+        ) {
+          peepsSessions.push(session);
+
+          for (classDate of myPeepSessionClassDates) {
+            if (classDate.sessionId == session.id) {
+              peepsClassDates.push(classDate);
+            }
+          }
+        }
+      }
+    }
+
+    peepsClassDates.sort((a, b) => (a.date > b.date ? 1 : -1));
+
+    let upcomingClassDates = peepsClassDates.slice(
+      0,
+      peepsClassDates.length / 5
+    );
+
+    return upcomingClassDates;
+  }
+
+  getUpcomingTests(peep) {
+    const { myPeepTests, myPeepTestIds } = this.state;
+
+    let tests = myPeepTests;
+
+    tests = tests.filter(
+      (tests, index, self) => index === self.findIndex((t) => t.id === tests.id)
+    );
+
+    var upcomingTests = [];
+    var peepsTests = [];
+    let test, peepTestId;
+    for (test of tests) {
+      for (peepTestId of myPeepTestIds) {
+        if (peepTestId.testId == test.id && peepTestId.peepId == peep.id) {
+          peepsTests.push(test);
+        }
+      }
+    }
+
+    for (test of peepsTests) {
+      let testDate = moment(test.date, "YYYY-MM-DD");
+      if (moment().isBefore(testDate)) {
+        upcomingTests.push(test);
+      }
+    }
+
+    return upcomingTests;
+  }
 
   getPeepSchedule(peep) {
     if (!peep || this.state.schedulesLoading) {
@@ -1008,7 +1135,7 @@ class MyGroup extends Component {
 
     return (
       <div>
-        <Collapse defaultActiveKey={["3"]} ghost>
+        <Collapse accordion defaultActiveKey={["3"]} ghost>
           <Panel header={classDatesHeader} key="3">
             {classDatesContent}
           </Panel>
@@ -1259,6 +1386,456 @@ class MyGroup extends Component {
       .catch((error) => {});
   }
 
+  createPeepDayHeaders() {
+    const { myPeeps } = this.state;
+
+    let peepDayHeaderList = [];
+    let upcomingClasses = [];
+    let upcomingTests = [];
+    let upcomingEvents = [];
+    let peep;
+    let i, item;
+    for (peep of myPeeps) {
+      let classList = this.getUpcomingClasses(peep);
+      let testList = this.getUpcomingTests(peep);
+      let eventList = this.getUpcomingEvents(peep);
+
+      for (i of classList) {
+        let classDate = moment(i.date, "YYYY-MM-DD HH:mm:ss");
+        if (
+          classDate.isSameOrAfter(moment()) &&
+          classDate.isSameOrBefore(moment().add(7, "d"))
+        ) {
+          upcomingClasses.push(i);
+        }
+      }
+
+      for (i of testList) {
+        let testDate = moment(i.date, "YYYY-MM-DD HH:mm:ss");
+        if (
+          testDate.isSameOrAfter(moment()) &&
+          testDate.isSameOrBefore(moment().add(7, "d"))
+        ) {
+          upcomingTests.push(i);
+        }
+      }
+
+      for (i of eventList) {
+        let eventDate = moment(i.date, "YYYY-MM-DD HH:mm:ss");
+        if (
+          eventDate.isSameOrAfter(moment()) &&
+          eventDate.isSameOrBefore(moment().add(7, "d"))
+        ) {
+          upcomingEvents.push(i);
+        }
+      }
+
+      let monList = [],
+        tueList = [],
+        wedList = [],
+        thuList = [],
+        friList = [],
+        satList = [];
+      for (i of upcomingClasses) {
+        let date = moment(i.date, "YYYY-MM-DD HH:mm:ss");
+        let day = date.format("ddd").toLowerCase();
+        let type = "class";
+        if (day == "mon") {
+          item = {
+            type: type,
+            item: i,
+          };
+          monList.push(item);
+        }
+        if (day == "tue") {
+          item = {
+            type: type,
+            item: i,
+          };
+          tueList.push(item);
+        }
+        if (day == "wed") {
+          item = {
+            type: type,
+            item: i,
+          };
+          wedList.push(item);
+        }
+        if (day == "thu") {
+          item = {
+            type: type,
+            item: i,
+          };
+          thuList.push(item);
+        }
+        if (day == "fri") {
+          item = {
+            type: type,
+            item: i,
+          };
+          friList.push(item);
+        }
+        if (day == "sat") {
+          item = {
+            type: type,
+            item: i,
+          };
+          satList.push(item);
+        }
+      }
+      for (i of upcomingTests) {
+        let date = moment(i.date, "YYYY-MM-DD HH:mm:ss");
+        let day = date.format("ddd").toLowerCase();
+        let type = "test";
+        if (day == "mon") {
+          item = {
+            type: type,
+            item: i,
+          };
+          monList.push(item);
+        }
+        if (day == "tue") {
+          item = {
+            type: type,
+            item: i,
+          };
+          tueList.push(item);
+        }
+        if (day == "wed") {
+          item = {
+            type: type,
+            item: i,
+          };
+          wedList.push(item);
+        }
+        if (day == "thu") {
+          item = {
+            type: type,
+            item: i,
+          };
+          thuList.push(item);
+        }
+        if (day == "fri") {
+          item = {
+            type: type,
+            item: i,
+          };
+          friList.push(item);
+        }
+        if (day == "sat") {
+          item = {
+            type: type,
+            item: i,
+          };
+          satList.push(item);
+        }
+      }
+      for (i of upcomingEvents) {
+        let date = moment(i.date, "YYYY-MM-DD HH:mm:ss");
+        let day = date.format("ddd").toLowerCase();
+        let type = "event";
+        if (day == "mon") {
+          item = {
+            type: type,
+            item: i,
+          };
+          monList.push(item);
+        }
+        if (day == "tue") {
+          item = {
+            type: type,
+            item: i,
+          };
+          tueList.push(item);
+        }
+        if (day == "wed") {
+          item = {
+            type: type,
+            item: i,
+          };
+          wedList.push(item);
+        }
+        if (day == "thu") {
+          item = {
+            type: type,
+            item: i,
+          };
+          thuList.push(item);
+        }
+        if (day == "fri") {
+          item = {
+            type: type,
+            item: i,
+          };
+          friList.push(item);
+        }
+        if (day == "sat") {
+          item = {
+            type: type,
+            item: i,
+          };
+          satList.push(item);
+        }
+      }
+
+      console.log(
+        "mon " +
+          monList.length +
+          " tue " +
+          tueList.length +
+          " wed " +
+          wedList.length +
+          " thu " +
+          thuList.length +
+          " fri " +
+          friList.length +
+          " sat " +
+          satList.length
+      );
+
+      const peepDayHeader = {
+        id: peep.id,
+        mon: monList,
+        tue: tueList,
+        wed: wedList,
+        thu: thuList,
+        fri: friList,
+        sat: satList,
+      };
+
+      peepDayHeaderList.push(peepDayHeader);
+    }
+
+    this.setState({ peepDayHeaders: peepDayHeaderList });
+  }
+
+  getPeepDayHeader(peep) {
+    const { peepDayHeaders } = this.state;
+
+    let monDate, tueDate, wedDate, thuDate, friDate, satDate;
+
+    let currentDay = moment().format("ddd").toLowerCase();
+
+    if (currentDay == "sun") {
+      monDate = moment().add(1, "d").format("MM/DD");
+      tueDate = moment().add(2, "d").format("MM/DD");
+      wedDate = moment().add(3, "d").format("MM/DD");
+      thuDate = moment().add(4, "d").format("MM/DD");
+      friDate = moment().add(5, "d").format("MM/DD");
+      satDate = moment().add(6, "d").format("MM/DD");
+    }
+    if (currentDay == "mon") {
+      monDate = moment().add(0, "d").format("MM/DD");
+      tueDate = moment().add(1, "d").format("MM/DD");
+      wedDate = moment().add(2, "d").format("MM/DD");
+      thuDate = moment().add(3, "d").format("MM/DD");
+      friDate = moment().add(4, "d").format("MM/DD");
+      satDate = moment().add(5, "d").format("MM/DD");
+    }
+    if (currentDay == "tue") {
+      monDate = moment().add(6, "d").format("MM/DD");
+      tueDate = moment().add(0, "d").format("MM/DD");
+      wedDate = moment().add(1, "d").format("MM/DD");
+      thuDate = moment().add(2, "d").format("MM/DD");
+      friDate = moment().add(3, "d").format("MM/DD");
+      satDate = moment().add(4, "d").format("MM/DD");
+    }
+    if (currentDay == "wed") {
+      monDate = moment().add(5, "d").format("MM/DD");
+      tueDate = moment().add(6, "d").format("MM/DD");
+      wedDate = moment().add(0, "d").format("MM/DD");
+      thuDate = moment().add(1, "d").format("MM/DD");
+      friDate = moment().add(2, "d").format("MM/DD");
+      satDate = moment().add(3, "d").format("MM/DD");
+    }
+    if (currentDay == "thu") {
+      monDate = moment().add(4, "d").format("MM/DD");
+      tueDate = moment().add(5, "d").format("MM/DD");
+      wedDate = moment().add(6, "d").format("MM/DD");
+      thuDate = moment().add(0, "d").format("MM/DD");
+      friDate = moment().add(1, "d").format("MM/DD");
+      satDate = moment().add(2, "d").format("MM/DD");
+    }
+    if (currentDay == "fri") {
+      monDate = moment().add(3, "d").format("MM/DD");
+      tueDate = moment().add(4, "d").format("MM/DD");
+      wedDate = moment().add(5, "d").format("MM/DD");
+      thuDate = moment().add(6, "d").format("MM/DD");
+      friDate = moment().add(0, "d").format("MM/DD");
+      satDate = moment().add(1, "d").format("MM/DD");
+    }
+    if (currentDay == "sat") {
+      monDate = moment().add(2, "d").format("MM/DD");
+      tueDate = moment().add(3, "d").format("MM/DD");
+      wedDate = moment().add(4, "d").format("MM/DD");
+      thuDate = moment().add(5, "d").format("MM/DD");
+      friDate = moment().add(6, "d").format("MM/DD");
+      satDate = moment().add(0, "d").format("MM/DD");
+    }
+
+    let monList = [],
+      tueList = [],
+      wedList = [],
+      thuList = [],
+      friList = [],
+      satList = [];
+    let peepDayHeader;
+    for (peepDayHeader of peepDayHeaders) {
+      if (peep.id == peepDayHeader.id) {
+        let i;
+        for (i of peepDayHeader.mon) {
+          const item = {
+            isBusy: true,
+            type: i.type,
+          };
+          monList.push(item);
+        }
+        for (i of peepDayHeader.tue) {
+          const item = {
+            isBusy: true,
+            type: i.type,
+          };
+          tueList.push(item);
+        }
+        for (i of peepDayHeader.wed) {
+          const item = {
+            isBusy: true,
+            type: i.type,
+          };
+          wedList.push(item);
+        }
+        for (i of peepDayHeader.thu) {
+          const item = {
+            isBusy: true,
+            type: i.type,
+          };
+          thuList.push(item);
+        }
+        for (i of peepDayHeader.fri) {
+          const item = {
+            isBusy: true,
+            type: i.type,
+          };
+          friList.push(item);
+        }
+        for (i of peepDayHeader.sat) {
+          const item = {
+            isBusy: true,
+            type: i.type,
+          };
+          satList.push(item);
+        }
+        break;
+      }
+    }
+
+    let l;
+    let monday = [],
+      tuesday = [],
+      wednesday = [],
+      thursday = [],
+      friday = [],
+      saturday = [];
+
+    monday.push(<div className="grid-day-item">{monDate}</div>);
+    monday.push(<div className="grid-day-item">M</div>);
+    if (monList.length > 0) {
+      for (l of monList) {
+        monday[1] = <div className="grid-day-highlight">M</div>;
+        monday.push(<div className="grid-day-highlight">{l.type}</div>);
+      }
+    }
+
+    tuesday.push(<div className="grid-day-item">{tueDate}</div>);
+    tuesday.push(<div className="grid-day-item">T</div>);
+    if (tueList.length > 0) {
+      for (l of tueList) {
+        tuesday[1] = <div className="grid-day-highlight">T</div>;
+        tuesday.push(<div className="grid-day-highlight">{l.type}</div>);
+      }
+    }
+
+    wednesday.push(<div className="grid-day-item">{wedDate}</div>);
+    wednesday.push(<div className="grid-day-item">W</div>);
+    if (wedList.length > 0) {
+      for (l of wedList) {
+        wednesday[1] = <div className="grid-day-highlight">W</div>;
+        wednesday.push(<div className="grid-day-highlight">{l.type}</div>);
+      }
+    }
+
+    thursday.push(<div className="grid-day-item">{thuDate}</div>);
+    thursday.push(<div className="grid-day-item">T</div>);
+    if (thuList.length > 0) {
+      for (l of thuList) {
+        thursday[1] = <div className="grid-day-highlight">T</div>;
+        thursday.push(<div className="grid-day-highlight">{l.type}</div>);
+      }
+    }
+
+    friday.push(<div className="grid-day-item">{friDate}</div>);
+    friday.push(<div className="grid-day-item">F</div>);
+    if (friList.length > 0) {
+      for (l of friList) {
+        friday[1] = <div className="grid-day-highlight">F</div>;
+        friday.push(<div className="grid-day-highlight">{l.type}</div>);
+      }
+    }
+
+    saturday.push(<div className="grid-day-item">{satDate}</div>);
+    saturday.push(<div className="grid-day-item">S</div>);
+    if (satList.length > 0) {
+      for (l of satList) {
+        saturday[1] = <div className="grid-day-highlight">S</div>;
+        saturday.push(<div className="grid-day-highlight">{l.type}</div>);
+      }
+    }
+
+    let monDiv, tueDiv, wedDiv, thuDiv, friDiv, satDiv;
+    if (currentDay == "mon") {
+      monDiv = <div className="grid-day-container-current">{monday}</div>;
+    } else {
+      monDiv = <div className="grid-day-container">{monday}</div>;
+    }
+    if (currentDay == "tue") {
+      tueDiv = <div className="grid-day-container-current">{tuesday}</div>;
+    } else {
+      tueDiv = <div className="grid-day-container">{tuesday}</div>;
+    }
+    if (currentDay == "wed") {
+      wedDiv = <div className="grid-day-container-current">{wednesday}</div>;
+    } else {
+      wedDiv = <div className="grid-day-container">{wednesday}</div>;
+    }
+    if (currentDay == "thu") {
+      thuDiv = <div className="grid-day-container-current">{thursday}</div>;
+    } else {
+      thuDiv = <div className="grid-day-container">{thursday}</div>;
+    }
+    if (currentDay == "fri") {
+      friDiv = <div className="grid-day-container-current">{friday}</div>;
+    } else {
+      friDiv = <div className="grid-day-container">{friday}</div>;
+    }
+    if (currentDay == "sat") {
+      satDiv = <div className="grid-day-container-current">{saturday}</div>;
+    } else {
+      satDiv = <div className="grid-day-container">{saturday}</div>;
+    }
+    const daysGrid = [
+      <div className="grid-week-container">
+        {monDiv}
+        {tueDiv}
+        {wedDiv}
+        {thuDiv}
+        {friDiv}
+        {satDiv}
+      </div>,
+    ];
+
+    return daysGrid;
+  }
+
   render() {
     const {
       myPeeps,
@@ -1289,6 +1866,8 @@ class MyGroup extends Component {
           }
         }
       }
+
+      const peepDayHeader = [this.getPeepDayHeader(peep)];
 
       const peepTitle = [
         <Col>
@@ -1363,12 +1942,20 @@ class MyGroup extends Component {
             </Button>,
           ]}
         >
+          {peepDayHeader}
           {peepContent}
         </Card>,
       ];
 
       myPeepCards.push(
-        <div style={{ marginLeft: 3, marginRight: 3, marginTop: 15 }}>
+        <div
+          style={{
+            marginLeft: 3,
+            marginRight: 3,
+            marginTop: 15,
+            marginBottom: 30,
+          }}
+        >
           {peepCard}
         </div>
       );

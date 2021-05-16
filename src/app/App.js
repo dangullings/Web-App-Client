@@ -9,6 +9,7 @@ import { ACCESS_TOKEN } from "../constants";
 import Home from "../common/Home";
 import MyGroup from "../user_role/MyGroup";
 import Sessions from "../user_role/Sessions";
+import SessionDetail from "../user_role/SessionDetail";
 import Events from "../user_role/Events";
 import EventDetail from "../user_role/EventDetail";
 import OrderList from "../inventory/OrderList";
@@ -385,6 +386,16 @@ class App extends Component {
                 path="/user/events/:id"
                 render={(props) => (
                   <EventDetail
+                    isAuthenticated={this.state.isAuthenticated}
+                    currentUser={this.state.currentUser}
+                    {...props}
+                  />
+                )}
+              ></Route>
+              <Route
+                path="/user/sessions/:id"
+                render={(props) => (
+                  <SessionDetail
                     isAuthenticated={this.state.isAuthenticated}
                     currentUser={this.state.currentUser}
                     {...props}
