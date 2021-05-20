@@ -86,7 +86,7 @@ class SessionDetail extends Component {
 
   getMyPeepsList() {
     let promise;
-    promise = getMyPeeps(4); // this.state.currentUser.id
+    promise = getMyPeeps(this.state.currentUser.id); // this.state.currentUser.id
     if (!promise) {
       return;
     }

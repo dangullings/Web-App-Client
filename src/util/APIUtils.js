@@ -246,6 +246,14 @@ export function getAllTestsBySearch(search, page, size) {
   });
 }
 
+export function createStudentUser(data) {
+  return request({
+    url: API_BASE_URL + "/user_students/saveUserStudent",
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}
+
 export function createStudentEvent(data) {
   return request({
     url: API_BASE_URL + "/studentevents/saveStudentEvent",
@@ -439,6 +447,15 @@ export function removeStudentEventByEventIdAndStudentId(eventId, studentId) {
   });
 }
 
+export function removeStudentUserByUserIdAndStudentId(userId, studentId) {
+  return request({
+    url:
+      API_BASE_URL + "/user_students/user/" + userId + "/student/" + studentId,
+    method: "DELETE",
+    body: JSON.stringify(studentId),
+  });
+}
+
 export function removeStudentSessionBySessionIdAndStudentId(
   sessionId,
   studentId
@@ -614,6 +631,32 @@ export function getEvent(id) {
 export function getSession(id) {
   return request({
     url: API_BASE_URL + "/attendance/sessions/" + id,
+    method: "GET",
+  });
+}
+
+export function updateUser(userData) {
+  return request({
+    url: API_BASE_URL + "/saveUser",
+    method: "POST",
+    body: JSON.stringify(userData),
+  });
+}
+
+export function removeUser(id) {
+  return request({
+    url: API_BASE_URL + "/user/" + id,
+    method: "DELETE",
+    body: JSON.stringify(id),
+  });
+}
+
+export function getAllUsers(page, size) {
+  let newPage = page - 1;
+  size = size || STUDENT_LIST_SIZE;
+
+  return request({
+    url: API_BASE_URL + "/users" + "?page=" + newPage + "&size=" + size,
     method: "GET",
   });
 }

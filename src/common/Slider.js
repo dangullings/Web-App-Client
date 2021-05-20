@@ -10,11 +10,11 @@ import {
   ProfileOutlined,
   EnvironmentOutlined,
   CalendarOutlined,
-  TeamOutlined,
   UserOutlined,
   MenuOutlined,
   IdcardOutlined,
   ShoppingOutlined,
+  TeamOutlined,
 } from "@ant-design/icons";
 
 const { SubMenu } = Menu;
@@ -149,6 +149,10 @@ class Slider extends Component {
         onClick={this.onClose}
       >
         <Link to={"/locations"}>Locations</Link>
+      </Menu.Item>,
+
+      <Menu.Item key="/users" icon={<TeamOutlined />} onClick={this.onClose}>
+        <Link to={"/users"}>Users</Link>
       </Menu.Item>,
     ];
 

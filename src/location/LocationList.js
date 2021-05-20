@@ -328,7 +328,7 @@ class LocationList extends Component {
             <Input
               placeholder="1234 Street City State"
               style={{ fontSize: "16px" }}
-              autosize={{ minRows: 1, maxRows: 2 }}
+              autosize={{ minRows: 2, maxRows: 4 }}
               onChange={this.handleAddressChange}
             />
           </Form.Item>

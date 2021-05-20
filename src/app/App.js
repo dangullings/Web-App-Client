@@ -25,6 +25,7 @@ import TestList from "../test/TestList";
 import Products from "../store/Products";
 import Shop from "../store/Shop";
 import ItemList from "../inventory/ItemList";
+import UserList from "../user/UserList";
 import StudentList from "../student/StudentList";
 import Student from "../student/Student";
 import Login from "../user/login/Login";
@@ -313,6 +314,17 @@ class App extends Component {
                 path="/user/events"
                 render={(props) => (
                   <Events
+                    isAuthenticated={this.state.isAuthenticated}
+                    currentUser={this.state.currentUser}
+                    {...props}
+                  />
+                )}
+              ></Route>
+              <Route
+                exact
+                path="/users"
+                render={(props) => (
+                  <UserList
                     isAuthenticated={this.state.isAuthenticated}
                     currentUser={this.state.currentUser}
                     {...props}
