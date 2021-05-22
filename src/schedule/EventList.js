@@ -123,9 +123,8 @@ class EventList extends Component {
     this.handleEndTimeChange = this.handleEndTimeChange.bind(this);
     this.handleTitleChange = this.handleTitleChange.bind(this);
     this.handleDescriptionChange = this.handleDescriptionChange.bind(this);
-    this.handleLocationDropdownChange = this.handleLocationDropdownChange.bind(
-      this
-    );
+    this.handleLocationDropdownChange =
+      this.handleLocationDropdownChange.bind(this);
     this.handleTypeChange = this.handleTypeChange.bind(this);
     this.handleUpload = this.handleUpload.bind(this);
     this.resizeImageFn = this.resizeImageFn.bind(this);
@@ -449,7 +448,7 @@ class EventList extends Component {
           description: "Event was saved.",
           duration: 2,
         });
-        this.props.history.push("/events");
+        this.props.history.push("/schedule/events");
         this.setState({ loading: false, eventModalVisible: false });
         this.handleCancel();
       })
@@ -1643,6 +1642,7 @@ class EventList extends Component {
         this.setState(
           {
             event: event,
+            photo: "image",
             signupStudents: response,
             selectedLocation: event.location,
             date: event.date,

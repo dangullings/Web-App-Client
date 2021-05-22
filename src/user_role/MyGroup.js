@@ -4,11 +4,12 @@ import {
   Table,
   Divider,
   Popconfirm,
+  Tooltip,
   Typography,
   Tag,
   Select,
   Icon,
-  Popover,
+  Space,
   notification,
   Row,
   Form,
@@ -188,9 +189,11 @@ class MyGroup extends Component {
       peepScheduleVisible: false,
       peepTestsVisible: false,
       peepAttendanceVisible: false,
+      dayItemVisible: false,
       selectedPeep: "",
       selectedSchedule: "",
       count: 0,
+      dayItem: "",
 
       firstName: {
         text: "",
@@ -245,6 +248,13 @@ class MyGroup extends Component {
     });
   };
 
+  showDayItemModal = (item) => {
+    this.setState({
+      dayItemVisible: true,
+      dayItem: item,
+    });
+  };
+
   handleSubmit() {}
 
   handleOk = () => {
@@ -269,7 +279,7 @@ class MyGroup extends Component {
 
   getMyPeepsList() {
     let promise;
-    promise = getMyPeeps(this.state.currentUser.id); //this.state.currentUser.id
+    promise = getMyPeeps(4); //this.state.currentUser.id
     if (!promise) {
       return;
     }
@@ -801,8 +811,6 @@ class MyGroup extends Component {
 
     // then show all events signed up for
 
-    console.log("get peep schedule " + peep.id);
-
     const {
       myPeepSessions,
       myPeepEvents,
@@ -1183,12 +1191,6 @@ class MyGroup extends Component {
     );
   }
 
-  showModal = () => {
-    this.setState({
-      visible: true,
-    });
-  };
-
   resetFields() {
     this.formRef.current.resetFields();
     this.setState({
@@ -1390,12 +1392,12 @@ class MyGroup extends Component {
     const { myPeeps } = this.state;
 
     let peepDayHeaderList = [];
-    let upcomingClasses = [];
-    let upcomingTests = [];
-    let upcomingEvents = [];
     let peep;
     let i, item;
     for (peep of myPeeps) {
+      let upcomingClasses = [];
+      let upcomingTests = [];
+      let upcomingEvents = [];
       let classList = this.getUpcomingClasses(peep);
       let testList = this.getUpcomingTests(peep);
       let eventList = this.getUpcomingEvents(peep);
@@ -1578,21 +1580,6 @@ class MyGroup extends Component {
         }
       }
 
-      console.log(
-        "mon " +
-          monList.length +
-          " tue " +
-          tueList.length +
-          " wed " +
-          wedList.length +
-          " thu " +
-          thuList.length +
-          " fri " +
-          friList.length +
-          " sat " +
-          satList.length
-      );
-
       const peepDayHeader = {
         id: peep.id,
         mon: monList,
@@ -1611,6 +1598,18 @@ class MyGroup extends Component {
 
   getPeepDayHeader(peep) {
     const { peepDayHeaders } = this.state;
+
+    const btnStyle = {
+      backgroundColor: "#2ecc71",
+      color: "#f0f0f0",
+      border: "1px solid #2ecc71",
+      padding: "0px",
+      fontSize: "14px",
+      textAlign: "center",
+      width: "100%",
+      borderRadius: "2px 2px 2px 2px",
+      boxShadow: "0 0px 0px 0 rgba(0, 0, 0, 0.0)",
+    };
 
     let monDate, tueDate, wedDate, thuDate, friDate, satDate;
 
@@ -1687,6 +1686,7 @@ class MyGroup extends Component {
           const item = {
             isBusy: true,
             type: i.type,
+            item: i.item,
           };
           monList.push(item);
         }
@@ -1694,6 +1694,7 @@ class MyGroup extends Component {
           const item = {
             isBusy: true,
             type: i.type,
+            item: i.item,
           };
           tueList.push(item);
         }
@@ -1701,6 +1702,7 @@ class MyGroup extends Component {
           const item = {
             isBusy: true,
             type: i.type,
+            item: i.item,
           };
           wedList.push(item);
         }
@@ -1708,6 +1710,7 @@ class MyGroup extends Component {
           const item = {
             isBusy: true,
             type: i.type,
+            item: i.item,
           };
           thuList.push(item);
         }
@@ -1715,6 +1718,7 @@ class MyGroup extends Component {
           const item = {
             isBusy: true,
             type: i.type,
+            item: i.item,
           };
           friList.push(item);
         }
@@ -1722,6 +1726,7 @@ class MyGroup extends Component {
           const item = {
             isBusy: true,
             type: i.type,
+            item: i.item,
           };
           satList.push(item);
         }
@@ -1742,7 +1747,7 @@ class MyGroup extends Component {
     if (monList.length > 0) {
       for (l of monList) {
         monday[1] = <div className="grid-day-highlight">M</div>;
-        monday.push(<div className="grid-day-highlight">{l.type}</div>);
+        monday.push(this.getPopOver(l, btnStyle));
       }
     }
 
@@ -1751,7 +1756,7 @@ class MyGroup extends Component {
     if (tueList.length > 0) {
       for (l of tueList) {
         tuesday[1] = <div className="grid-day-highlight">T</div>;
-        tuesday.push(<div className="grid-day-highlight">{l.type}</div>);
+        tuesday.push(this.getPopOver(l, btnStyle));
       }
     }
 
@@ -1760,7 +1765,7 @@ class MyGroup extends Component {
     if (wedList.length > 0) {
       for (l of wedList) {
         wednesday[1] = <div className="grid-day-highlight">W</div>;
-        wednesday.push(<div className="grid-day-highlight">{l.type}</div>);
+        wednesday.push(this.getPopOver(l, btnStyle));
       }
     }
 
@@ -1769,7 +1774,7 @@ class MyGroup extends Component {
     if (thuList.length > 0) {
       for (l of thuList) {
         thursday[1] = <div className="grid-day-highlight">T</div>;
-        thursday.push(<div className="grid-day-highlight">{l.type}</div>);
+        thursday.push(this.getPopOver(l, btnStyle));
       }
     }
 
@@ -1778,7 +1783,7 @@ class MyGroup extends Component {
     if (friList.length > 0) {
       for (l of friList) {
         friday[1] = <div className="grid-day-highlight">F</div>;
-        friday.push(<div className="grid-day-highlight">{l.type}</div>);
+        friday.push(this.getPopOver(l, btnStyle));
       }
     }
 
@@ -1787,7 +1792,7 @@ class MyGroup extends Component {
     if (satList.length > 0) {
       for (l of satList) {
         saturday[1] = <div className="grid-day-highlight">S</div>;
-        saturday.push(<div className="grid-day-highlight">{l.type}</div>);
+        saturday.push(this.getPopOver(l, btnStyle));
       }
     }
 
@@ -1836,6 +1841,31 @@ class MyGroup extends Component {
     return daysGrid;
   }
 
+  getPopOver(l, btnStyle) {
+    const content = [
+      <div className="day-item-container">
+        <div>{l.item.title}</div>
+        <div>{moment(l.item.date).format("ddd, MMM Do")}</div>
+        <div>{l.item.startTime + "-" + l.item.endTime}</div>
+        <div>{l.item.location}</div>
+      </div>,
+    ];
+
+    return (
+      <Tooltip
+        getPopupContainer={(trigger) => {
+          return trigger;
+        }}
+        title={content}
+        className="my-group"
+      >
+        <Button style={btnStyle} type="primary" size={"small"}>
+          {l.type}
+        </Button>
+      </Tooltip>
+    );
+  }
+
   render() {
     const {
       myPeeps,
@@ -1853,8 +1883,10 @@ class MyGroup extends Component {
     myPeepCards.length = 0;
 
     let peep, peepContent, pcs;
+    let peepDayHeader = [];
     for (peep of myPeeps) {
       peepContent = "";
+      peepDayHeader = [];
       for (pcs of peepContentSelected) {
         if (pcs.peepId == peep.id) {
           if (pcs.selectedContent == "schedule") {
@@ -1867,7 +1899,7 @@ class MyGroup extends Component {
         }
       }
 
-      const peepDayHeader = [this.getPeepDayHeader(peep)];
+      peepDayHeader = [this.getPeepDayHeader(peep)];
 
       const peepTitle = [
         <Col>

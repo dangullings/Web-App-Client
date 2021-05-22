@@ -648,12 +648,21 @@ class SessionList extends Component {
 
     createImage(data, imageId)
       .then((response) => {
-        this.setState(
-          {
-            imageId: response.id,
-          },
-          () => this.saveSession(session)
-        );
+        if (imageId == 0) {
+          this.setState(
+            {
+              imageId: response.id,
+            },
+            () => this.saveSession(session)
+          );
+        } else {
+          this.setState(
+            {
+              imageId: this.state.session.imageId,
+            },
+            () => this.saveSession(session)
+          );
+        }
       })
       .catch((error) => {
         this.setState({
@@ -690,26 +699,26 @@ class SessionList extends Component {
     let days = "";
 
     if (monday.isSelected) {
-      days.concat("mon,");
+      days = days.concat("mon,");
     }
     if (tuesday.isSelected) {
-      days.concat("tue,");
+      days = days.concat("tue,");
     }
     if (wednesday.isSelected) {
-      days.concat("wed,");
+      days = days.concat("wed,");
     }
     if (thursday.isSelected) {
-      days.concat("thu,");
+      days = days.concat("thu,");
     }
     if (friday.isSelected) {
-      days.concat("fri,");
+      days = days.concat("fri,");
     }
     if (saturday.isSelected) {
-      days.concat("sat,");
+      days = days.concat("sat,");
     }
 
     let sessionId;
-    if (this.state.isSavedEvent) {
+    if (this.state.isSavedSession) {
       sessionId = this.state.session.id;
     } else {
       sessionId = 0;
@@ -805,11 +814,12 @@ class SessionList extends Component {
       year = y;
 
       let ClassDateData = {
+        id: date.id,
         location: this.state.selectedLocation,
         title: this.state.title,
         date: date.date,
-        startTime: date.startTime.format("h:mm a"),
-        endTime: date.endTime.format("h:mm a"),
+        startTime: date.startTime,
+        endTime: date.endTime,
         sessionId: sessionId,
         secondHour: date.hasSecondHour,
         month: month,
@@ -822,7 +832,7 @@ class SessionList extends Component {
 
     Promise.all(promises).then((values) => {
       this.handleCancel();
-      this.props.history.push("/sessions");
+      this.props.history.push("/schedule/sessions");
     });
   }
 
@@ -2948,6 +2958,7 @@ class SessionList extends Component {
         this.setState(
           {
             session: session,
+            photo: "image",
             startDate: session.startDate,
             endDate: session.endDate,
             signupStudents: response,

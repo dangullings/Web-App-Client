@@ -255,7 +255,7 @@ class EventDetail extends Component {
   onChange(checkedValues) {
     this.setState({
       signedUpPeeps: checkedValues,
-      eventSignupPrice: this.state.selectedEvent.price * checkedValues.length,
+      eventSignupPrice: this.state.event.price * checkedValues.length,
     });
   }
 
@@ -416,7 +416,7 @@ class EventDetail extends Component {
   showEventSignupModal = (event) => (e) => {
     this.setState({
       eventSignupVisible: true,
-      selectedEvent: event,
+      event: event,
       signedUpPeeps: [],
     });
   };
@@ -450,6 +450,7 @@ class EventDetail extends Component {
             description: "",
             duration: 4,
           });
+          this.props.history.push("/user/events");
         })
         .catch((error) => {
           this.setState({

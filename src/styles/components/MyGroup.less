@@ -23,10 +23,17 @@
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39);
   }
 
-  .ant-btn:focus {
-    color: #fff;
-    background: @primary-blue;
-    border-color: white;
+  .ant-btn-primary:active {
+    background-color: white !important;
+    color: #2ecc71 !important;
+    border: 2px solid #2ecc71 !important;
+  }
+
+  .ant-btn-primary:hover,
+  .ant-btn-primary:focus {
+    background-color: white !important;
+    color: #2ecc71 !important;
+    border: 2px solid #2ecc71 !important;
   }
 
   .ant-modal-header {
@@ -60,6 +67,31 @@
 
   .ant-list-bordered.ant-list-sm .ant-list-item {
     padding: 8px 16px;
+  }
+
+  .ant-tooltip-inner {
+    min-width: 30px;
+    min-height: 32px;
+    padding: 6px 8px;
+    color: #fff;
+    text-align: center;
+    text-decoration: none;
+    word-wrap: break-word;
+    background-color: rgba(0, 0, 0, 0.85);
+    border-radius: 4px;
+    -webkit-box-shadow: 0 3px 6px -4px rgb(0 0 0 / 12%),
+      0 6px 16px 0 rgb(0 0 0 / 8%), 0 9px 28px 8px rgb(0 0 0 / 5%);
+    box-shadow: 0 3px 6px -4px rgb(0 0 0 / 12%), 0 6px 16px 0 rgb(0 0 0 / 8%),
+      0 9px 28px 8px rgb(0 0 0 / 5%);
+  }
+
+  .day-item-container {
+    display: grid;
+    grid-template-rows: auto auto auto;
+    grid-row-gap: 2px;
+    margin-left: 0px;
+    margin-right: 0px;
+    align-content: flex-start;
   }
 
   .grid-week-container {

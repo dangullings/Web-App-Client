@@ -58,6 +58,7 @@ class SessionDetail extends Component {
     };
 
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.onChange = this.onChange.bind(this);
   }
 
   componentDidMount() {
@@ -159,10 +160,23 @@ class SessionDetail extends Component {
   }
 
   getDayAndTime(day, dayTimes) {
-    let dt;
+    let dt, fullDay;
+    if (day == "mon") {
+      fullDay = "Monday";
+    } else if (day == "tue") {
+      fullDay = "Tuesday";
+    } else if (day == "wed") {
+      fullDay = "Wednesday";
+    } else if (day == "thu") {
+      fullDay = "Thursday";
+    } else if (day == "fri") {
+      fullDay = "Friday";
+    } else if (day == "sat") {
+      fullDay = "Saturday";
+    }
     for (dt of dayTimes) {
       if (day == dt.slice(0, 3)) {
-        let dayFormat = day.slice(0, 1).toUpperCase() + " ";
+        let dayFormat = fullDay + " "; //day.slice(0, 1).toUpperCase() + " ";
         return dayFormat.concat(dt.slice(4));
       }
     }
@@ -179,12 +193,12 @@ class SessionDetail extends Component {
       let dt = moment(classDates[cd].date, "YYYY-MM-DD HH:mm:ss");
       let day = dt.format("ddd").toLowerCase();
 
-      let start = classDates[cd].startTime;
-      let end = classDates[cd].endTime;
+      let start = classDates[cd].startTime.replace(/ /g, "");
+      let end = classDates[cd].endTime.replace(/ /g, "");
 
       //let day = d.format("d");
 
-      let time = day + " " + start + " - " + end;
+      let time = day + " " + start.slice(0, -1) + "-" + end.slice(0, -1);
 
       if (dayHistory.includes(day)) {
         break;
@@ -205,7 +219,7 @@ class SessionDetail extends Component {
 
     let days = session.days.split(",");
 
-    let mon = [<div className="grid-item">M</div>];
+    let mon = [<div className="grid-item">Monday</div>];
     if (days.includes("mon")) {
       mon = [
         <div className="grid-item-highlight">
@@ -213,7 +227,7 @@ class SessionDetail extends Component {
         </div>,
       ];
     }
-    let tue = [<div className="grid-item">T</div>];
+    let tue = [<div className="grid-item">Tuesday</div>];
     if (days.includes("tue")) {
       tue = [
         <div className="grid-item-highlight">
@@ -221,7 +235,7 @@ class SessionDetail extends Component {
         </div>,
       ];
     }
-    let wed = [<div className="grid-item">W</div>];
+    let wed = [<div className="grid-item">Wednesday</div>];
     if (days.includes("wed")) {
       wed = [
         <div className="grid-item-highlight">
@@ -229,7 +243,7 @@ class SessionDetail extends Component {
         </div>,
       ];
     }
-    let thu = [<div className="grid-item">T</div>];
+    let thu = [<div className="grid-item">Thursday</div>];
     if (days.includes("thu")) {
       thu = [
         <div className="grid-item-highlight">
@@ -237,7 +251,7 @@ class SessionDetail extends Component {
         </div>,
       ];
     }
-    let fri = [<div className="grid-item">F</div>];
+    let fri = [<div className="grid-item">Friday</div>];
     if (days.includes("fri")) {
       fri = [
         <div className="grid-item-highlight">
@@ -245,7 +259,7 @@ class SessionDetail extends Component {
         </div>,
       ];
     }
-    let sat = [<div className="grid-item">S</div>];
+    let sat = [<div className="grid-item">Saturday</div>];
     if (days.includes("sat")) {
       sat = [
         <div className="grid-item-highlight">
@@ -373,8 +387,7 @@ class SessionDetail extends Component {
   onChange(checkedValues) {
     this.setState({
       signedUpPeeps: checkedValues,
-      sessionSignupPrice:
-        this.state.selectedSession.price * checkedValues.length,
+      sessionSignupPrice: this.state.session.price * checkedValues.length,
     });
   }
 
@@ -536,7 +549,7 @@ class SessionDetail extends Component {
     let peep;
     for (peep of signedUpPeeps) {
       const data = {
-        sessionId: session.id,
+        classSessionId: session.id,
         studentId: peep,
         charged: session.price,
         paid: 0,
@@ -556,6 +569,7 @@ class SessionDetail extends Component {
             description: "",
             duration: 4,
           });
+          this.props.history.push("/user/sessions");
         })
         .catch((error) => {
           this.setState({
