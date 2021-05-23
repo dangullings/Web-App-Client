@@ -569,7 +569,7 @@ class SessionList extends Component {
     }
 
     const data = {
-      session: sessionId,
+      classSessionId: sessionId,
       studentId: selectedStudentId,
       charged: session.price,
       paid: 0,

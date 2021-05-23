@@ -360,7 +360,9 @@ class MyGroup extends Component {
     Promise.all(promises).then((values) => {
       for (value of values) {
         for (innerValue of value) {
-          if (moment(innerValue.endDate).isSameOrAfter(moment())) {
+          if (
+            moment(innerValue.endDate).add(1, "days").isSameOrAfter(moment())
+          ) {
             sessions.push(innerValue);
 
             const peepSessionId = {
@@ -408,7 +410,9 @@ class MyGroup extends Component {
       for (value of values) {
         if (value != "null") {
           for (innerValue of value) {
-            if (moment(innerValue.date).isSameOrAfter(moment())) {
+            if (
+              moment(innerValue.date).add(1, "days").isSameOrAfter(moment())
+            ) {
               classDates.push(innerValue);
             }
           }
@@ -536,7 +540,7 @@ class MyGroup extends Component {
     Promise.all(promises).then((values) => {
       for (value of values) {
         for (innerValue of value) {
-          if (moment(innerValue.date).isSameOrAfter(moment())) {
+          if (moment(innerValue.date).add(1, "days").isSameOrAfter(moment())) {
             tests.push(innerValue);
             const peepTestId = {
               peepId: peeps[peepInc].id,
@@ -605,9 +609,10 @@ class MyGroup extends Component {
     Promise.all(promises).then((values) => {
       for (value of values) {
         for (innerValue of value) {
-          if (moment(innerValue.date).isSameOrAfter(moment())) {
+          console.log("event " + innerValue.date);
+          if (moment(innerValue.date).add(1, "days").isSameOrAfter(moment())) {
             events.push(innerValue);
-
+            console.log("added event " + innerValue.date);
             const peepEventId = {
               peepId: peeps[peepInc].id,
               eventId: innerValue.id,

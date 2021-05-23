@@ -353,12 +353,21 @@ class EventList extends Component {
 
     createImage(data, imageId)
       .then((response) => {
-        this.setState(
-          {
-            imageId: response.id,
-          },
-          () => this.saveEvent(event)
-        );
+        if (imageId == 0) {
+          this.setState(
+            {
+              imageId: response.id,
+            },
+            () => this.saveEvent(event)
+          );
+        } else {
+          this.setState(
+            {
+              imageId: this.state.event.imageId,
+            },
+            () => this.saveEvent(event)
+          );
+        }
       })
       .catch((error) => {
         this.setState({
