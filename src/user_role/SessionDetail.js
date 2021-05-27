@@ -190,7 +190,7 @@ class SessionDetail extends Component {
 
     let cd;
     for (cd = 0; cd < classDates.length && cd < 7; cd++) {
-      let dt = moment(classDates[cd].date, "YYYY-MM-DD HH:mm:ss");
+      let dt = moment(classDates[cd].date, "YYYY-MM-DD HH:mm");
       let day = dt.format("ddd").toLowerCase();
 
       let start = classDates[cd].startTime.replace(/ /g, "");

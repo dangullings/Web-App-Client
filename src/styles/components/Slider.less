@@ -4,45 +4,51 @@
   grid-gap: 0px;
   padding: 0px;
   margin: 0px;
-  color: rgb(71, 71, 71);
-  justify-content: space-between;
+  color: rgb(71, 71, 71) !important;
+  justify-content: space-between !important;
 }
 
-.slider {
-  .ant-menu.ant-menu-dark,
-  .ant-menu-dark .ant-menu-sub,
-  .ant-menu.ant-menu-dark .ant-menu-sub {
-    color: #808080;
-    background: #fefefa;
-  }
+/* .ant-drawer-header {
+  background-color: #5340ff !important;
+  border-radius: 0;
+}
 
-  .ant-menu-item:hover,
-  .ant-menu-item-active,
-  .ant-menu:not(.ant-menu-inline) .ant-menu-submenu-open,
-  .ant-menu-submenu-active,
-  .ant-menu-submenu-title:hover {
-    color: @highlight-blue;
-  }
+.ant-drawer-title {
+  color: #fff;
+}
 
-  .ant-menu:not(.ant-menu-horizontal) .ant-menu-item-selected {
-    background-color: #e6e6e6;
-  }
+.ant-drawer-body {
+  background-color: transparent;
+  color: #fff !important;
+} */
 
-  .ant-menu-vertical .ant-menu-item::after,
-  .ant-menu-vertical-left .ant-menu-item::after,
-  .ant-menu-vertical-right .ant-menu-item::after,
-  .ant-menu-inline .ant-menu-item::after {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    border-right: 3px solid @primary-blue;
-  }
+.ant-menu.ant-menu-light .ant-menu-item-selected.menu-item {
+  background-color: @highlight-blue; /*Overriden property*/
+  color: #fff;
+}
 
-  .ant-menu-item-selected a,
-  .ant-menu-item-selected a:hover {
-    color: @highlight-blue;
-  }
+.ant-menu-item-selected a,
+.ant-menu-item-selected a:hover {
+  color: #fff !important;
+}
+
+.ant-menu-item:hover,
+.ant-menu-item-active,
+.ant-menu:not(.ant-menu-inline) .ant-menu-submenu-open,
+.ant-menu-submenu-active,
+.ant-menu-submenu-title:hover {
+  color: @highlight-blue !important;
+}
+
+.ant-menu-vertical .ant-menu-item::after,
+.ant-menu-vertical-left .ant-menu-item::after,
+.ant-menu-vertical-right .ant-menu-item::after,
+.ant-menu-inline .ant-menu-item::after {
+  border-right: 3px solid @primary-blue !important;
+}
+
+.ant-menu-submenu-selected {
+  color: @highlight-blue !important;
 }
 
 .app-header {
@@ -71,12 +77,12 @@
     z-index: 1050;
     border-radius: 2px;
     -webkit-box-shadow: none;
-    color: @primary-blue;
-    background-color: @primary-blue;
+    color: @primary-blue !important;
+    background-color: @primary-blue !important;
   }
 
   .ant-menu-item-selected a,
   .ant-menu-item-selected a:hover {
-    color: #00a700;
+    color: #00a700 !important;
   }
 }

@@ -2271,6 +2271,7 @@ class SessionList extends Component {
           ref={this.formRef}
         >
           <Collapse
+            accordion
             bordered={false}
             defaultActiveKey={["4"]}
             className="site-collapse-custom-collapse"

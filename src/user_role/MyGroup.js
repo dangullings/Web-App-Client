@@ -513,6 +513,7 @@ class MyGroup extends Component {
       <Table
         rowKey={key}
         bordered
+        rowClassName={(record, index) => this.getRowColor(record, index)}
         pagination={false}
         columns={testCols}
         dataSource={datas}
@@ -521,6 +522,14 @@ class MyGroup extends Component {
         scroll={{ x: 800 }}
       />
     );
+  }
+
+  getRowColor(record, index) {
+    if (index % 2 === 0) {
+      return "table-row-light";
+    } else {
+      return "table-row-dark";
+    }
   }
 
   loadPeepTests(peeps) {
@@ -710,14 +719,20 @@ class MyGroup extends Component {
           break;
         }
       }
+
+      let startTime = pe.startTime.replace(/ /g, "");
+      startTime = startTime.slice(0, -1);
+      let endTime = pe.endTime.replace(/ /g, "");
+      endTime = endTime.slice(0, -1);
+
       const eventWithLocation = {
         key: pe.id,
         id: pe.id,
         title: pe.title,
         description: pe.description,
         date: pe.date,
-        startTime: pe.startTime,
-        endTime: pe.endTime,
+        startTime: startTime,
+        endTime: endTime,
         location: pe.location,
         address: peAddress,
       };
@@ -728,12 +743,8 @@ class MyGroup extends Component {
   }
 
   getUpcomingClasses(peep) {
-    const {
-      myPeepSessions,
-      myPeepSessionClassDates,
-      myPeepSessionIds,
-      locations,
-    } = this.state;
+    const { myPeepSessions, myPeepSessionClassDates, myPeepSessionIds } =
+      this.state;
 
     let sessions = myPeepSessions;
 
@@ -763,7 +774,7 @@ class MyGroup extends Component {
       }
     }
 
-    peepsClassDates.sort((a, b) => (a.date > b.date ? 1 : -1));
+    peepsClassDates.sort((a, b) => (a.date >= b.date ? 1 : -1));
 
     let upcomingClassDates = peepsClassDates.slice(
       0,
@@ -861,14 +872,19 @@ class MyGroup extends Component {
           break;
         }
       }
+
+      let startTime = ut.startTime.replace(/ /g, "");
+      startTime = startTime.slice(0, -1);
+      let endTime = ut.endTime.replace(/ /g, "");
+      endTime = endTime.slice(0, -1);
       const testWithLocation = {
         key: ut.id,
         id: ut.id,
         title: ut.title,
         type: ut.type,
         date: ut.date,
-        startTime: ut.startTime,
-        endTime: ut.endTime,
+        startTime: startTime,
+        endTime: endTime,
         location: ut.location,
         address: utAddress,
       };
@@ -919,6 +935,7 @@ class MyGroup extends Component {
           break;
         }
       }
+
       const sessionWithLocation = {
         key: s.id,
         id: s.id,
@@ -926,7 +943,6 @@ class MyGroup extends Component {
         description: s.description,
         startDate: s.startDate,
         endDate: s.endDate,
-        endTime: s.endTime,
         location: s.location,
         address: sAddress,
       };
@@ -950,14 +966,18 @@ class MyGroup extends Component {
           break;
         }
       }
+      let startTime = pe.startTime.replace(/ /g, "");
+      startTime = startTime.slice(0, -1);
+      let endTime = pe.endTime.replace(/ /g, "");
+      endTime = endTime.slice(0, -1);
       const eventWithLocation = {
         key: pe.id,
         id: pe.id,
         title: pe.title,
         description: pe.description,
         date: pe.date,
-        startTime: pe.startTime,
-        endTime: pe.endTime,
+        startTime: startTime,
+        endTime: endTime,
         location: pe.location,
         address: peAddress,
       };
@@ -966,7 +986,7 @@ class MyGroup extends Component {
 
     let testsHeader = [
       <Text strong style={{ textShadow: "0px 1px 0px rgba(255,255,255,0.9)" }}>
-        tests
+        TESTS
       </Text>,
     ];
 
@@ -1015,7 +1035,7 @@ class MyGroup extends Component {
 
     let sessionsHeader = [
       <Text strong style={{ textShadow: "0px 1px 0px rgba(255,255,255,0.9)" }}>
-        sessions
+        SESSIONS
       </Text>,
     ];
 
@@ -1064,7 +1084,7 @@ class MyGroup extends Component {
 
     let classDatesHeader = [
       <Text strong style={{ textShadow: "0px 1px 0px rgba(255,255,255,0.9)" }}>
-        upcoming classes
+        UPCOMING CLASSES
       </Text>,
     ];
 
@@ -1100,7 +1120,7 @@ class MyGroup extends Component {
 
     let eventsHeader = [
       <Text strong style={{ textShadow: "0px 1px 0px rgba(255,255,255,0.9)" }}>
-        events
+        EVENTS
       </Text>,
     ];
 
@@ -1408,7 +1428,7 @@ class MyGroup extends Component {
       let eventList = this.getUpcomingEvents(peep);
 
       for (i of classList) {
-        let classDate = moment(i.date, "YYYY-MM-DD HH:mm:ss");
+        let classDate = moment(i.date, "YYYY-MM-DD HH:mm a");
         if (
           classDate.isSameOrAfter(moment()) &&
           classDate.isSameOrBefore(moment().add(7, "d"))
@@ -1418,7 +1438,7 @@ class MyGroup extends Component {
       }
 
       for (i of testList) {
-        let testDate = moment(i.date, "YYYY-MM-DD HH:mm:ss");
+        let testDate = moment(i.date, "YYYY-MM-DD HH:mm a");
         if (
           testDate.isSameOrAfter(moment()) &&
           testDate.isSameOrBefore(moment().add(7, "d"))
@@ -1428,7 +1448,7 @@ class MyGroup extends Component {
       }
 
       for (i of eventList) {
-        let eventDate = moment(i.date, "YYYY-MM-DD HH:mm:ss");
+        let eventDate = moment(i.date, "YYYY-MM-DD HH:mm a");
         if (
           eventDate.isSameOrAfter(moment()) &&
           eventDate.isSameOrBefore(moment().add(7, "d"))
@@ -1444,7 +1464,7 @@ class MyGroup extends Component {
         friList = [],
         satList = [];
       for (i of upcomingClasses) {
-        let date = moment(i.date, "YYYY-MM-DD HH:mm:ss");
+        let date = moment(i.date, "YYYY-MM-DD HH:mm a");
         let day = date.format("ddd").toLowerCase();
         let type = "class";
         if (day == "mon") {
@@ -1491,7 +1511,7 @@ class MyGroup extends Component {
         }
       }
       for (i of upcomingTests) {
-        let date = moment(i.date, "YYYY-MM-DD HH:mm:ss");
+        let date = moment(i.date, "YYYY-MM-DD HH:mm a");
         let day = date.format("ddd").toLowerCase();
         let type = "test";
         if (day == "mon") {
@@ -1538,7 +1558,7 @@ class MyGroup extends Component {
         }
       }
       for (i of upcomingEvents) {
-        let date = moment(i.date, "YYYY-MM-DD HH:mm:ss");
+        let date = moment(i.date, "YYYY-MM-DD HH:mm a");
         let day = date.format("ddd").toLowerCase();
         let type = "event";
         if (day == "mon") {
@@ -1847,11 +1867,16 @@ class MyGroup extends Component {
   }
 
   getPopOver(l, btnStyle) {
+    let startTime = l.item.startTime.replace(/ /g, "");
+    startTime = startTime.slice(0, -1);
+    let endTime = l.item.endTime.replace(/ /g, "");
+    endTime = endTime.slice(0, -1);
+
     const content = [
       <div className="day-item-container">
         <div>{l.item.title}</div>
         <div>{moment(l.item.date).format("ddd, MMM Do")}</div>
-        <div>{l.item.startTime + "-" + l.item.endTime}</div>
+        <div>{startTime + "-" + endTime}</div>
         <div>{l.item.location}</div>
       </div>,
     ];

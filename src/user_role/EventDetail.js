@@ -146,7 +146,11 @@ class EventDetail extends Component {
     const title = [event.title];
 
     const dateView = [date.format("dddd, MMMM Do YYYY")];
-    const time = [event.startTime + " - " + event.endTime];
+    let startTime = event.startTime.replace(/ /g, "");
+    startTime = startTime.slice(0, -1);
+    let endTime = event.endTime.replace(/ /g, "");
+    endTime = endTime.slice(0, -1);
+    const time = [startTime + " - " + endTime];
 
     let ageRange = event.ageRange.split("-");
     if (ageRange[0] != "0" || ageRange[1] != "99") {
@@ -192,10 +196,6 @@ class EventDetail extends Component {
         }
       </Link>,
     ];
-
-    //<div className="event-detail sub-title">{ages} yrs old</div>
-    //<div className="event-detail sub-title">{ranks}</div>
-    //<div className="event-detail sub-title">${price}</div>
 
     const eventCard = [
       <Card

@@ -507,15 +507,8 @@ class StudentList extends Component {
   };
 
   render() {
-    const {
-      students,
-      columns,
-      visible,
-      loading,
-      current,
-      total,
-      totalPages,
-    } = this.state;
+    const { students, columns, visible, loading, current, total, totalPages } =
+      this.state;
 
     const paginations = {
       current: current,
@@ -804,7 +797,7 @@ class StudentList extends Component {
         columns={columns}
         dataSource={students}
         size="small"
-        scroll={{ y: 380 }}
+        scroll={{ y: 400 }}
         onChange={this.handleTableChange}
         onRow={(record, rowIndex) => {
           return {

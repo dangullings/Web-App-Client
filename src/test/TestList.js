@@ -124,9 +124,8 @@ class TestList extends Component {
     this.handleStartTimeChange = this.handleStartTimeChange.bind(this);
     this.handleEndTimeChange = this.handleEndTimeChange.bind(this);
     this.changeSelectedTestStudent = this.changeSelectedTestStudent.bind(this);
-    this.handleLocationDropdownChange = this.handleLocationDropdownChange.bind(
-      this
-    );
+    this.handleLocationDropdownChange =
+      this.handleLocationDropdownChange.bind(this);
 
     this.clickFormInput = this.clickFormInput.bind(this);
     this.clickStepsInput = this.clickStepsInput.bind(this);
@@ -141,9 +140,8 @@ class TestList extends Component {
     this.handleStepsScoreChange = this.handleStepsScoreChange.bind(this);
     this.handlePowerScoreChange = this.handlePowerScoreChange.bind(this);
     this.handleKiapScoreChange = this.handleKiapScoreChange.bind(this);
-    this.handleQuestionsScoreChange = this.handleQuestionsScoreChange.bind(
-      this
-    );
+    this.handleQuestionsScoreChange =
+      this.handleQuestionsScoreChange.bind(this);
     this.handleAttitudeScoreChange = this.handleAttitudeScoreChange.bind(this);
     this.handleSparringScoreChange = this.handleSparringScoreChange.bind(this);
     this.handleBreakingScoreChange = this.handleBreakingScoreChange.bind(this);
@@ -157,8 +155,8 @@ class TestList extends Component {
   onFill = () => {
     this.formRef.current.setFieldsValue({
       title: this.state.title,
-      startTime: moment(this.state.test.startTime, "HH:mm:ss"),
-      endTime: moment(this.state.test.endTime, "HH:mm:ss"),
+      startTime: moment(this.state.test.startTime, "HH:mm a"),
+      endTime: moment(this.state.test.endTime, "HH:mm a"),
       date: moment(this.state.date),
       location: this.state.selectedLocation,
       type: this.state.selectedType,
@@ -1159,8 +1157,8 @@ class TestList extends Component {
         <Form
           initialValues={{
             title: this.state.title,
-            startTime: moment(this.state.test.startTime, "HH:mm:ss"),
-            endTime: moment(this.state.test.endTime, "HH:mm:ss"),
+            startTime: moment(this.state.test.startTime, "HH:mm a"),
+            endTime: moment(this.state.test.endTime, "HH:mm a"),
             date: moment(this.state.date),
             location: this.state.selectedLocation,
             type: this.state.selectedType,

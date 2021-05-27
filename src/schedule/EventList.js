@@ -1065,8 +1065,8 @@ class EventList extends Component {
             type: this.state.selectedType,
             location: this.state.selectedLocation,
             date: moment(this.state.date),
-            startTime: moment(this.state.startTime, "HH:mm:ss"),
-            endTime: moment(this.state.endTime, "HH:mm:ss"),
+            startTime: moment(this.state.startTime, "HH:mm a"),
+            endTime: moment(this.state.endTime, "HH:mm a"),
             lowestRank: "Gold Stripe",
             highestRank: "Fifth Degree",
             youngestAge: 0,
@@ -1078,6 +1078,7 @@ class EventList extends Component {
           ref={this.formRef}
         >
           <Collapse
+            accordion
             bordered={false}
             defaultActiveKey={["1"]}
             className="site-collapse-custom-collapse"
@@ -1555,8 +1556,8 @@ class EventList extends Component {
     this.formRef.current.setFieldsValue({
       title: this.state.title,
       description: this.state.description,
-      startTime: moment(this.state.startTime, "HH:mm:ss"),
-      endTime: moment(this.state.endTime, "HH:mm:ss"),
+      startTime: moment(this.state.startTime, "HH:mm a"),
+      endTime: moment(this.state.endTime, "HH:mm a"),
       date: moment(this.state.date),
       location: this.state.selectedLocation,
       type: this.state.selectedType,
