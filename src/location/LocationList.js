@@ -28,6 +28,7 @@ import {
   DeleteOutlined,
   EnvironmentOutlined,
   SaveOutlined,
+  QuestionCircleOutlined,
 } from "@ant-design/icons";
 
 const { Title, Text } = Typography;
@@ -208,9 +209,6 @@ class LocationList extends Component {
       pagination,
       columns,
       isSavedLocation,
-      name,
-      address,
-      location,
     } = this.state;
 
     var ModalTitle;
@@ -224,10 +222,12 @@ class LocationList extends Component {
       if (isSavedLocation) {
         return (
           <Popconfirm
+            icon={<QuestionCircleOutlined style={{ color: "red" }} />}
             title="Delete location?"
             onConfirm={this.removeLocation}
             okText="Yes"
             cancelText="No"
+            overlayClassName="custom-style"
           >
             <Button
               type="primary"

@@ -275,6 +275,15 @@
     border-color: @primary-blue;
   }
 
+  .ant-input:hover {
+    border-color: @primary-blue;
+  }
+
+  .ant-input:focus {
+    border-color: @highlight-blue;
+    box-shadow: 0 0 0px 1px @border-blue;
+  }
+
   .ant-select {
     background-color: @highlight-blue;
   }
@@ -291,7 +300,7 @@
   .ant-select-focused:not(.ant-select-disabled).ant-select-single:not(.ant-select-customize-input)
     .ant-select-selector {
     border-color: @highlight-blue;
-    box-shadow: 0 0 0px 1px @highlight-blue;
+    box-shadow: 0 0 0px 1px @border-blue;
   }
 
   .ant-checkbox-wrapper:hover .ant-checkbox-inner,
@@ -434,29 +443,6 @@
     font-size: 14px;
     text-align: center;
     border-radius: 2px 2px 2px 2px;
-  }
-
-  .ant-popover-message {
-    position: relative;
-    padding: 4px 0 12px;
-    color: rgba(0, 0, 0, 0.85);
-    font-size: 14px;
-    background-color: @primary-blue;
-  }
-
-  .ant-popover-buttons {
-    margin-bottom: 4px;
-    text-align: right;
-    color: #fff;
-    background: @primary-blue;
-    border-color: @border-blue;
-    border-radius: 6px;
-    box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.6);
-    &:hover {
-      background-color: @highlight-blue !important;
-      border-color: @border-blue !important;
-      color: white;
-    }
   }
 
   .ant-picker {

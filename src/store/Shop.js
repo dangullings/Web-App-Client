@@ -336,8 +336,23 @@ class Shop extends Component {
 
   completeOrder() {
     this.setState({
+      cartItems: [],
+      cartItemsQty: [],
+      search: "",
+      page: 0,
+      searchText: "",
+      searchedColumn: "",
+      total: 0,
+      orderId: "",
       loading: false,
       cartVisible: false,
+    });
+
+    notification.success({
+      message: "Thank you for your purchase!",
+      description:
+        "The receipt has been emailed to " + this.state.currentUser.email,
+      duration: 6,
     });
   }
 
@@ -977,7 +992,7 @@ class Shop extends Component {
 
           <Affix
             offsetTop={55}
-            style={{ position: "absolute", top: 0, left: -25 }}
+            style={{ position: "absolute", top: 0, left: -50 }}
           >
             <Badge count={cartItems.length}>
               <Button
@@ -992,8 +1007,8 @@ class Shop extends Component {
                 onClick={this.showModal}
                 icon={
                   <ShoppingCartOutlined
-                    offset={[-30, -10]}
-                    style={{ fontSize: "40px" }}
+                    offset={[0, 0]}
+                    style={{ fontSize: "40px", marginLeft: 30 }}
                   />
                 }
               ></Button>

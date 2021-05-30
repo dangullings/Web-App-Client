@@ -408,25 +408,25 @@ class OrderList extends Component {
     ];
 
     const newHeader = [
-      <Row>
+      <Row style={{ justifyContent: "space-between" }}>
         {title}
-        <Divider style={{ height: 35, marginLeft: 5 }} type="vertical" />
+        <Divider style={{ height: 35 }} type="vertical" />
         <Search
           size={"small"}
           placeholder="search note"
           onSearch={this.onSearch}
           onChange={this.onChangeSearch}
+          dropdownClassName="custom-style"
           style={{
-            marginLeft: 5,
             width: 120,
             height: 32,
           }}
         />
-        <Text type="secondary" style={{ marginTop: 5, marginLeft: 8 }}>
+        <Text type="secondary" style={{ marginTop: 5 }}>
           Fulfilled
         </Text>
         <Switch
-          className="custom-style"
+          dropdownClassName="custom-style"
           style={{
             marginTop: 5,
             marginLeft: 5,

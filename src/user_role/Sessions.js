@@ -128,7 +128,6 @@ class Sessions extends Component {
       <Link to={`/user/sessions/${session.id}`}>
         <Card
           className="session"
-          hoverable
           bordered={false}
           key={session.id}
           headStyle={{ backgroundColor: "#fafafa" }}

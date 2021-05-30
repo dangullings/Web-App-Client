@@ -57,7 +57,7 @@ import {
   CarryOutOutlined,
   PlusCircleOutlined,
   PlusOutlined,
-  CaretRightOutlined,
+  QuestionCircleOutlined,
 } from "@ant-design/icons";
 import "../styles/style.less";
 
@@ -2275,10 +2275,12 @@ class SessionList extends Component {
       if (isSavedSession) {
         return (
           <Popconfirm
+            icon={<QuestionCircleOutlined style={{ color: "red" }} />}
             title="Delete event?"
             onConfirm={this.removeSession}
             okText="Yes"
             cancelText="No"
+            overlayClassName="custom-style"
           >
             <Button
               type="primary"
@@ -2396,6 +2398,7 @@ class SessionList extends Component {
                 <Input
                   placeholder="Title"
                   autosize={{ minRows: 1, maxRows: 1 }}
+                  className="custom-style"
                 />
               </Form.Item>
 
@@ -2530,6 +2533,7 @@ class SessionList extends Component {
                   placeholder={"select a lowest rank"}
                   defaultValue={"Gold Stripe"}
                   onChange={this.handleLowestRankChange}
+                  dropdownClassName="custom-style"
                 >
                   {ranks.map((rank) => (
                     <Select.Option value={rank} key={rank}>
@@ -2556,6 +2560,7 @@ class SessionList extends Component {
                   placeholder={"select a highest rank"}
                   defaultValue={"Fifth Degree"}
                   onChange={this.handleHighestRankChange}
+                  dropdownClassName="custom-style"
                 >
                   {ranks.map((rank) => (
                     <Select.Option value={rank} key={rank}>
@@ -2583,6 +2588,7 @@ class SessionList extends Component {
                   placeholder={"select a youngest age"}
                   defaultValue={0}
                   onChange={this.handleYoungestAgeChange}
+                  dropdownClassName="custom-style"
                 >
                   {ages}
                 </Select>
@@ -2605,6 +2611,7 @@ class SessionList extends Component {
                   placeholder={"select an oldest age"}
                   defaultValue={99}
                   onChange={this.handleOldestAgeChange}
+                  dropdownClassName="custom-style"
                 >
                   {ages}
                 </Select>

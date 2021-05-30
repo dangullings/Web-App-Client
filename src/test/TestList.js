@@ -49,6 +49,7 @@ import {
   DeleteOutlined,
   CloseOutlined,
   LoadingOutlined,
+  QuestionCircleOutlined,
 } from "@ant-design/icons";
 
 const ranks = getRanks();
@@ -1094,10 +1095,12 @@ class TestList extends Component {
       if (isSavedTest) {
         return (
           <Popconfirm
+            icon={<QuestionCircleOutlined style={{ color: "red" }} />}
             title="Delete test?"
             onConfirm={this.removeTest}
             okText="Yes"
             cancelText="No"
+            overlayClassName="custom-style"
           >
             <Button
               type="primary"
@@ -1381,6 +1384,7 @@ class TestList extends Component {
               value={testStudentIds}
               onChange={this.handleChange}
               onMouseEnter={this.mouseEnter}
+              dropdownClassName="custom-style"
             >
               {filteredOptions.map((item) => (
                 <Select.Option key={item.id} value={item.id}>

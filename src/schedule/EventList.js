@@ -47,7 +47,7 @@ import {
   DeleteOutlined,
   UploadOutlined,
   ReloadOutlined,
-  CarryOutOutlined,
+  QuestionCircleOutlined,
   PlusCircleOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
@@ -1004,10 +1004,12 @@ class EventList extends Component {
       if (isSavedEvent) {
         return (
           <Popconfirm
+            icon={<QuestionCircleOutlined style={{ color: "red" }} />}
             title="Delete event?"
             onConfirm={this.removeEvent}
             okText="Yes"
             cancelText="No"
+            overlayClassName="custom-style"
           >
             <Button
               type="primary"
@@ -1079,6 +1081,7 @@ class EventList extends Component {
           layout="vertical"
           onFinish={this.handleEventSubmit}
           ref={this.formRef}
+          className="custom-style"
         >
           <Collapse
             accordion
@@ -1157,6 +1160,7 @@ class EventList extends Component {
                   align="center"
                   placeholder={"select type"}
                   onChange={this.handleTypeChange}
+                  dropdownClassName="custom-style"
                 >
                   <Option value="Camp">Camp</Option>
                   <Option value="Misc">Misc</Option>
@@ -1183,6 +1187,7 @@ class EventList extends Component {
                   Key={locations.id}
                   placeholder={"select location"}
                   onChange={this.handleLocationDropdownChange}
+                  dropdownClassName="custom-style"
                 >
                   {locations.map((item) => (
                     <Select.Option value={item.name} key={item.id}>
@@ -1374,6 +1379,7 @@ class EventList extends Component {
                   placeholder={"select a lowest rank"}
                   defaultValue={"Gold Stripe"}
                   onChange={this.handleLowestRankChange}
+                  dropdownClassName="custom-style"
                 >
                   {ranks.map((rank) => (
                     <Select.Option value={rank} key={rank}>
@@ -1400,6 +1406,7 @@ class EventList extends Component {
                   placeholder={"select a highest rank"}
                   defaultValue={"Fifth Degree"}
                   onChange={this.handleHighestRankChange}
+                  dropdownClassName="custom-style"
                 >
                   {ranks.map((rank) => (
                     <Select.Option value={rank} key={rank}>
@@ -1427,6 +1434,7 @@ class EventList extends Component {
                   placeholder={"select a youngest age"}
                   defaultValue={0}
                   onChange={this.handleYoungestAgeChange}
+                  dropdownClassName="custom-style"
                 >
                   {ages}
                 </Select>
@@ -1449,6 +1457,7 @@ class EventList extends Component {
                   placeholder={"select an oldest age"}
                   defaultValue={99}
                   onChange={this.handleOldestAgeChange}
+                  dropdownClassName="custom-style"
                 >
                   {ages}
                 </Select>

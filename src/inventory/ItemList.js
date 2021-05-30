@@ -597,6 +597,7 @@ class NewItem extends Component {
               style={{ marginLeft: 0, width: "100%" }}
               placeholder={"select type"}
               onChange={this.handleTypeDropdownChange}
+              dropdownClassName="custom-style"
             >
               {children}
             </Select>
@@ -618,6 +619,7 @@ class NewItem extends Component {
               placeholder={"select genders"}
               value={selectedSizes}
               onChange={this.handleGenderDropdownChange}
+              dropdownClassName="custom-style"
             >
               {clothingGenders}
             </Select>
@@ -639,6 +641,7 @@ class NewItem extends Component {
               placeholder={"select sizes"}
               value={selectedSizes}
               onChange={this.handleSizeDropdownChange}
+              dropdownClassName="custom-style"
             >
               {clothingSizes}
             </Select>
@@ -660,6 +663,7 @@ class NewItem extends Component {
               placeholder={"select colors"}
               value={selectedColors}
               onChange={this.handleColorDropdownChange}
+              dropdownClassName="custom-style"
             >
               {colorsAvailable}
             </Select>

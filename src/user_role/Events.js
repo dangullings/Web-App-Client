@@ -127,7 +127,6 @@ class Events extends Component {
       <Link to={`/user/events/${event.id}`}>
         <Card
           className="session"
-          hoverable
           bordered={false}
           key={event.id}
           headStyle={{ backgroundColor: "#fafafa" }}

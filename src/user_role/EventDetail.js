@@ -503,6 +503,7 @@ class EventDetail extends Component {
         {eventCard}
         <Modal
           className="event-detail"
+          style={{ top: 10 }}
           bordered={false}
           loading={loading}
           visible={eventSignupVisible}

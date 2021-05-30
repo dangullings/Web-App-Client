@@ -30,7 +30,7 @@ import {
 import {
   LeftOutlined,
   SaveOutlined,
-  EditOutlined,
+  QuestionCircleOutlined,
   LikeOutlined,
   DislikeOutlined,
   DeleteOutlined,
@@ -333,10 +333,12 @@ class Order extends Component {
 
     const deleteOrderBtn = [
       <Popconfirm
+        icon={<QuestionCircleOutlined style={{ color: "red" }} />}
         title="Delete order?"
         onConfirm={this.deleteOrder}
         okText="Yes"
         cancelText="No"
+        overlayClassName="custom-style"
       >
         <Button
           type="primary"

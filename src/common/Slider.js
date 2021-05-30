@@ -234,7 +234,10 @@ class Slider extends Component {
     } */
 
     const title = [
-      <Title style={{ marginBottom: 0, marginTop: 0 }} level={3}>
+      <Title
+        style={{ marginBottom: 0, marginTop: 0, color: "white" }}
+        level={3}
+      >
         Company Name
       </Title>,
     ];

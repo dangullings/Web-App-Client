@@ -628,7 +628,7 @@ class SessionDetail extends Component {
         {sessionCard}
         <Modal
           className="session-detail"
-          style={{ top: 20 }}
+          style={{ top: 10 }}
           bordered={false}
           loading={loading}
           visible={sessionSignupVisible}
