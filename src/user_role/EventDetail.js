@@ -30,7 +30,12 @@ import {
 } from "../util/APIUtils";
 import { Link, withRouter } from "react-router-dom";
 import StripeContainer from "../stripe/StripeContainer";
-import { SaveOutlined, DollarOutlined, LeftOutlined } from "@ant-design/icons";
+import {
+  SaveOutlined,
+  DollarOutlined,
+  LeftOutlined,
+  LoadingOutlined,
+} from "@ant-design/icons";
 
 import "../styles/style.less";
 
@@ -475,7 +480,11 @@ class EventDetail extends Component {
     const { loading, currentUser, event, eventSignupVisible, myPeeps, image } =
       this.state;
 
-    var eventCard = [<Spin spinning={loading} />];
+    var eventCard = [
+      <Row style={{ color: "#c9c9c9", fontSize: 28, justifyContent: "center" }}>
+        Loading... <LoadingOutlined spin />
+      </Row>,
+    ];
 
     if (event && image) {
       eventCard = this.eventCard(event);

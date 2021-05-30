@@ -35,6 +35,7 @@ import {
   removeStudentEventByEventIdAndStudentId,
   removeStudentEventsByEventId,
   getImage,
+  removeImage,
 } from "../util/APIUtils";
 import moment from "moment";
 import { STUDENT_LIST_SIZE } from "../constants";
@@ -796,6 +797,11 @@ class EventList extends Component {
 
   removeEvent = () => {
     const id = this.state.eventId;
+    const { event } = this.state;
+    removeImage(event.imageId)
+      .then((response) => {})
+      .catch((error) => {});
+
     removeEventById(id)
       .then((response) => {
         message.success("Event deleted.");
@@ -1025,10 +1031,7 @@ class EventList extends Component {
         onClick={this.showModal}
         size={"default"}
         style={{
-          marginBottom: 10,
-          marginTop: 10,
-          marginLeft: 8,
-          marginRight: 10,
+          margin: 10,
         }}
       >
         New Event
@@ -1036,7 +1039,7 @@ class EventList extends Component {
 
       <Modal
         closable={false}
-        className="session-list"
+        className="custom-style"
         visible={eventModalVisible}
         title={ModalTitle}
         onCancel={this.handleCancel}
@@ -1251,6 +1254,7 @@ class EventList extends Component {
                   style={{
                     width: "100%",
                   }}
+                  dropdownClassName="custom-style"
                 />
               </Form.Item>
 
@@ -1280,7 +1284,9 @@ class EventList extends Component {
                   align="center"
                   placeholder={"select start time"}
                   minuteStep={15}
+                  showNow={false}
                   style={{ marginLeft: 0, width: "100%" }}
+                  popupClassName="custom-style"
                 />
               </Form.Item>
 
@@ -1310,7 +1316,10 @@ class EventList extends Component {
                   align="center"
                   placeholder={"select end time"}
                   minuteStep={15}
+                  showNow={false}
+                  popupClassName="custom-style"
                   style={{ marginLeft: 0, width: "100%" }}
+                  dropdownClassName="custom-style"
                 />
               </Form.Item>
             </Panel>
@@ -1512,7 +1521,7 @@ class EventList extends Component {
         columns={eventCols}
         dataSource={events}
         size="small"
-        scroll={{ y: 350 }}
+        scroll={{ y: 400 }}
         onChange={this.handleTableChange}
         onRow={(record, rowIndex) => {
           return {
@@ -1530,9 +1539,9 @@ class EventList extends Component {
 
     return (
       <Card
-        className="session-list"
+        className="custom-style"
         bordered={false}
-        bodyStyle={{ padding: 0 }}
+        bodyStyle={{ padding: 1 }}
         title={TableTitle}
       >
         {contentList}

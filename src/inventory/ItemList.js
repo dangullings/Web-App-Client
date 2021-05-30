@@ -545,17 +545,14 @@ class NewItem extends Component {
         icon={<PlusOutlined />}
         onClick={this.showModal}
         style={{
-          marginBottom: 10,
-          marginTop: 10,
-          marginLeft: 2,
-          marginRight: 10,
+          margin: 10,
         }}
       >
         New Item
       </Button>,
 
       <Modal
-        className="item-list"
+        className="custom-style"
         //destroyOnClose={true}
         closable={false}
         style={{ top: 0 }}
@@ -783,7 +780,7 @@ class NewItem extends Component {
         columns={columns}
         dataSource={items}
         size="small"
-        scroll={{ y: 350 }}
+        scroll={{ y: 400 }}
         onChange={this.handleTableChange}
         onRow={(record, rowIndex) => {
           return {
@@ -807,9 +804,9 @@ class NewItem extends Component {
 
     return (
       <Card
-        className="item-list"
+        className="custom-style"
         bordered={false}
-        bodyStyle={{ padding: 0 }}
+        bodyStyle={{ padding: 1 }}
         title={title}
       >
         {contentList}

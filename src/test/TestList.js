@@ -1120,10 +1120,7 @@ class TestList extends Component {
         icon={<PlusOutlined />}
         onClick={this.showModal}
         style={{
-          marginBottom: 10,
-          marginTop: 10,
-          marginLeft: 4,
-          marginRight: 10,
+          margin: 10,
         }}
       >
         New Test
@@ -1131,7 +1128,7 @@ class TestList extends Component {
 
       <Modal
         visible={visible}
-        className="test-list"
+        className="custom-style"
         title={ModalTitle}
         closable={false}
         style={{ top: 0 }}
@@ -1233,6 +1230,7 @@ class TestList extends Component {
             <Select
               align="center"
               style={{ marginLeft: 0, width: "100%" }}
+              dropdownClassName="custom-style"
               Key={locationItems.id}
               placeholder={"select location"}
             >
@@ -1263,6 +1261,7 @@ class TestList extends Component {
               inputReadOnly="true"
               align="center"
               style={{ marginLeft: 0, width: "100%" }}
+              dropdownClassName="custom-style"
             />
           </Form.Item>
 
@@ -1293,6 +1292,8 @@ class TestList extends Component {
               placeholder={"select start time"}
               minuteStep={15}
               style={{ marginLeft: 0, width: "100%" }}
+              showNow={false}
+              popupClassName="custom-style"
             />
           </Form.Item>
           <span
@@ -1330,6 +1331,8 @@ class TestList extends Component {
               placeholder={"select end time"}
               minuteStep={15}
               style={{ marginLeft: 0, width: "100%" }}
+              showNow={false}
+              popupClassName="custom-style"
             />
           </Form.Item>
 
@@ -1418,8 +1421,8 @@ class TestList extends Component {
 
     return (
       <Card
-        bodyStyle={{ padding: 0 }}
-        className="test-list"
+        bodyStyle={{ padding: 1 }}
+        className="custom-style"
         bordered={false}
         title={TableTitle}
       >

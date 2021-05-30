@@ -126,7 +126,7 @@ class Events extends Component {
     const eventCard = [
       <Link to={`/user/events/${event.id}`}>
         <Card
-          className="event"
+          className="session"
           hoverable
           bordered={false}
           key={event.id}

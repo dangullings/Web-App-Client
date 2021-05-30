@@ -36,9 +36,13 @@ import {
   getAllStudentsBySessionId,
   createStudentSession,
   getStudentSessionsBySessionId,
+  removeClassDatesBySessionId,
+  removeStudentSessionsBySessionId,
   removeStudentSessionBySessionIdAndStudentId,
+  removeSessionById,
   getImage,
   createImage,
+  removeImage,
 } from "../util/APIUtils";
 import moment from "moment";
 import { STUDENT_LIST_SIZE } from "../constants";
@@ -813,13 +817,22 @@ class SessionList extends Component {
       month = m;
       year = y;
 
+      let startTime = date.startTime,
+        endTime = date.endTime;
+      if (date.startTime instanceof moment) {
+        startTime = startTime.format("h:mm a");
+      }
+      if (date.endTime instanceof moment) {
+        endTime = endTime.format("h:mm a");
+      }
+
       let ClassDateData = {
         id: date.id,
         location: this.state.selectedLocation,
         title: this.state.title,
         date: date.date,
-        startTime: date.startTime,
-        endTime: date.endTime,
+        startTime: startTime,
+        endTime: endTime,
         sessionId: sessionId,
         secondHour: date.hasSecondHour,
         month: month,
@@ -837,6 +850,10 @@ class SessionList extends Component {
   }
 
   resetAllDates() {
+    removeClassDatesBySessionId(this.state.sessionId)
+      .then((response) => {})
+      .catch((error) => {});
+
     this.setState({
       selectedDays: [],
       selected2ndHours: [],
@@ -897,6 +914,10 @@ class SessionList extends Component {
     this.setState({
       datesSet: true,
     });
+
+    removeClassDatesBySessionId(this.state.sessionId)
+      .then((response) => {})
+      .catch((error) => {});
   }
 
   changeSelectedDate(value) {
@@ -1624,6 +1645,29 @@ class SessionList extends Component {
     });
   }
 
+  removeSession = () => {
+    const id = this.state.sessionId;
+    const { session } = this.state;
+    removeImage(session.imageId)
+      .then((response) => {})
+      .catch((error) => {});
+
+    removeSessionById(id)
+      .then((response) => {
+        message.success("Session deleted.");
+        this.handleCancel;
+        this.getSessionList(this.state.page, this.state.STUDENT_LIST_SIZE);
+        this.setState({ loading: false, sessionModalVisible: false });
+      })
+      .catch((error) => {
+        message.error("Error [" + error.message + "]");
+      });
+
+    removeStudentSessionsBySessionId(id)
+      .then((response) => {})
+      .catch((error) => {});
+  };
+
   render() {
     const {
       selectedDate,
@@ -1796,6 +1840,7 @@ class SessionList extends Component {
             defaultValue={moment()}
             value={specific.date}
             onChange={this.changeSpecificDate}
+            dropdownClassName="custom-style"
           />
           {/* <Checkbox
             style={{ marginLeft: 20 }}
@@ -1819,6 +1864,8 @@ class SessionList extends Component {
             minuteStep={15}
             value={specific.startTime}
             onChange={this.handleSpecificStartTimeChange}
+            showNow={false}
+            popupClassName="custom-style"
           />
           <TimePicker
             inputReadOnly="true"
@@ -1831,6 +1878,8 @@ class SessionList extends Component {
             minuteStep={15}
             value={specific.endTime}
             onChange={this.handleSpecificEndTimeChange}
+            showNow={false}
+            popupClassName="custom-style"
           />
         </Col>
       </Row>,
@@ -1858,6 +1907,8 @@ class SessionList extends Component {
             minuteStep={15}
             value={monday.startTime}
             onChange={this.handleMondayStartTimeChange}
+            showNow={false}
+            popupClassName="custom-style"
           />
           <TimePicker
             inputReadOnly="true"
@@ -1870,6 +1921,8 @@ class SessionList extends Component {
             minuteStep={15}
             value={monday.endTime}
             onChange={this.handleMondayEndTimeChange}
+            showNow={false}
+            popupClassName="custom-style"
           />
 
           {/* <Checkbox
@@ -1903,6 +1956,8 @@ class SessionList extends Component {
             minuteStep={15}
             value={tuesday.startTime}
             onChange={this.handleTuesdayStartTimeChange}
+            showNow={false}
+            popupClassName="custom-style"
           />
           <TimePicker
             inputReadOnly="true"
@@ -1915,6 +1970,8 @@ class SessionList extends Component {
             minuteStep={15}
             value={tuesday.endTime}
             onChange={this.handleTuesdayEndTimeChange}
+            showNow={false}
+            popupClassName="custom-style"
           />
 
           {/* <Checkbox
@@ -1948,6 +2005,8 @@ class SessionList extends Component {
             minuteStep={15}
             value={wednesday.startTime}
             onChange={this.handleWednesdayStartTimeChange}
+            showNow={false}
+            popupClassName="custom-style"
           />
           <TimePicker
             inputReadOnly="true"
@@ -1960,6 +2019,8 @@ class SessionList extends Component {
             minuteStep={15}
             value={wednesday.endTime}
             onChange={this.handleWednesdayEndTimeChange}
+            showNow={false}
+            popupClassName="custom-style"
           />
 
           {/*  <Checkbox
@@ -1993,6 +2054,8 @@ class SessionList extends Component {
             minuteStep={15}
             value={thursday.startTime}
             onChange={this.handleThursdayStartTimeChange}
+            showNow={false}
+            popupClassName="custom-style"
           />
           <TimePicker
             inputReadOnly="true"
@@ -2005,6 +2068,8 @@ class SessionList extends Component {
             minuteStep={15}
             value={thursday.endTime}
             onChange={this.handleThursdayEndTimeChange}
+            showNow={false}
+            popupClassName="custom-style"
           />
 
           {/* <Checkbox
@@ -2038,6 +2103,8 @@ class SessionList extends Component {
             minuteStep={15}
             value={friday.startTime}
             onChange={this.handleFridayStartTimeChange}
+            showNow={false}
+            popupClassName="custom-style"
           />
           <TimePicker
             inputReadOnly="true"
@@ -2050,6 +2117,8 @@ class SessionList extends Component {
             minuteStep={15}
             value={friday.endTime}
             onChange={this.handleFridayEndTimeChange}
+            showNow={false}
+            popupClassName="custom-style"
           />
 
           {/*  <Checkbox
@@ -2083,6 +2152,8 @@ class SessionList extends Component {
             minuteStep={15}
             value={saturday.startTime}
             onChange={this.handleSaturdayStartTimeChange}
+            showNow={false}
+            popupClassName="custom-style"
           />
           <TimePicker
             inputReadOnly="true"
@@ -2095,6 +2166,8 @@ class SessionList extends Component {
             minuteStep={15}
             value={saturday.endTime}
             onChange={this.handleSaturdayEndTimeChange}
+            showNow={false}
+            popupClassName="custom-style"
           />
 
           {/* <Checkbox
@@ -2198,6 +2271,30 @@ class SessionList extends Component {
     }
     const TableTitle = <Title level={3}>Session List</Title>;
 
+    const renderDeleteButton = () => {
+      if (isSavedSession) {
+        return (
+          <Popconfirm
+            title="Delete event?"
+            onConfirm={this.removeSession}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Button
+              type="primary"
+              danger
+              icon={<DeleteOutlined />}
+              loading={loading}
+            >
+              Delete
+            </Button>
+          </Popconfirm>
+        );
+      } else {
+        return [];
+      }
+    };
+
     const contentList = [
       <Button
         type="primary"
@@ -2205,19 +2302,14 @@ class SessionList extends Component {
         onClick={this.showModal}
         size={"default"}
         style={{
-          marginBottom: 10,
-          marginTop: 10,
-          marginLeft: 8,
-          marginRight: 10,
-          boxShadow:
-            "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
+          margin: 10,
         }}
       >
         New Session
       </Button>,
 
       <Modal
-        className="session-list"
+        className="custom-style"
         visible={sessionModalVisible}
         title={ModalTitle}
         closable={false}
@@ -2237,6 +2329,7 @@ class SessionList extends Component {
           >
             Cancel
           </Button>,
+          renderDeleteButton(),
           <Button
             key="submit"
             type="primary"
@@ -2347,6 +2440,7 @@ class SessionList extends Component {
                   align="center"
                   Key={locations.id}
                   placeholder={"select location"}
+                  dropdownClassName="custom-style"
                   onChange={this.handleLocationDropdownChange}
                 >
                   {locations.map((item) => (
@@ -2551,6 +2645,17 @@ class SessionList extends Component {
                   style={{
                     width: "100%",
                   }}
+                  dropdownClassName="custom-style"
+                  /* dateRender={(current) => {
+                    const style = {};
+                      style.border = "1px solid #1890ff";
+                      style.borderRadius = "50%";
+                    return (
+                      <div className="ant-picker-cell-inner" style={style}>
+                        {current.date()}
+                      </div>
+                    );
+                  }} */
                 />
               </Form.Item>
 
@@ -2580,6 +2685,7 @@ class SessionList extends Component {
                   style={{
                     width: "100%",
                   }}
+                  dropdownClassName="custom-style"
                 />
               </Form.Item>
 
@@ -2719,7 +2825,7 @@ class SessionList extends Component {
         columns={sessionCols}
         dataSource={sessions}
         size="small"
-        scroll={{ y: 350 }}
+        scroll={{ y: 400 }}
         onChange={this.handleTableChange}
         onRow={(record, rowIndex) => {
           return {
@@ -2737,9 +2843,9 @@ class SessionList extends Component {
 
     return (
       <Card
-        className="session-list"
+        className="custom-style"
         bordered={false}
-        bodyStyle={{ padding: 0 }}
+        bodyStyle={{ padding: 1 }}
         title={TableTitle}
       >
         {contentList}
@@ -2969,8 +3075,6 @@ class SessionList extends Component {
             description: session.description,
             sessionId: session.id,
             price: session.price,
-            startTime: session.startTime,
-            endTime: session.endTime,
             selectedType: session.type,
             youngestAge: youngestAge,
             oldestAge: oldestAge,

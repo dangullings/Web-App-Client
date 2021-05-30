@@ -31,7 +31,12 @@ import {
 } from "../util/APIUtils";
 import { Link, withRouter } from "react-router-dom";
 import StripeContainer from "../stripe/StripeContainer";
-import { SaveOutlined, DollarOutlined, LeftOutlined } from "@ant-design/icons";
+import {
+  SaveOutlined,
+  DollarOutlined,
+  LeftOutlined,
+  LoadingOutlined,
+} from "@ant-design/icons";
 
 import "../styles/style.less";
 
@@ -600,7 +605,11 @@ class SessionDetail extends Component {
       image,
     } = this.state;
 
-    var sessionCard = [<Spin spinning={loading} />];
+    var sessionCard = [
+      <Row style={{ color: "#c9c9c9", fontSize: 28, justifyContent: "center" }}>
+        Loading... <LoadingOutlined spin />
+      </Row>,
+    ];
 
     if (session && image) {
       sessionCard = this.sessionCard(session);
@@ -618,32 +627,24 @@ class SessionDetail extends Component {
       <div className="session-detail">
         {sessionCard}
         <Modal
-          className="event-detail"
+          className="session-detail"
+          style={{ top: 20 }}
           bordered={false}
           loading={loading}
           visible={sessionSignupVisible}
           title={sessionModalTitle}
           footer={[
-            <Button
-              key="back"
-              type="secondary"
-              onClick={this.handleCancel}
-              style={{
-                boxShadow: "0px 0px 5px rgba(0,0,0,0.2)",
-              }}
-            >
+            <Button key="back" type="secondary" onClick={this.handleCancel}>
               Cancel
             </Button>,
             <Button
               key="submit"
               type="primary"
+              style={{ marginLeft: 0, marginTop: 10 }}
               icon={<SaveOutlined />}
               disabled={this.isFormInvalid()}
               loading={loading}
               onClick={this.handleSubmit}
-              style={{
-                boxShadow: "0px 0px 5px rgba(0,0,0,0.2)",
-              }}
             >
               Submit
             </Button>,

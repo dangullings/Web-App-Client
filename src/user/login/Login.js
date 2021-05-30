@@ -21,9 +21,9 @@ class Login extends Component {
   }
   render() {
     return (
-      <div className="login-container">
-        <h1 className="page-title">Login</h1>
-        <div className="login-content">
+      <div className="custom-style">
+        <h1 className="custom-style">Login</h1>
+        <div className="custom-style">
           <LoginForm onLogin={this.props.onLogin} />
         </div>
       </div>
@@ -82,7 +82,7 @@ class LoginForm extends Component {
 
   render() {
     return (
-      <Form onFinish={this.handleSubmit} className="login-container">
+      <Form onFinish={this.handleSubmit} className="custom-style">
         <FormItem
           name="usernameOrEmail"
           rules={[
@@ -116,7 +116,7 @@ class LoginForm extends Component {
             type="primary"
             htmlType="submit"
             size="large"
-            className="login-form-button"
+            className="custom-style"
           >
             Login
           </Button>

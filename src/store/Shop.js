@@ -745,6 +745,7 @@ class Shop extends Component {
                     marginLeft: 0,
                   }}
                   placeholder="Genders"
+                  dropdownClassName="custom-style"
                   onChange={this.changeSelectedGender(product)}
                   //Key={eventDates.index}
                 >
@@ -761,6 +762,7 @@ class Shop extends Component {
                     marginLeft: 0,
                   }}
                   placeholder="Colors"
+                  dropdownClassName="custom-style"
                   onChange={this.changeSelectedColor(product)}
                   //Key={eventDates.index}
                 >
@@ -777,6 +779,7 @@ class Shop extends Component {
                     marginLeft: 0,
                   }}
                   placeholder="Sizes"
+                  dropdownClassName="custom-style"
                   onChange={this.changeSelectedSize(product)}
                   //Key={eventDates.index}
                 >
@@ -878,7 +881,7 @@ class Shop extends Component {
     const ModalTitle = <Title level={2}>Cart</Title>;
     const cartView = [
       <Modal
-        className="shop"
+        className="custom-style"
         visible={cartVisible}
         title={ModalTitle}
         style={{ top: 0 }}
@@ -922,28 +925,28 @@ class Shop extends Component {
     const title = [<Title level={3}>Store</Title>];
 
     const newHeader = [
-      <Row>
+      <Row style={{ justifyContent: "space-around" }}>
         {title}
-        <Divider style={{ height: 35, marginLeft: 10 }} type="vertical" />
+        <Divider style={{ height: 35 }} type="vertical" />
         <Search
           size={"small"}
           placeholder="search"
           onSearch={this.onSearch}
           style={{
-            marginLeft: 8,
             width: 120,
             height: 32,
           }}
+          dropdownClassName="custom-style"
         />
         <Select
           align="center"
           style={{
-            marginLeft: 8,
             width: 120,
             height: 32,
           }}
           placeholder={"type"}
           onChange={this.handleTypeDropdownChange}
+          dropdownClassName="custom-style"
         >
           {children}
         </Select>
@@ -951,9 +954,9 @@ class Shop extends Component {
     ];
     return (
       <Card
-        className="shop"
+        className="custom-style"
         bordered={false}
-        headStyle={{ padding: 6, marginBottom: 8 }}
+        headStyle={{ marginBottom: 8 }}
         bodyStyle={{ padding: 16 }}
         title={newHeader}
       >

@@ -3,13 +3,9 @@ import moment from "moment";
 import {
   Table,
   Divider,
-  Popconfirm,
   Tooltip,
   Typography,
-  Tag,
   Select,
-  Icon,
-  Space,
   notification,
   Row,
   Form,
@@ -33,15 +29,9 @@ import {
   getTestScoresByStudentIdAndTestId,
   createUserStudent,
 } from "../util/APIUtils";
-import { STUDENT_LIST_SIZE } from "../constants";
 import { withRouter } from "react-router-dom";
 
-import {
-  SaveOutlined,
-  TeamOutlined,
-  UserAddOutlined,
-  ItalicOutlined,
-} from "@ant-design/icons";
+import { SaveOutlined, TeamOutlined, UserAddOutlined } from "@ant-design/icons";
 
 import "../styles/style.less";
 import testImage from "../img/TestImage.png";
@@ -68,29 +58,19 @@ const children = [
 ];
 const { Title, Text, Paragraph } = Typography;
 
-/* const layout = {
-  labelCol: {
-    span: 6,
-  },
-  wrapperCol: {
-    span: 12,
-  },
-}; */
-
 var testCols = [
   {
     title: "Date",
     dataIndex: "date",
     key: "date",
-    align: "center",
-    width: 25,
+    width: 20,
   },
   {
-    title: "Location",
-    dataIndex: "location",
-    key: "location",
-    align: "center",
-    width: 25,
+    title: "Rank",
+    dataIndex: "ranks",
+    key: "ranks",
+    width: 20,
+    ellipsis: true,
   },
   {
     title: "Scores",
@@ -99,7 +79,7 @@ var testCols = [
         title: "Form",
         dataIndex: "form",
         key: "form",
-        align: "center",
+        align: "right",
         width: 15,
         ellipsis: true,
       },
@@ -107,14 +87,14 @@ var testCols = [
         title: "Steps",
         dataIndex: "steps",
         key: "steps",
-        align: "center",
+        align: "right",
         width: 15,
         ellipsis: true,
       },
       {
         title: "Power",
         dataIndex: "power",
-        align: "center",
+        align: "right",
         key: "power",
         width: 15,
         ellipsis: true,
@@ -122,7 +102,7 @@ var testCols = [
       {
         title: "Kiap",
         dataIndex: "kiap",
-        align: "center",
+        align: "right",
         key: "kiap",
         width: 15,
         ellipsis: true,
@@ -130,7 +110,7 @@ var testCols = [
       {
         title: "Questions",
         dataIndex: "questions",
-        align: "center",
+        align: "right",
         key: "questions",
         width: 15,
         ellipsis: true,
@@ -138,7 +118,7 @@ var testCols = [
       {
         title: "Attitude",
         dataIndex: "attitude",
-        align: "center",
+        align: "right",
         key: "attitude",
         width: 15,
         ellipsis: true,
@@ -146,7 +126,7 @@ var testCols = [
       {
         title: "Sparring",
         dataIndex: "sparring",
-        align: "center",
+        align: "right",
         key: "sparring",
         width: 15,
         ellipsis: true,
@@ -154,7 +134,7 @@ var testCols = [
       {
         title: "Breaking",
         dataIndex: "breaking",
-        align: "center",
+        align: "right",
         key: "breaking",
         width: 15,
         ellipsis: true,
@@ -162,8 +142,6 @@ var testCols = [
     ],
   },
 ];
-
-// load all peep info up front and render static data and updated peep info
 
 class MyGroup extends Component {
   constructor(props) {
@@ -285,7 +263,7 @@ class MyGroup extends Component {
     }
 
     this.setState({
-      isLoading: true,
+      loading: true,
     });
 
     promise
@@ -293,14 +271,13 @@ class MyGroup extends Component {
         this.setState(
           {
             myPeeps: response,
-            isLoading: false,
           },
           () => this.loadPeepData(response)
         );
       })
       .catch((error) => {
         this.setState({
-          isLoading: false,
+          loading: false,
         });
       });
   }
@@ -497,6 +474,7 @@ class MyGroup extends Component {
           key: i,
           date: test.date,
           location: test.location,
+          ranks: testScore.ranks,
           form: testScore.form,
           power: testScore.power,
           steps: testScore.steps,
@@ -1618,7 +1596,7 @@ class MyGroup extends Component {
       peepDayHeaderList.push(peepDayHeader);
     }
 
-    this.setState({ peepDayHeaders: peepDayHeaderList });
+    this.setState({ peepDayHeaders: peepDayHeaderList, loading: false });
   }
 
   getPeepDayHeader(peep) {
@@ -2217,6 +2195,7 @@ class MyGroup extends Component {
       <div className="my-group">
         <Card
           bordered={false}
+          loading={loading}
           bodyStyle={{ padding: 6 }}
           style={{
             width: "100%",

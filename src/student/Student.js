@@ -253,6 +253,7 @@ class Student extends Component {
             key: i,
             date: test.date,
             location: test.location,
+            ranks: score.ranks,
             form: score.form,
             power: score.power,
             steps: score.steps,
@@ -416,21 +417,10 @@ class Student extends Component {
   isFormInvalid() {}
 
   render() {
-    const {
-      id,
-      firstName,
-      lastName,
-      email,
-      ranks,
-      active,
-    } = this.state.student;
-    const {
-      firstNameText,
-      lastNameText,
-      emailText,
-      ranksText,
-      activeText,
-    } = this.state;
+    const { id, firstName, lastName, email, ranks, active } =
+      this.state.student;
+    const { firstNameText, lastNameText, emailText, ranksText, activeText } =
+      this.state;
     const {
       testData,
       size,
@@ -448,10 +438,10 @@ class Student extends Component {
         width: 50,
       },
       {
-        title: "Location",
-        dataIndex: "location",
-        key: "location",
-        width: 60,
+        title: "Rank",
+        dataIndex: "ranks",
+        key: "ranks",
+        width: 50,
         ellipsis: true,
       },
       {
@@ -461,7 +451,7 @@ class Student extends Component {
             title: "Form",
             dataIndex: "form",
             key: "form",
-            align: "center",
+            align: "right",
             width: 40,
             ellipsis: true,
           },
@@ -469,14 +459,14 @@ class Student extends Component {
             title: "Steps",
             dataIndex: "steps",
             key: "steps",
-            align: "center",
+            align: "right",
             width: 40,
             ellipsis: true,
           },
           {
             title: "Power",
             dataIndex: "power",
-            align: "center",
+            align: "right",
             key: "power",
             width: 40,
             ellipsis: true,
@@ -484,7 +474,7 @@ class Student extends Component {
           {
             title: "Kiap",
             dataIndex: "kiap",
-            align: "center",
+            align: "right",
             key: "kiap",
             width: 40,
             ellipsis: true,
@@ -492,7 +482,7 @@ class Student extends Component {
           {
             title: "Questions",
             dataIndex: "questions",
-            align: "center",
+            align: "right",
             key: "questions",
             width: 40,
             ellipsis: true,
@@ -500,7 +490,7 @@ class Student extends Component {
           {
             title: "Attitude",
             dataIndex: "attitude",
-            align: "center",
+            align: "right",
             key: "attitude",
             width: 40,
             ellipsis: true,
@@ -508,7 +498,7 @@ class Student extends Component {
           {
             title: "Sparring",
             dataIndex: "sparring",
-            align: "center",
+            align: "right",
             key: "sparring",
             width: 40,
             ellipsis: true,
@@ -516,7 +506,7 @@ class Student extends Component {
           {
             title: "Breaking",
             dataIndex: "breaking",
-            align: "center",
+            align: "right",
             key: "breaking",
             width: 40,
             ellipsis: true,
@@ -795,10 +785,10 @@ class Student extends Component {
     ];
 
     return (
-      <div className="student">
+      <div className="custom-style">
         {back}
         <Card
-          className="student"
+          className="custom-style"
           bordered={false}
           bodyStyle={{ padding: 8 }}
           title={title}

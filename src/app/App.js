@@ -18,18 +18,14 @@ import EventCalendar from "../schedule/EventCalendar";
 import LocationList from "../location/LocationList";
 import SessionList from "../schedule/SessionList";
 import EventList from "../schedule/EventList";
-import NewSession from "../schedule/NewSession";
-import Session from "../schedule/Session";
 import Attendance from "../schedule/Attendance";
 import TestList from "../test/TestList";
-import Products from "../store/Products";
 import Shop from "../store/Shop";
 import ItemList from "../inventory/ItemList";
 import UserList from "../user/UserList";
 import StudentList from "../student/StudentList";
 import Student from "../student/Student";
 import Login from "../user/login/Login";
-import LoginForm from "../user/login/Login";
 import Signup from "../user/signup/Signup";
 import Profile from "../user/profile/Profile";
 import AppHeader from "../common/AppHeader";
@@ -256,17 +252,6 @@ class App extends Component {
               ></Route>
               <Route
                 exact
-                path="/store/Products"
-                render={(props) => (
-                  <Products
-                    isAuthenticated={this.state.isAuthenticated}
-                    currentUser={this.state.currentUser}
-                    {...props}
-                  />
-                )}
-              ></Route>
-              <Route
-                exact
                 path="/store/Shop"
                 render={(props) => (
                   <Shop
@@ -363,21 +348,6 @@ class App extends Component {
                 path="/users/:username/group"
                 render={(props) => (
                   <MyGroup
-                    isAuthenticated={this.state.isAuthenticated}
-                    currentUser={this.state.currentUser}
-                    {...props}
-                  />
-                )}
-              ></Route>
-              <Route
-                authenticated={this.state.isAuthenticated}
-                path="/attendance/NewSession"
-                component={NewSession}
-              ></Route>
-              <Route
-                path="/sessions/:id"
-                render={(props) => (
-                  <Session
                     isAuthenticated={this.state.isAuthenticated}
                     currentUser={this.state.currentUser}
                     {...props}

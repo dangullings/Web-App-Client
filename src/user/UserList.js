@@ -530,17 +530,14 @@ class UserList extends Component {
         icon={<PlusOutlined />}
         onClick={this.showModal}
         style={{
-          marginBottom: 10,
-          marginTop: 10,
-          marginLeft: 4,
-          marginRight: 10,
+          margin: 10,
         }}
       >
         New User
       </Button>,
 
       <Modal
-        className="location-list"
+        className="custom-style"
         visible={visible}
         style={{ top: 0 }}
         title={ModalTitle}
@@ -711,7 +708,6 @@ class UserList extends Component {
       </Modal>,
 
       <Table
-        style={{ padding: 2 }}
         loading={this.state.loading}
         pagination={paginations}
         rowClassName={(record, index) => this.getRowColor(record, index)}
@@ -720,7 +716,7 @@ class UserList extends Component {
         columns={columns}
         dataSource={users}
         size="small"
-        scroll={{ y: 300 }}
+        scroll={{ y: 400 }}
         onRow={(record, rowIndex) => {
           return {
             onClick: (event) => {
@@ -741,9 +737,9 @@ class UserList extends Component {
 
     return (
       <Card
-        className="location-list"
+        className="custom-style"
         bordered={false}
-        bodyStyle={{ padding: 0 }}
+        bodyStyle={{ padding: 1 }}
         title={title}
       >
         {contentList}

@@ -277,6 +277,7 @@ class Slider extends Component {
             visible={visible}
             key="placement"
             bodyStyle={{ padding: "0" }}
+            className="custom-style"
           >
             <Menu theme="light" defaultSelectedKeys={["1"]} mode="inline">
               {menuItems}

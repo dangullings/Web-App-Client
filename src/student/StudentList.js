@@ -526,24 +526,20 @@ class StudentList extends Component {
         paginations.totalPages
     );
 
-    const title = [
-      <Title style={{ marginLeft: 6, marginRight: 6 }} level={3}>
-        Students
-      </Title>,
-    ];
+    const title = [<Title level={3}>Students</Title>];
     const newStudentTitle = [<Title level={2}>New Student</Title>];
 
     const newHeader = [
-      <Row>
+      <Row style={{ justifyContent: "space-between" }}>
         {title}
-        <Divider style={{ height: 35, marginLeft: 5 }} type="vertical" />
+        <Divider style={{ height: 35 }} type="vertical" />
         <Search
           size={"small"}
           placeholder="name"
           onSearch={this.onSearch}
           onChange={this.onChangeSearch}
+          dropdownClassName="custom-style"
           style={{
-            marginLeft: 5,
             width: 120,
             height: 32,
           }}
@@ -552,11 +548,10 @@ class StudentList extends Component {
           Active
         </Text>
         <Switch
-          className="studentList"
+          className="custom-style"
           defaultChecked
           style={{
             marginTop: 5,
-            marginLeft: 5,
           }}
           onChange={this.toggleActive}
         ></Switch>
@@ -570,16 +565,13 @@ class StudentList extends Component {
         onClick={this.showModal}
         shape="round"
         style={{
-          marginBottom: 10,
-          marginTop: 5,
-          marginLeft: 0,
-          marginRight: 10,
+          margin: 10,
         }}
       >
         New Student
       </Button>,
       <Modal
-        className="studentList"
+        className="custom-style"
         visible={visible}
         title={newStudentTitle}
         closable={false}
@@ -698,13 +690,17 @@ class StudentList extends Component {
               },
             ]}
           >
-            <Select onChange={this.handleMonthChange} style={{ width: 200 }}>
+            <Select
+              dropdownClassName="custom-style"
+              onChange={this.handleMonthChange}
+              style={{ width: 200 }}
+            >
               {children}
             </Select>
           </Form.Item>
 
           <Form.Item
-            className="student-form-row"
+            className="custom-style"
             name="day"
             label={
               <Title style={{ marginBottom: 0 }} level={5}>
@@ -729,7 +725,7 @@ class StudentList extends Component {
           </Form.Item>
 
           <Form.Item
-            className="student-form-row"
+            className="custom-style"
             name="year"
             label={
               <Title style={{ marginBottom: 0 }} level={5}>
@@ -769,7 +765,11 @@ class StudentList extends Component {
               },
             ]}
           >
-            <Select onChange={this.handleRankChange} style={{ width: 200 }}>
+            <Select
+              dropdownClassName="custom-style"
+              onChange={this.handleRankChange}
+              style={{ width: 200 }}
+            >
               {ranks.map((rank) => (
                 <Select.Option value={rank}>{rank}</Select.Option>
               ))}
@@ -815,12 +815,12 @@ class StudentList extends Component {
 
     return (
       <Card
-        className="studentList"
+        className="custom-style"
         bordered={false}
-        bodyStyle={{ padding: 6 }}
         title={newHeader}
+        bodyStyle={{ padding: 1 }}
       >
-        <Spin spinning={loading}>{contentList}</Spin>
+        {contentList}
       </Card>
     );
   }

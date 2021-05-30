@@ -250,17 +250,14 @@ class LocationList extends Component {
         icon={<PlusOutlined />}
         onClick={this.showModal}
         style={{
-          marginBottom: 10,
-          marginTop: 10,
-          marginLeft: 4,
-          marginRight: 10,
+          margin: 10,
         }}
       >
         New Location
       </Button>,
 
       <Modal
-        className="location-list"
+        className="custom-style"
         visible={visible}
         title={ModalTitle}
         closable={false}
@@ -336,7 +333,6 @@ class LocationList extends Component {
       </Modal>,
 
       <Table
-        style={{ padding: 2 }}
         loading={this.state.loading}
         rowClassName={(record, index) => this.getRowColor(record, index)}
         rowKey={locations.id}
@@ -344,7 +340,7 @@ class LocationList extends Component {
         columns={columns}
         dataSource={locations}
         size="small"
-        scroll={{ y: 300 }}
+        scroll={{ y: 400 }}
         onRow={(record, rowIndex) => {
           return {
             onClick: (event) => {
@@ -365,9 +361,9 @@ class LocationList extends Component {
 
     return (
       <Card
-        className="location-list"
+        className="custom-style"
         bordered={false}
-        bodyStyle={{ padding: 0 }}
+        bodyStyle={{ padding: 1 }}
         title={title}
       >
         {contentList}

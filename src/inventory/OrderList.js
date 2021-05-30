@@ -78,6 +78,7 @@ class OrderList extends Component {
           title: "Total",
           dataIndex: "price",
           key: "price",
+          align: "right",
         },
         {
           title: "Fulfilled",
@@ -425,7 +426,7 @@ class OrderList extends Component {
           Fulfilled
         </Text>
         <Switch
-          className="order-list"
+          className="custom-style"
           style={{
             marginTop: 5,
             marginLeft: 5,
@@ -472,7 +473,7 @@ class OrderList extends Component {
 
     const orderModal = [
       <Modal
-        className="sessionList"
+        className="custom-style"
         visible={visible}
         title={modalTitle}
         closable={false}
@@ -513,12 +514,12 @@ class OrderList extends Component {
 
     return (
       <Card
-        className="order-list"
+        className="custom-style"
         bordered={false}
-        bodyStyle={{ padding: 0 }}
+        bodyStyle={{ padding: 1 }}
         title={newHeader}
       >
-        <Spin spinning={loading}>{contentList}</Spin>
+        {contentList}
         {orderModal}
       </Card>
     );

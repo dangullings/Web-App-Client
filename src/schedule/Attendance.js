@@ -89,9 +89,8 @@ class Attendance extends Component {
     };
 
     this.onChange = this.onChange.bind(this);
-    this.handleCheckboxChangeFactory = this.handleCheckboxChangeFactory.bind(
-      this
-    );
+    this.handleCheckboxChangeFactory =
+      this.handleCheckboxChangeFactory.bind(this);
     this.resetSession = this.resetSession.bind(this);
     this.saveAttendance = this.saveAttendance.bind(this);
     this.updateAttendance = this.updateAttendance.bind(this);
@@ -442,47 +441,6 @@ class Attendance extends Component {
     );
   }
 
-  getRowColor(student) {
-    let index = 2;
-    if (student.ranks.includes("Gold")) {
-      if (index % 2 === 0) {
-        return "#ffef99"; // #ffef99
-      } else {
-        return "#c8ae01"; // #c8ae01
-      }
-    } else if (student.ranks.includes("Green")) {
-      if (index % 2 === 0) {
-        return "#a5bea0"; // #a5bea0
-      } else {
-        return "#147800"; // #147800
-      }
-    } else if (student.ranks.includes("Purple")) {
-      if (index % 2 === 0) {
-        return "#c1a4c5"; // #c1a4c5
-      } else {
-        return "#a401bd"; // #a401bd
-      }
-    } else if (student.ranks.includes("Brown")) {
-      if (index % 2 === 0) {
-        return "#80756d"; // #80756d
-      } else {
-        return "#7d5e47"; // #7d5e47
-      }
-    } else if (student.ranks.includes("Red")) {
-      if (index % 2 === 0) {
-        return "#e0bbbb"; // #e0bbbb
-      } else {
-        return "#e30101"; // #e30101
-      }
-    } else {
-      if (index % 2 === 0) {
-        return "#f0f0f0"; // #f0f0f0
-      } else {
-        return "#c2c2c2"; // #c2c2c2
-      }
-    }
-  }
-
   handleSessionChange = (session) => {
     const { sessionStudents } = this.state;
 
@@ -533,6 +491,47 @@ class Attendance extends Component {
     }
 
     return min + "-" + max;
+  }
+
+  getRowColor(student, indexx) {
+    let index = 2;
+    if (student.ranks.includes("Gold")) {
+      if (index % 2 === 0) {
+        return "#ffef99"; // #ffef99
+      } else {
+        return "#c8ae01"; // #c8ae01
+      }
+    } else if (student.ranks.includes("Green")) {
+      if (index % 2 === 0) {
+        return "#a5bea0"; // #a5bea0
+      } else {
+        return "#147800"; // #147800
+      }
+    } else if (student.ranks.includes("Purple")) {
+      if (index % 2 === 0) {
+        return "#c1a4c5"; // #c1a4c5
+      } else {
+        return "#a401bd"; // #a401bd
+      }
+    } else if (student.ranks.includes("Brown")) {
+      if (index % 2 === 0) {
+        return "#80756d"; // #80756d
+      } else {
+        return "#7d5e47"; // #7d5e47
+      }
+    } else if (student.ranks.includes("Red")) {
+      if (index % 2 === 0) {
+        return "#e0bbbb"; // #e0bbbb
+      } else {
+        return "#e30101"; // #e30101
+      }
+    } else {
+      if (index % 2 === 0) {
+        return "#f0f0f0"; // #f0f0f0
+      } else {
+        return "#c2c2c2"; // #c2c2c2
+      }
+    }
   }
 
   render() {
@@ -602,10 +601,8 @@ class Attendance extends Component {
           <Button
             icon={<CarryOutOutlined />}
             disabled
-            style={{ marginLeft: 0 }}
             onClick={this.saveAttendance}
             size="default"
-            shape="round"
             type="primary"
           >
             Save Attendance
@@ -615,10 +612,8 @@ class Attendance extends Component {
         return (
           <Button
             icon={<CarryOutOutlined />}
-            style={{ marginLeft: 0 }}
             onClick={this.saveAttendance}
             size="default"
-            shape="round"
             type="primary"
           >
             Save Attendance
@@ -635,9 +630,7 @@ class Attendance extends Component {
         size={"default"}
         onChange={this.onChange}
         picker="month"
-        style={{
-          marginLeft: 6,
-        }}
+        dropdownClassName="attendance"
       />,
     ];
 
@@ -645,7 +638,7 @@ class Attendance extends Component {
       Week1: (
         <Table
           size="small"
-          //rowClassName={(record, index) => this.getRowColor(record, index)}
+          rowClassName={(record, index) => this.getRowColor(record, index)}
           pagination={false}
           loading={isLoading}
           dataSource={students}
@@ -662,7 +655,7 @@ class Attendance extends Component {
       Week2: (
         <Table
           size="small"
-          //rowClassName={(record, index) => this.getRowColor(record, index)}
+          rowClassName={(record, index) => this.getRowColor(record, index)}
           dataSource={students}
           columns={dateCols}
           bordered={true}
@@ -675,7 +668,7 @@ class Attendance extends Component {
       Week3: (
         <Table
           size="small"
-          //rowClassName={(record, index) => this.getRowColor(record, index)}
+          rowClassName={(record, index) => this.getRowColor(record, index)}
           pagination={false}
           dataSource={students}
           columns={dateCols}
@@ -688,7 +681,7 @@ class Attendance extends Component {
       Week4: (
         <Table
           size="small"
-          //rowClassName={(record, index) => this.getRowColor(record, index)}
+          rowClassName={(record, index) => this.getRowColor(record, index)}
           pagination={false}
           dataSource={students}
           columns={dateCols}
@@ -705,46 +698,41 @@ class Attendance extends Component {
     const newTitle = [<Title level={3}>{title}</Title>];
 
     const newHeader = [
-      <Row style={{ marginLeft: 0 }}>
+      <Row style={{ justifyContent: "space-between" }}>
         {newTitle}
         <Divider
           style={{
             height: 34,
-            marginLeft: 10,
-            marginRight: 10,
           }}
           type="vertical"
         />
+        {month_year}
+      </Row>,
+      <Row style={{ justifyContent: "space-between" }}>
+        {renderButton()}
+        <Select
+          align="center"
+          size="default"
+          dropdownClassName="custom-style"
+          style={{ width: "50%" }}
+          Key={sessionList.id}
+          onChange={this.handleSessionChange}
+          placeholder={"session"}
+          value={selectedSessionId}
+        >
+          {sessionList.map((item) => (
+            <Select.Option value={item.id} key={item.id}>
+              {item.title + " | " + item.location}
+            </Select.Option>
+          ))}
+        </Select>
       </Row>,
     ];
 
     return (
       <Content className="attendance">
-        <Row style={{ marginTop: 10 }}>{renderButton()}</Row>
-        <Row style={{ marginTop: 10 }}>
-          {month_year}
-          <Select
-            align="center"
-            size="default"
-            style={{
-              width: 240,
-              marginLeft: 8,
-            }}
-            Key={sessionList.id}
-            onChange={this.handleSessionChange}
-            placeholder={"session"}
-            value={selectedSessionId}
-          >
-            {sessionList.map((item) => (
-              <Select.Option value={item.id} key={item.id}>
-                {item.title + " | " + item.location}
-              </Select.Option>
-            ))}
-          </Select>
-        </Row>
         <Card
-          bodyStyle={{ padding: 0 }}
-          style={{ marginTop: 12, marginBottom: 0 }}
+          bodyStyle={{ padding: 1 }}
           bordered={false}
           title={newHeader}
           tabList={tabList}

@@ -439,56 +439,26 @@ class EventCalendar extends Component {
 
   render() {
     const {
-      title,
-      description,
-      locations,
-      selectedLocation,
       selectedDate,
       selectedMoment,
       month,
       year,
       loading,
       dayModalVisible,
-      eventModalVisible,
       eventDates,
       tests,
-      price,
     } = this.state;
 
     const headerRender = () => null;
 
     const datepickerValue = moment(selectedMoment.format("YYYY-MM"));
 
-    //console.log("user " + this.state.currentUser.role);
     var isGood;
     if (this.state.currentUser) {
       isGood = this.state.currentUser.role;
     } else {
       isGood = "user";
     }
-
-    const renderButton = () => {
-      if (isGood == "user" || isGood == "admin") {
-        return (
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={this.showEventModal}
-            size={"default"}
-            style={{
-              marginBottom: 0,
-              marginTop: 0,
-              marginLeft: 10,
-              marginRight: 0,
-            }}
-          >
-            New Event
-          </Button>
-        );
-      } else {
-        return [];
-      }
-    };
 
     var valueEventsDate = [];
 
@@ -503,7 +473,6 @@ class EventCalendar extends Component {
 
     valueEventsDate.sort((a, b) => (a.date > b.date ? 1 : -1));
 
-    const ModalTitle = <Title level={2}>New Event</Title>;
     const ModalSelectedDateTitle = <Title level={2}>{selectedDate}</Title>;
 
     const calendar = [
@@ -516,6 +485,7 @@ class EventCalendar extends Component {
           }}
           placeholder="Events / Classes"
           optionFilterProp="children"
+          dropdownClassName="custom-style"
           onChange={this.changeSelectedEvent}
           Key={valueEventsDate.index}
         >
@@ -531,13 +501,13 @@ class EventCalendar extends Component {
           onChange={this.onMonthYearChange}
           picker="month"
           inputReadOnly="true"
+          dropdownClassName="custom-style"
           defaultValue={moment().format("YYYY-MM")}
           value={datepickerValue}
           style={{
             marginLeft: 0,
           }}
         />
-        {renderButton()}
       </Row>,
 
       <Calendar
@@ -551,7 +521,7 @@ class EventCalendar extends Component {
       ></Calendar>,
 
       <Modal
-        className="eventCalendar"
+        className="custom-style"
         closable={false}
         visible={dayModalVisible}
         title={ModalSelectedDateTitle}
@@ -575,7 +545,7 @@ class EventCalendar extends Component {
     var cardTitle = "Calendar " + shortName + " '" + String(year).slice(-2);
 
     return (
-      <Content className="eventCalendar">
+      <Content className="custom-style">
         <Card
           bodyStyle={{ padding: 0 }}
           bordered={false}

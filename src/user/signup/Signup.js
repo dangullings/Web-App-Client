@@ -60,9 +60,8 @@ class Signup extends Component {
     };
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.validateUsernameAvailability = this.validateUsernameAvailability.bind(
-      this
-    );
+    this.validateUsernameAvailability =
+      this.validateUsernameAvailability.bind(this);
     this.validateEmailAvailability = this.validateEmailAvailability.bind(this);
     this.isFormInvalid = this.isFormInvalid.bind(this);
   }
@@ -121,10 +120,10 @@ class Signup extends Component {
 
   render() {
     return (
-      <div className="signup-container">
-        <h1 className="page-title">Sign Up</h1>
-        <div className="signup-content">
-          <Form onSubmit={this.handleSubmit} className="signup-form">
+      <div className="custom-style">
+        <h1 className="custom-style">Sign Up</h1>
+        <div className="custom-style">
+          <Form onSubmit={this.handleSubmit} className="custom-style">
             <Form.Item
               label="Full Name"
               validateStatus={this.state.name.validateStatus}
@@ -240,7 +239,7 @@ class Signup extends Component {
                 type="primary"
                 htmlType="submit"
                 size="large"
-                className="signup-form-button"
+                className="custom-style"
                 onClick={this.handleSubmit}
                 disabled={this.isFormInvalid()}
               >

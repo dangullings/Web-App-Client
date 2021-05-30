@@ -496,6 +496,14 @@ export function removeUserPeepsByStudentId(studentId) {
   });
 }
 
+export function removeClassDatesBySessionId(sessionId) {
+  return request({
+    url: API_BASE_URL + "/attendance/classDates/session/" + sessionId,
+    method: "DELETE",
+    body: JSON.stringify(sessionId),
+  });
+}
+
 export function removeStudentTestScores(testId) {
   return request({
     url: API_BASE_URL + "/tests/student_scores/test/" + testId,
@@ -530,6 +538,22 @@ export function removeStudentEventsByEventId(eventId) {
     url: API_BASE_URL + "/studentevents/event/" + eventId,
     method: "DELETE",
     body: JSON.stringify(eventId),
+  });
+}
+
+export function removeStudentSessionsBySessionId(sessionId) {
+  return request({
+    url: API_BASE_URL + "/studentsessions/session/" + sessionId,
+    method: "DELETE",
+    body: JSON.stringify(sessionId),
+  });
+}
+
+export function removeSessionById(id) {
+  return request({
+    url: API_BASE_URL + "/attendance/sessions/" + id,
+    method: "DELETE",
+    body: JSON.stringify(id),
   });
 }
 
@@ -944,6 +968,14 @@ export function getItem(id) {
 export function removeItemImage(id) {
   return request({
     url: API_BASE_URL + "/items/image/" + id,
+    method: "DELETE",
+    body: JSON.stringify(id),
+  });
+}
+
+export function removeImage(id) {
+  return request({
+    url: API_BASE_URL + "/images/image/" + id,
     method: "DELETE",
     body: JSON.stringify(id),
   });
