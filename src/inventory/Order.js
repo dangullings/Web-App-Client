@@ -23,6 +23,7 @@ import {
   getUser,
   getOrder,
   getOrderLineItems,
+  removeLineItemByOrderId,
   createOrder,
   removeOrder,
 } from "../util/APIUtils";
@@ -230,6 +231,12 @@ class Order extends Component {
         message.success("Order deleted.");
         this.props.history.push(`/orders/`);
       })
+      .catch((error) => {
+        message.error("Error [" + error.message + "]");
+      });
+
+    removeLineItemByOrderId(order.id)
+      .then((response) => {})
       .catch((error) => {
         message.error("Error [" + error.message + "]");
       });

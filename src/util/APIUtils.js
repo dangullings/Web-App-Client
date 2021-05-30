@@ -831,6 +831,14 @@ export function removeLineItem(id) {
   });
 }
 
+export function removeLineItemByOrderId(orderId) {
+  return request({
+    url: API_BASE_URL + "/lineitems/order/" + orderId,
+    method: "DELETE",
+    body: JSON.stringify(orderId),
+  });
+}
+
 export function getOrders(page, size) {
   //page = page || 0;
   --page;
