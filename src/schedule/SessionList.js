@@ -139,7 +139,7 @@ class SessionList extends Component {
       checkboxValues: [],
       selectedDate: moment(),
       startDate: moment(),
-      endDate: moment().add(2, "M"),
+      endDate: moment(),
       datesSet: false,
       sessionId: "",
 
@@ -390,7 +390,7 @@ class SessionList extends Component {
       oldestAge: "",
       price: 0,
       startDate: moment(),
-      endDate: moment().add(2, "M"),
+      endDate: moment(),
       signupStudents: [],
       studentSessions: [],
       allStudents: [],
@@ -809,44 +809,48 @@ class SessionList extends Component {
     var date;
     var month, year;
 
-    for (date of classDates) {
-      let parts = date.date.split("-");
-      let y = parts[0];
-      let m = parts[1];
+    removeClassDatesBySessionId(this.state.sessionId)
+      .then((response) => {
+        for (date of classDates) {
+          let parts = date.date.split("-");
+          let y = parts[0];
+          let m = parts[1];
 
-      month = m;
-      year = y;
+          month = m;
+          year = y;
 
-      let startTime = date.startTime,
-        endTime = date.endTime;
-      if (date.startTime instanceof moment) {
-        startTime = startTime.format("h:mm a");
-      }
-      if (date.endTime instanceof moment) {
-        endTime = endTime.format("h:mm a");
-      }
+          let startTime = date.startTime,
+            endTime = date.endTime;
+          if (date.startTime instanceof moment) {
+            startTime = startTime.format("h:mm a");
+          }
+          if (date.endTime instanceof moment) {
+            endTime = endTime.format("h:mm a");
+          }
 
-      let ClassDateData = {
-        id: date.id,
-        location: this.state.selectedLocation,
-        title: this.state.title,
-        date: date.date,
-        startTime: startTime,
-        endTime: endTime,
-        sessionId: sessionId,
-        secondHour: date.hasSecondHour,
-        month: month,
-        year: year,
-      };
+          let ClassDateData = {
+            id: date.id,
+            location: this.state.selectedLocation,
+            title: this.state.title,
+            date: date.date,
+            startTime: startTime,
+            endTime: endTime,
+            sessionId: sessionId,
+            secondHour: date.hasSecondHour,
+            month: month,
+            year: year,
+          };
 
-      let promise = createClassDate(ClassDateData);
-      promises.push(promise);
-    }
+          let promise = createClassDate(ClassDateData);
+          promises.push(promise);
+        }
 
-    Promise.all(promises).then((values) => {
-      this.handleCancel();
-      this.props.history.push("/schedule/sessions");
-    });
+        Promise.all(promises).then((values) => {
+          this.handleCancel();
+          this.props.history.push("/schedule/sessions");
+        });
+      })
+      .catch((error) => {});
   }
 
   resetAllDates() {
@@ -861,7 +865,7 @@ class SessionList extends Component {
       selectedDate: "",
       datesSet: false,
       startDate: moment(),
-      endDate: moment().add(1, "M"),
+      endDate: moment(),
 
       specific: {
         date: "",
@@ -946,7 +950,7 @@ class SessionList extends Component {
     };
 
     this.setState({
-      dates: this.state.dates.concat(newSpecific),
+      classDates: this.state.classDates.concat(newSpecific),
       specific: {
         date: "",
         hasSecondHour: false,
@@ -964,19 +968,19 @@ class SessionList extends Component {
   }
 
   removeSelectedDate(value) {
-    const { dates } = this.state;
+    const { classDates } = this.state;
     var i = 0;
     var d;
     var subValue = value.slice(0, 10);
 
-    for (d of dates) {
+    for (d of classDates) {
       if (subValue == d.date) {
         break;
       }
       i++;
     }
 
-    dates.splice(i, 1);
+    classDates.splice(i, 1);
 
     this.setState({
       selectedDate: "",
@@ -1029,17 +1033,12 @@ class SessionList extends Component {
   }
 
   updateDates() {
-    const {
-      startDate,
-      endDate,
-      monday,
-      tuesday,
-      wednesday,
-      thursday,
-      friday,
-      saturday,
-    } = this.state;
+    const { monday, tuesday, wednesday, thursday, friday, saturday } =
+      this.state;
     var days = [];
+
+    let startDate = this.formRef.current.getFieldValue("startDate");
+    let endDate = this.formRef.current.getFieldValue("endDate");
 
     for (
       var day = moment(startDate);
@@ -1786,7 +1785,6 @@ class SessionList extends Component {
             style={{
               width: "60%",
             }}
-            onClick={this.setDates}
             shape="round"
             type="primary"
           >
@@ -1837,7 +1835,6 @@ class SessionList extends Component {
             style={{ marginBottom: 6, marginLeft: 0 }}
             align="center"
             size={"default"}
-            defaultValue={moment()}
             value={specific.date}
             onChange={this.changeSpecificDate}
             dropdownClassName="custom-style"
@@ -2653,16 +2650,6 @@ class SessionList extends Component {
                     width: "100%",
                   }}
                   dropdownClassName="custom-style"
-                  /* dateRender={(current) => {
-                    const style = {};
-                      style.border = "1px solid #1890ff";
-                      style.borderRadius = "50%";
-                    return (
-                      <div className="ant-picker-cell-inner" style={style}>
-                        {current.date()}
-                      </div>
-                    );
-                  }} */
                 />
               </Form.Item>
 
