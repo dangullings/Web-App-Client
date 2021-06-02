@@ -261,6 +261,12 @@ class NewItem extends Component {
     if (typeof sizes == "undefined") {
       sizes = "";
     }
+    if (typeof genders == "undefined") {
+      genders = "";
+    }
+    if (typeof colors == "undefined") {
+      colors = "";
+    }
 
     console.log(
       "name " +

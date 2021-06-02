@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import moment from "moment";
+import { Link } from "react-router-dom";
 import {
   Modal,
   notification,
@@ -377,6 +378,7 @@ class EventCalendar extends Component {
       if (date.date.substring(0, 10) == cellDate) {
         const event = {
           id: date.id,
+          sessionId: date.sessionId,
           type: date.type,
           title: date.title,
           date: date.date,
@@ -423,12 +425,40 @@ class EventCalendar extends Component {
   }
 
   getFullDateData(date) {
-    const firstLine = [
-      <Text strong>
-        <Tag color={this.getTypeColor(date.type)}>{date.title}</Tag>
-        {date.startTime + " - " + date.endTime}
-      </Text>,
-    ];
+    var firstLine = [];
+
+    console.log("date.type " + date.type + " sessionid " + date.sessionId);
+
+    //session, test, event
+    if (date.type == undefined) {
+      firstLine = [
+        <Link to={`/user/sessions/${date.sessionId}`}>
+          <Text strong>
+            <Tag color={this.getTypeColor(date.type)}>{date.title}</Tag>
+            {date.startTime + " - " + date.endTime}
+          </Text>
+        </Link>,
+      ];
+    } else if (date.type == "Test") {
+      firstLine = [
+        //<Link to={`/user/sessions/${session.id}`}>
+        <Text strong>
+          <Tag color={this.getTypeColor(date.type)}>{date.title}</Tag>
+          {date.startTime + " - " + date.endTime}
+        </Text>,
+        //</Link>,
+      ];
+    } else if (date.type == "Camp") {
+      firstLine = [
+        <Link to={`/user/events/${date.id}`}>
+          <Text strong>
+            <Tag color={this.getTypeColor(date.type)}>{date.title}</Tag>
+            {date.startTime + " - " + date.endTime}
+          </Text>
+        </Link>,
+      ];
+    }
+
     const secondLine = [<Text>{date.description}</Text>];
     const view = [
       <Row>{firstLine}</Row>,

@@ -808,6 +808,7 @@ class SessionList extends Component {
     let promises = [];
     var date;
     var month, year;
+    let title = this.formRef.current.getFieldValue("title");
 
     removeClassDatesBySessionId(this.state.sessionId)
       .then((response) => {
@@ -831,7 +832,7 @@ class SessionList extends Component {
           let ClassDateData = {
             id: date.id,
             location: this.state.selectedLocation,
-            title: this.state.title,
+            title: title,
             date: date.date,
             startTime: startTime,
             endTime: endTime,

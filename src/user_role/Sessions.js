@@ -2,23 +2,7 @@ import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import moment from "moment";
 import { getRanks } from "../util/Helpers.js";
-import {
-  Typography,
-  Popconfirm,
-  Modal,
-  Row,
-  Select,
-  Divider,
-  Space,
-  message,
-  Image,
-  Checkbox,
-  notification,
-  Col,
-  Button,
-  Card,
-  List,
-} from "antd";
+import { Typography, Image, Card, List } from "antd";
 import { getAllSessionsByDateAsc, getImage } from "../util/APIUtils";
 import { withRouter, Link } from "react-router-dom";
 
