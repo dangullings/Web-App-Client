@@ -998,6 +998,7 @@ class TestList extends Component {
       } else {
         return (
           <Button
+            style={{ backgroundColor: "#50C878" }}
             type="primary"
             icon={<CheckOutlined />}
             block={true}
@@ -1444,6 +1445,10 @@ class TestList extends Component {
   }
 
   failStudent(student) {
+    this.setState({
+      loading: true,
+    });
+
     let rankIndex = ranks.indexOf(student.ranks);
     let newRank;
 
@@ -1451,9 +1456,12 @@ class TestList extends Component {
       newRank = ranks[--rankIndex];
     }
 
-    this.setState({
-      passed: false,
-    });
+    this.setState(
+      {
+        passed: false,
+      },
+      () => this.saveStudentScores(student, newRank)
+    );
   }
 
   passStudent(student) {
@@ -1462,14 +1470,24 @@ class TestList extends Component {
       loading: true,
     });
 
-    let studentId = student.id;
-    let testId = this.state.testId;
     let rankIndex = ranks.indexOf(student.ranks);
     let newRank;
 
     if (rankIndex < ranks.length) {
       newRank = ranks[++rankIndex];
     }
+
+    this.setState(
+      {
+        passed: true,
+      },
+      () => this.saveStudentScores(student, newRank)
+    );
+  }
+
+  saveStudentScores(student, newRank) {
+    let studentId = student.id;
+    let testId = this.state.testId;
 
     var studentScores = {
       studentId: studentId,
@@ -1483,7 +1501,7 @@ class TestList extends Component {
       attitude: this.state.attitude,
       sparring: this.state.sparring,
       breaking: this.state.breaking,
-      passed: true,
+      passed: this.state.passed,
     };
 
     saveStudentTestScores(studentScores)
@@ -1507,7 +1525,9 @@ class TestList extends Component {
 
     createStudent(studentData)
       .then((response) => {
-        this.setState({ passed: true, loading: false });
+        this.setState({
+          loading: false,
+        });
       })
       .catch((error) => {});
   }

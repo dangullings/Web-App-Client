@@ -427,42 +427,61 @@ class EventCalendar extends Component {
   getFullDateData(date) {
     var firstLine = [];
 
-    console.log("date.type " + date.type + " sessionid " + date.sessionId);
-
     //session, test, event
     if (date.type == undefined) {
       firstLine = [
-        <Link to={`/user/sessions/${date.sessionId}`}>
-          <Text strong>
-            <Tag color={this.getTypeColor(date.type)}>{date.title}</Tag>
-            {date.startTime + " - " + date.endTime}
-          </Text>
-        </Link>,
+        <div className="day-event-container">
+          <div className="day-event-info">
+            <Tag className="tag" color={this.getTypeColor(date.type)}>
+              {date.title}
+            </Tag>
+            <div className="day-event-time">
+              {date.startTime + " - " + date.endTime}
+            </div>
+          </div>
+          <Link to={`/user/sessions/${date.sessionId}`}>
+            <button type="button" className="btn">
+              View Session
+            </button>
+          </Link>
+        </div>,
       ];
     } else if (date.type == "Test") {
       firstLine = [
-        //<Link to={`/user/sessions/${session.id}`}>
-        <Text strong>
-          <Tag color={this.getTypeColor(date.type)}>{date.title}</Tag>
-          {date.startTime + " - " + date.endTime}
-        </Text>,
-        //</Link>,
+        <div className="day-event-container">
+          <div className="day-event-info">
+            <Tag className="tag" color={this.getTypeColor(date.type)}>
+              {date.title}
+            </Tag>
+            <div className="day-event-time">
+              {date.startTime + " - " + date.endTime}
+            </div>
+          </div>
+        </div>,
       ];
     } else if (date.type == "Camp") {
       firstLine = [
-        <Link to={`/user/events/${date.id}`}>
-          <Text strong>
-            <Tag color={this.getTypeColor(date.type)}>{date.title}</Tag>
-            {date.startTime + " - " + date.endTime}
-          </Text>
-        </Link>,
+        <div className="day-event-container">
+          <div className="day-event-info">
+            <Tag className="tag" color={this.getTypeColor(date.type)}>
+              {date.title}
+            </Tag>
+            <div className="day-event-time">
+              {date.startTime + " - " + date.endTime}
+            </div>
+          </div>
+          <Link to={`/user/events/${date.id}`}>
+            <button type="button" className="btn">
+              View Event
+            </button>
+          </Link>
+        </div>,
       ];
     }
 
-    const secondLine = [<Text>{date.description}</Text>];
     const view = [
       <Row>{firstLine}</Row>,
-      <Row style={{ marginTop: 5, marginLeft: 15 }}>{secondLine}</Row>,
+      <Row style={{ marginLeft: 15 }}></Row>,
     ];
     return view;
   }
@@ -551,7 +570,7 @@ class EventCalendar extends Component {
       ></Calendar>,
 
       <Modal
-        className="custom-style"
+        className="calendar-event"
         closable={false}
         visible={dayModalVisible}
         title={ModalSelectedDateTitle}
@@ -575,7 +594,7 @@ class EventCalendar extends Component {
     var cardTitle = "Calendar " + shortName + " '" + String(year).slice(-2);
 
     return (
-      <Content className="custom-style">
+      <Content className="calendar-event">
         <Card
           bodyStyle={{ padding: 0 }}
           bordered={false}

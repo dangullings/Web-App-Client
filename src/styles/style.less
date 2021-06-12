@@ -6,6 +6,7 @@
 // Components
 @import "components/App";
 @import "components/AppHeader";
+@import "components/CalendarEvent";
 @import "components/OrderAntD";
 @import "components/Attendance";
 @import "components/Event";
@@ -25,11 +26,6 @@
     border-radius: 6px;
     text-shadow: 0 -1px 0 rgb(0 0 0 / 12%);
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39);
-    &:hover {
-      background-color: @highlight-blue !important;
-      border-color: @border-blue !important;
-      color: white;
-    }
   }
 
   .ant-btn-primary[disabled],
@@ -475,18 +471,6 @@
     transition: border 0.3s, box-shadow 0.3s, -webkit-box-shadow 0.3s;
   }
 
-  .ant-picker-calendar-full
-    .ant-picker-panel
-    .ant-picker-calendar-date-content {
-    position: static;
-    width: auto;
-    height: 80px;
-    overflow-y: auto;
-    color: rgba(0, 0, 0, 0.85);
-    line-height: 1.5715;
-    text-align: left;
-  }
-
   .ant-drawer-header {
     position: relative;
     padding: 16px 24px;
@@ -495,18 +479,6 @@
     border-radius: 0px 0px 0 0;
   }
 
-  .events {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-  .events .ant-badge-status {
-    overflow: hidden;
-    white-space: wrap;
-    width: 100%;
-    text-overflow: ellipsis;
-    font-size: 4px;
-  }
   .notes-month {
     text-align: center;
     font-size: 28px;

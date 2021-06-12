@@ -1,0 +1,187 @@
+.calendar-event {
+  .ant-picker-calendar-full .ant-picker-panel .ant-picker-calendar-date {
+    display: block;
+    width: auto;
+    height: auto;
+    margin: 0px 4px;
+    padding: 0px 0px;
+    border: 0;
+    border-top: 2px solid #f0f0f0;
+    border-radius: 0;
+    -webkit-transition: background 0.3s;
+    -o-transition: background 0.3s;
+    transition: background 0.3s;
+  }
+
+  .ant-picker-calendar-full
+    .ant-picker-panel
+    .ant-picker-cell-selected
+    .ant-picker-calendar-date,
+  .ant-picker-calendar-full
+    .ant-picker-panel
+    .ant-picker-cell-selected:hover
+    .ant-picker-calendar-date,
+  .ant-picker-calendar-full
+    .ant-picker-panel
+    .ant-picker-cell-selected
+    .ant-picker-calendar-date-today,
+  .ant-picker-calendar-full
+    .ant-picker-panel
+    .ant-picker-cell-selected:hover
+    .ant-picker-calendar-date-today {
+    background: @border-blue;
+    padding: 0;
+    margin: 0;
+  }
+
+  .ant-picker-calendar-full
+    .ant-picker-panel
+    .ant-picker-cell-selected
+    .ant-picker-calendar-date
+    .ant-picker-calendar-date-value,
+  .ant-picker-calendar-full
+    .ant-picker-panel
+    .ant-picker-cell-selected:hover
+    .ant-picker-calendar-date
+    .ant-picker-calendar-date-value,
+  .ant-picker-calendar-full
+    .ant-picker-panel
+    .ant-picker-cell-selected
+    .ant-picker-calendar-date-today
+    .ant-picker-calendar-date-value,
+  .ant-picker-calendar-full
+    .ant-picker-panel
+    .ant-picker-cell-selected:hover
+    .ant-picker-calendar-date-today
+    .ant-picker-calendar-date-value {
+    color: white;
+  }
+
+  .ant-picker-calendar-full .ant-picker-panel .ant-picker-calendar-date-today {
+    border-color: @highlight-blue;
+  }
+
+  .ant-picker-calendar-full
+    .ant-picker-panel
+    .ant-picker-calendar-date-content {
+    position: static;
+    width: auto;
+    height: 65px;
+    overflow-y: auto;
+    color: rgba(0, 0, 0, 0.85);
+    line-height: 1.5715;
+    text-align: left;
+  }
+
+  .events {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .events .ant-badge-status {
+    overflow: hidden;
+    white-space: wrap;
+    width: 100%;
+    text-overflow: ellipsis;
+    font-size: 4px;
+  }
+
+  .ant-modal-body {
+    padding: 16px;
+    font-size: 14px;
+    line-height: 1.5715;
+    word-wrap: break-word;
+  }
+
+  .ant-modal-header {
+    padding: 16px 24px;
+    color: #fff;
+    background: #4694b4;
+    border-bottom: #4694b4;
+    box-shadow: 0px 4px 6px #525252;
+  }
+
+  h2.ant-typography,
+  .ant-typography h2 {
+    margin-bottom: 0.2em;
+    color: #fff;
+    font-weight: 600;
+    font-size: 24px;
+    line-height: 1.35;
+  }
+
+  h3.ant-typography,
+  .ant-typography h3 {
+    margin-bottom: 0.5em;
+    color: rgb(27, 27, 27);
+    font-weight: 600;
+    font-size: 24px;
+    line-height: 1.35;
+  }
+
+  .ant-typography strong {
+    font-weight: 600;
+    font-size: 18px;
+  }
+
+  .ant-btn {
+    color: #fff;
+    background: @primary-blue;
+    border-color: @border-blue;
+    border-radius: 6px;
+    text-shadow: 0 -1px 0 rgb(0 0 0 / 12%);
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39);
+    &:hover {
+      background-color: @highlight-blue !important;
+      border-color: @border-blue !important;
+      color: white;
+    }
+  }
+
+  .day-event-container {
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-column-gap: 10px;
+  }
+
+  .day-event-info {
+    display: grid;
+    grid-template-rows: auto auto;
+    grid-row-gap: 0px;
+    display: inline-block;
+  }
+
+  .tag {
+    font-size: 18px;
+    padding: 6px;
+  }
+
+  .day-event-time {
+    color: rgb(37, 37, 37);
+    font-size: 16px;
+    font-weight: bolder;
+  }
+
+  .ant-list-split .ant-list-item {
+    border-bottom: 2px dashed #f0f0f0;
+  }
+
+  .btn {
+    color: white;
+    text-align: center;
+    font-size: 16px;
+    border-radius: 4px;
+    border: 3px solid white;
+
+    background-color: #008cba;
+
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39);
+  }
+
+  .btn:hover {
+    background-color: #00abe4;
+    color: white;
+
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39);
+  }
+}

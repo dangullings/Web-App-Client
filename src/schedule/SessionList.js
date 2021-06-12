@@ -2509,6 +2509,7 @@ class SessionList extends Component {
               >
                 <Input
                   placeholder="US$"
+                  onClick={this.clickFormInput}
                   autosize={{ minRows: 1, maxRows: 1 }}
                 />
               </Form.Item>
