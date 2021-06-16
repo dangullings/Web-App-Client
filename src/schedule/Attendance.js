@@ -238,6 +238,7 @@ class Attendance extends Component {
             id: value.id,
             firstName: value.firstName,
             lastName: value.lastName,
+            ranks: value.ranks,
           };
 
           students.push(student);
@@ -495,6 +496,13 @@ class Attendance extends Component {
 
   getRowColor(student, indexx) {
     let index = 2;
+
+    //if (index % 2 === 0) {
+    //  return "table-row-light";
+    //} else {
+    //  return "table-row-dark";
+    //}
+
     if (student.ranks.includes("Gold")) {
       if (index % 2 === 0) {
         return "#ffef99"; // #ffef99

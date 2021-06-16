@@ -105,6 +105,7 @@ class EventList extends Component {
       photo: "",
       imageId: "",
       image: "",
+      isSavedEvent: false,
     };
 
     this.handleAgeRangeChange = this.handleAgeRangeChange.bind(this);

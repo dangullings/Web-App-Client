@@ -1,19 +1,23 @@
 import React, { Component } from "react";
-import { login, getCurrentUser } from "../../util/APIUtils";
+import { login, getCurrentUser, forgotPassword } from "../../util/APIUtils";
 import "../../styles/style.less";
 import { Link, withRouter } from "react-router-dom";
 import { ACCESS_TOKEN } from "../../constants";
 
-import { Form, Input, Button, Icon, notification } from "antd";
 import {
-  DesktopOutlined,
-  PieChartOutlined,
-  FileOutlined,
-  TeamOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
+  Form,
+  Input,
+  Button,
+  Icon,
+  notification,
+  Modal,
+  Card,
+  Typography,
+} from "antd";
+import { SendOutlined } from "@ant-design/icons";
 
 const FormItem = Form.Item;
+const { Title, Text } = Typography;
 
 class Login extends Component {
   constructor(props) {
@@ -22,7 +26,6 @@ class Login extends Component {
   render() {
     return (
       <div className="custom-style">
-        <h1 className="custom-style">Login</h1>
         <div className="custom-style">
           <LoginForm onLogin={this.props.onLogin} />
         </div>
@@ -38,10 +41,22 @@ class LoginForm extends Component {
     this.state = {
       usernameOrEmail: "",
       password: "",
+      email: "",
+      loading: false,
+      forgotPasswordVisible: false,
     };
 
     this.handleSubmit = this.handleSubmit.bind(this);
   }
+
+  handleCancel = () => {
+    this.setState({
+      email: "",
+      password: "",
+      loading: false,
+      forgotPasswordVisible: false,
+    });
+  };
 
   handleSubmit(event) {
     const loginRequest = {
@@ -80,13 +95,40 @@ class LoginForm extends Component {
       });
   }
 
+  showModal = () => {
+    this.setState({
+      forgotPasswordVisible: true,
+    });
+  };
+
+  isFormInvalid() {
+    if (this.state.email == "") {
+      return true;
+    }
+
+    return false;
+  }
+
+  forgotPasswordSend() {
+    const { email } = this.state;
+
+    forgotPassword(email).then((response) => {});
+  }
+
   render() {
-    return (
+    const { forgotPasswordVisible, loading } = this.state;
+
+    const modalTitle = <Title level={2}>Password Reset</Title>;
+
+    const content = [
       <Form onFinish={this.handleSubmit} className="custom-style">
         <FormItem
           name="usernameOrEmail"
           rules={[
-            { required: true, message: "Please input your username or email!" },
+            {
+              required: true,
+              message: "Please input your username or email!",
+            },
           ]}
         >
           <Input
@@ -111,17 +153,64 @@ class LoginForm extends Component {
             placeholder="Password"
           />
         </FormItem>
+        <Button type="text" onClick={this.showModal}>
+          Forgot Password?
+        </Button>
         <FormItem>
           <Button
             type="primary"
             htmlType="submit"
             size="large"
             className="custom-style"
+            onClick={this.handleSubmit}
           >
             Login
           </Button>
         </FormItem>
-      </Form>
+      </Form>,
+      <Modal
+        visible={forgotPasswordVisible}
+        className="custom-style"
+        title={modalTitle}
+        closable={false}
+        onCancel={this.handleCancel}
+        footer={[
+          <Button key="back" type="secondary" onClick={this.handleCancel}>
+            Cancel
+          </Button>,
+          <Button
+            key="submit"
+            htmlType="submit"
+            type="primary"
+            icon={<SendOutlined />}
+            disabled={this.isFormInvalid()}
+            loading={loading}
+            onClick={this.handleSubmit}
+          >
+            Send
+          </Button>,
+        ]}
+      >
+        <Input
+          size="large"
+          name="email"
+          onChange={(e) => this.setState({ email: e.target.value })}
+          placeholder="Enter your e-mail"
+        />
+      </Modal>,
+    ];
+
+    const cardTitle = <Title level={3}>Login</Title>;
+
+    return (
+      <Card
+        className="custom-style"
+        bordered={false}
+        title={cardTitle}
+        style={{ padding: 20 }}
+      >
+        {content}
+      </Card>
     );
   }
 }

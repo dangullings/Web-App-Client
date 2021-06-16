@@ -439,7 +439,7 @@ class MyGroup extends Component {
 
   getStudentTestScores() {
     const { myPeepTestIds } = this.state;
-
+    console.log("mypeeptestids " + myPeepTestIds.length);
     let ids;
     for (ids of myPeepTestIds) {
       this.getStudentTestScoresCont(ids.peepId, ids.testId);
@@ -459,6 +459,8 @@ class MyGroup extends Component {
   createPeepTestScoreTable(peep) {
     const { myPeepTestScores, myPeepTests } = this.state;
     var datas = [];
+
+    console.log("mypeeptestscores " + myPeepTestScores.length);
 
     var testScore, i, key, test, t;
     for (testScore of myPeepTestScores) {
@@ -486,6 +488,8 @@ class MyGroup extends Component {
         });
       }
     }
+
+    console.log("test list " + datas.length);
 
     return (
       <Table
@@ -527,14 +531,14 @@ class MyGroup extends Component {
     Promise.all(promises).then((values) => {
       for (value of values) {
         for (innerValue of value) {
-          if (moment(innerValue.date).add(1, "days").isSameOrAfter(moment())) {
-            tests.push(innerValue);
-            const peepTestId = {
-              peepId: peeps[peepInc].id,
-              testId: innerValue.id,
-            };
-            peepTestIds.push(peepTestId);
-          }
+          //if (moment(innerValue.date).add(1, "days").isSameOrAfter(moment())) {
+          tests.push(innerValue);
+          const peepTestId = {
+            peepId: peeps[peepInc].id,
+            testId: innerValue.id,
+          };
+          peepTestIds.push(peepTestId);
+          //}
         }
         peepInc++;
       }

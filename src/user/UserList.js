@@ -292,6 +292,8 @@ class UserList extends Component {
       visible: false,
       loading: false,
       isSavedUser: false,
+      selectedStudentId: "",
+      assignStudents: [],
     });
   };
 
@@ -504,7 +506,7 @@ class UserList extends Component {
       if (isSavedUser) {
         return (
           <Popconfirm
-            title="Delete location?"
+            title="Delete User?"
             onConfirm={this.removeUser}
             okText="Yes"
             cancelText="No"
@@ -584,7 +586,6 @@ class UserList extends Component {
               placeholder="Full Name"
               style={{ fontSize: "16px" }}
               autosize={{ minRows: 1, maxRows: 1 }}
-              onChange={this.handleNameChange}
             />
           </Form.Item>
 
@@ -607,7 +608,6 @@ class UserList extends Component {
               placeholder="Username"
               style={{ fontSize: "16px" }}
               autosize={{ minRows: 1, maxRows: 1 }}
-              onChange={this.handleUsernameChange}
             />
           </Form.Item>
 
@@ -631,8 +631,6 @@ class UserList extends Component {
               placeholder="myemail@gmail.com"
               style={{ fontSize: "16px" }}
               autosize={{ minRows: 1, maxRows: 1 }}
-              value={this.state.email.text}
-              onChange={this.handleEmailChange}
             />
           </Form.Item>
 
@@ -655,7 +653,6 @@ class UserList extends Component {
               placeholder="777-777-7777"
               style={{ fontSize: "16px" }}
               autosize={{ minRows: 1, maxRows: 2 }}
-              onChange={this.handlePhoneNumberChange}
             />
           </Form.Item>
 
@@ -678,7 +675,6 @@ class UserList extends Component {
               placeholder="1234 Street City State"
               style={{ fontSize: "16px" }}
               autosize={{ minRows: 2, maxRows: 4 }}
-              onChange={this.handleAddressChange}
             />
           </Form.Item>
 

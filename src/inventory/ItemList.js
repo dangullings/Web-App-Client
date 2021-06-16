@@ -234,12 +234,21 @@ class NewItem extends Component {
 
     createItemImage(data, imageId)
       .then((response) => {
-        this.setState(
-          {
-            imageId: response.id,
-          },
-          () => this.saveItem()
-        );
+        if (imageId == 0) {
+          this.setState(
+            {
+              imageId: response.id,
+            },
+            () => this.saveItem()
+          );
+        } else {
+          this.setState(
+            {
+              imageId: this.state.item.imageId,
+            },
+            () => this.saveItem()
+          );
+        }
       })
       .catch((error) => {
         this.setState({
