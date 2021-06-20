@@ -35,6 +35,8 @@ import { withRouter } from "react-router-dom";
 import StripeContainer from "../stripe/StripeContainer";
 
 import "../styles/style.less";
+import "../styles/components/Shop.less";
+import "../styles/components/Shop.css";
 
 import Highlighter from "react-highlight-words";
 import {
@@ -46,6 +48,7 @@ import {
   DollarCircleOutlined,
   MinusOutlined,
   PlusOutlined,
+  TagsFilled,
 } from "@ant-design/icons";
 
 const Option = Select.Option;
@@ -90,6 +93,8 @@ class Shop extends Component {
       orderId: "",
       cartVisible: false,
       loading: false,
+      selectedProduct: "",
+      productDetailVisible: false,
 
       screenWidth: window.screen.width,
     };
@@ -97,6 +102,10 @@ class Shop extends Component {
     this.addToCart = this.addToCart.bind(this);
     this.handlePurchase = this.handlePurchase.bind(this);
     this.onSearch = this.onSearch.bind(this);
+
+    this.getProducts();
+
+    window.addEventListener("resize", this.handleResize);
   }
 
   getProducts() {
@@ -148,23 +157,26 @@ class Shop extends Component {
       promises.push(promise);
     }
 
-    let con;
     Promise.all(promises).then((values) => {
       for (value of values) {
-        console.log("value " + value.name);
         imageList.push(value);
         //for (con of value.content) {
         //  imageList.push(con);
         //}
       }
-      this.setState({
-        productImages: imageList,
-        loading: false,
-      });
+      this.setState(
+        {
+          productImages: imageList,
+        },
+        () => this.startCreateProducts(products)
+      );
     });
+  }
 
+  startCreateProducts(products) {
     let newProducts = [];
-    for (product of this.state.products) {
+    let product;
+    for (product of products) {
       const newProduct = {
         id: product.id,
         name: product.name,
@@ -177,23 +189,29 @@ class Shop extends Component {
         sizes: product.sizes,
         size: "",
         color: "",
+        gender: "",
       };
       newProducts.push(newProduct);
     }
 
-    this.setState({
-      products: newProducts,
-    });
+    this.setState(
+      {
+        products: newProducts,
+      },
+      () => this.setProductCards(newProducts)
+    );
   }
 
-  componentDidMount() {
-    this.getProducts();
-
-    this.setState({
-      productCards: [],
+  setProductCards(products) {
+    var newProductCards = [];
+    products.forEach((product) => {
+      newProductCards.push(this.productCard(product));
     });
 
-    window.addEventListener("resize", this.handleResize);
+    this.setState({
+      productCards: newProductCards,
+      loading: false,
+    });
   }
 
   componentWillUnMount() {
@@ -201,7 +219,6 @@ class Shop extends Component {
   }
 
   showModal = () => {
-    console.log("show cart ");
     this.setState({
       cartVisible: true,
     });
@@ -210,16 +227,47 @@ class Shop extends Component {
   handleOk = () => {
     this.setState({ loading: true });
     setTimeout(() => {
-      this.setState({ loading: false, cartVisible: false });
+      this.setState({
+        loading: false,
+        cartVisible: false,
+        productDetailVisible: false,
+      });
     }, 3000);
   };
 
   handleCancel = () => {
-    this.setState({ cartVisible: false });
+    this.setState({
+      cartVisible: false,
+      productDetailVisible: false,
+      selectedProduct: "",
+    });
   };
 
   addToCart(product) {
-    const { cartItems } = this.state;
+    const { cartItems, products } = this.state;
+
+    let i, newProduct;
+    for (i of products) {
+      if (product.id == i.id) {
+        newProduct = {
+          id: product.id,
+          name: product.name,
+          type: product.type,
+          saleCost: product.saleCost,
+          description: product.description,
+          imageId: product.imageId,
+          genders: product.genders,
+          colors: product.colors,
+          sizes: product.sizes,
+          size: i.size,
+          color: i.color,
+          gender: i.gender,
+        };
+        break;
+      }
+    }
+
+    product = newProduct;
 
     let item;
     let cartItemIds = [];
@@ -245,6 +293,7 @@ class Shop extends Component {
     this.setState({
       cartItemsQty: [...this.state.cartItemsQty, newCartItemQty],
       cartItems: [...this.state.cartItems, newCartItem],
+      productDetailVisible: false,
     });
 
     message.success("Item added to cart.");
@@ -447,7 +496,6 @@ class Shop extends Component {
   };
 
   handleTypeDropdownChange = (value) => {
-    console.log("drop value " + value);
     if (value == "All") {
       this.getProducts();
       return;
@@ -562,51 +610,456 @@ class Shop extends Component {
     const item = product.product;
     const itemId = product.id;
 
-    const genderLabel = [
-      <Space size="small">
-        <Text type="secondary">Gender:</Text>
-        <Text style={{ marginLeft: -5 }} strong>
-          {" "}
-          {item.gender}
-        </Text>
-      </Space>,
-    ];
-    const colorLabel = [
-      <Space size="small">
-        <Text type="secondary">Color:</Text>
-        <Text style={{ marginLeft: -5 }} strong>
-          {" "}
-          {item.color}
-        </Text>
-      </Space>,
-    ];
-    const sizeLabel = [
-      <Space size="small">
-        <Text type="secondary">Size:</Text>
-        <Text style={{ marginLeft: -5 }} strong>
-          {item.size}
-        </Text>
-      </Space>,
-    ];
     let num = item.saleCost * this.getItemQty(itemId);
     let totalItemCost = (Math.round(num * 100) / 100).toFixed(2);
-    const saleCostLabel = [
-      <Space size="small">
-        <Text type="secondary">Price:</Text>
-        <Text style={{ marginLeft: -5 }} strong>
-          ${totalItemCost}
-        </Text>
-      </Space>,
-    ];
-    const itemQty = [
-      <Space size="small">
-        <Text type="secondary">Qty:</Text>
-        <Text strong>{this.getItemQty(itemId)}</Text>
-      </Space>,
-    ];
+    let itemQty = this.getItemQty(itemId);
+    const image = this.getProductImage(product.imageId);
 
     return (
-      <Row
+      <div className="cart-item-container">
+        <div className="cart-item-info-container">
+          <div className="cart-item-info-one">
+            <div className="cart-item-info-name">{item.name}</div>
+            <div className="cart-item-qty-container">
+              <div className="cart-item-qty-minus">
+                <Button
+                  style={{ marginRight: 35 }}
+                  size="small"
+                  onClick={() => this.reduceItemQty(itemId)}
+                  style={{
+                    boxShadow:
+                      "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 3px 6px 0 rgba(0, 0, 0, 0.39)",
+                  }}
+                >
+                  <MinusOutlined />
+                </Button>
+              </div>
+              <div className="cart-item-qty">{itemQty}</div>
+              <div className="cart-item-qty-plus">
+                <Button
+                  size="small"
+                  onClick={() => this.increaseItemQty(itemId)}
+                  style={{
+                    boxShadow:
+                      "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 3px 6px 0 rgba(0, 0, 0, 0.39)",
+                  }}
+                >
+                  <PlusOutlined />
+                </Button>
+              </div>
+              <div className="cart-item-total">${totalItemCost}</div>
+            </div>
+          </div>
+          <div className="cart-item-footer-container">
+            <div className="cart-item-option-container">
+              <div>{item.type}</div>
+              <div>{item.color}</div>
+              <div>{item.size}</div>
+              <div>{item.gender}</div>
+            </div>
+          </div>
+          <div className="cart-item-info-two">
+            <div className="cart-item-info-desc">{item.description}</div>
+          </div>
+        </div>
+        <div className="cart-item-qty-remove">
+          <Button
+            size="small"
+            type="primary"
+            danger
+            icon={<DeleteOutlined />}
+            onClick={() => this.removeCartItem(itemId)}
+            style={{
+              boxShadow:
+                "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 3px 6px 0 rgba(0, 0, 0, 0.39)",
+            }}
+          >
+            Remove
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  productCardDetail(product) {
+    let saleCost = (Math.round(product.saleCost * 100) / 100).toFixed(2);
+    let productColors = product.colors.split(",");
+    let productSizes = product.sizes.split(",");
+    let productGenders = product.genders.split(",");
+
+    return (
+      <div className="product-detail-container">
+        <img
+          src={`data:image/jpeg;base64,${this.getProductImage(
+            product.imageId
+          )}`}
+        />
+
+        <div className="product-detail-options-container">
+          <Select
+            align="center"
+            placeholder="Genders"
+            dropdownClassName="custom-style"
+            onChange={this.changeSelectedGender(product)}
+            //Key={eventDates.index}
+          >
+            {productGenders.map((gender) => (
+              <Select.Option value={gender} key={gender}>
+                {gender}
+              </Select.Option>
+            ))}
+          </Select>
+          <Select
+            align="center"
+            placeholder="Colors"
+            dropdownClassName="custom-style"
+            onChange={this.changeSelectedColor(product)}
+            //Key={eventDates.index}
+          >
+            {productColors.map((color) => (
+              <Select.Option value={color} key={color}>
+                {color}
+              </Select.Option>
+            ))}
+          </Select>
+          <Select
+            align="center"
+            placeholder="Sizes"
+            dropdownClassName="custom-style"
+            onChange={this.changeSelectedSize(product)}
+            //Key={eventDates.index}
+          >
+            {productSizes.map((size) => (
+              <Select.Option value={size} key={size}>
+                {size}
+              </Select.Option>
+            ))}
+          </Select>
+        </div>
+
+        <div className="product-detail-info">
+          <div className="product-detail-info-name">{product.name}</div>
+          <div className="product-detail-info-desc">{product.description}</div>
+          <div className="product-detail-info-price">${saleCost}</div>
+        </div>
+      </div>
+    );
+  }
+
+  productCard(product) {
+    let saleCost = (Math.round(product.saleCost * 100) / 100).toFixed(2);
+
+    const saleCostLabel = [
+      <Title
+        style={{
+          width: "100%",
+          textAlign: "center",
+          margin: 0,
+          color: "darkgray",
+        }}
+        level={5}
+      >
+        ${saleCost}
+      </Title>,
+    ];
+
+    const nameLabel = [
+      <Title
+        style={{
+          width: "100%",
+          textAlign: "center",
+          margin: 0,
+        }}
+        level={4}
+      >
+        {product.name}
+      </Title>,
+    ];
+
+    const image = this.getProductImage(product.imageId);
+
+    const content = [
+      <Row style={{ marginBottom: 15 }}>
+        <Col>
+          <Card
+            style={{
+              borderRadius: "10px",
+              boxShadow: "0 2px 6px 0 rgba(0, 0, 0, 0.4)",
+            }}
+            bodyStyle={{
+              padding: 6,
+            }}
+            hoverable
+            key={product.id}
+            cover={
+              <Image
+                preview={false}
+                style={{ left: -1 }}
+                width={"100%"}
+                height={"100%"}
+                src={`data:image/jpeg;base64,${image}`}
+                onClick={() => this.selectProduct(product)}
+              />
+            }
+          >
+            {nameLabel}
+            {saleCostLabel}
+          </Card>
+        </Col>
+      </Row>,
+    ];
+
+    return content;
+  }
+
+  selectProduct(product) {
+    const { products } = this.state;
+
+    let i, newProduct;
+    for (i of products) {
+      if (product.id == i.id) {
+        newProduct = {
+          id: product.id,
+          name: product.name,
+          type: product.type,
+          saleCost: product.saleCost,
+          description: product.description,
+          imageId: product.imageId,
+          genders: product.genders,
+          colors: product.colors,
+          sizes: product.sizes,
+          size: i.size,
+          color: i.color,
+          gender: i.gender,
+        };
+        break;
+      }
+    }
+
+    this.setState({ selectedProduct: newProduct, productDetailVisible: true });
+  }
+
+  getTotalCartCost() {
+    const { cartItems, cartItemsQty } = this.state;
+
+    var item, itemQty;
+    var totalCost = 0;
+    for (item of cartItems) {
+      for (itemQty of cartItemsQty) {
+        if (itemQty.id == item.id) {
+          totalCost += itemQty.quantity * item.product.saleCost;
+          break;
+        }
+      }
+    }
+
+    return (Math.round(totalCost * 100) / 100).toFixed(2);
+  }
+
+  render() {
+    const {
+      products,
+      pagination,
+      totalPages,
+      search,
+      screenWidth,
+      cartItems,
+      cartItemsQty,
+      loading,
+      cartVisible,
+      selectedProduct,
+      productDetailVisible,
+      productCards,
+    } = this.state;
+
+    const stripeView = <StripeContainer />;
+
+    var cartCards = [];
+    if (cartItems) {
+      cartItems.forEach((item) => {
+        cartCards.push(this.cartItemCard(item));
+      });
+    }
+
+    let totalCartCost = "$" + this.getTotalCartCost();
+
+    const totals = [
+      <Row align="end" style={{ marginTop: 35, marginRight: 20 }}>
+        <Space size="small">
+          <Title level={4}>Cart Total:</Title>
+          <Title type="success" level={3}>
+            {totalCartCost}
+          </Title>
+        </Space>
+      </Row>,
+    ];
+
+    var productDetailView = [];
+
+    if (selectedProduct) {
+      productDetailView = [this.productCardDetail(selectedProduct)];
+    }
+
+    const ModalTitle = [
+      <Row>
+        <ShoppingCartOutlined
+          style={{
+            color: "white",
+            fontSize: "40px",
+            marginLeft: 0,
+            marginRight: 15,
+          }}
+        />
+        <Title level={2}>Cart</Title>
+      </Row>,
+    ];
+    const cartView = [
+      <Modal
+        className="shop"
+        visible={cartVisible}
+        title={ModalTitle}
+        style={{ top: 0 }}
+        onOk={this.handleOk}
+        onCancel={this.handleCancel}
+        footer={[
+          <Button key="back" type="secondary" onClick={this.handleCancel}>
+            Cancel
+          </Button>,
+          <Button
+            key="submit"
+            type="primary"
+            icon={<DollarCircleOutlined />}
+            disabled={this.isFormInvalid()}
+            loading={loading}
+            onClick={this.handlePurchase}
+          >
+            Purchase
+          </Button>,
+        ]}
+      >
+        <div className="cart-container">{cartCards}</div>
+        {totals}
+        {stripeView}
+      </Modal>,
+    ];
+
+    const title = [<Title level={3}>Store</Title>];
+
+    const newHeader = [
+      <Row style={{ justifyContent: "space-around" }}>
+        {title}
+        <Divider style={{ height: 35 }} type="vertical" />
+        <Search
+          size={"small"}
+          placeholder="search"
+          onSearch={this.onSearch}
+          style={{
+            width: 120,
+            height: 32,
+          }}
+          dropdownClassName="custom-style"
+        />
+        <Select
+          align="center"
+          style={{
+            width: 120,
+            height: 32,
+          }}
+          placeholder={"type"}
+          onChange={this.handleTypeDropdownChange}
+          dropdownClassName="custom-style"
+        >
+          {children}
+        </Select>
+      </Row>,
+    ];
+
+    var content = [];
+
+    content = [
+      <Spin spinning={loading}>
+        <List
+          grid={{
+            gutter: 16,
+            xs: 2,
+            sm: 3,
+            md: 4,
+            lg: 5,
+            xl: 6,
+            xxl: 7,
+          }}
+          dataSource={productCards}
+          renderItem={(item) => <List.Item>{item}</List.Item>}
+        />
+
+        <Affix
+          offsetTop={55}
+          style={{ position: "absolute", top: 0, left: -50 }}
+        >
+          <Badge count={cartItems.length}>
+            <Button
+              style={{
+                boxShadow:
+                  "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
+                borderRadius: "14px",
+                height: "60px",
+                width: "80px",
+              }}
+              size={"large"}
+              onClick={this.showModal}
+              icon={
+                <ShoppingCartOutlined
+                  offset={[0, 0]}
+                  style={{ fontSize: "40px", marginLeft: 30 }}
+                />
+              }
+            ></Button>
+          </Badge>
+        </Affix>
+        {cartView}
+      </Spin>,
+      <Modal
+        className="shop"
+        closable={false}
+        visible={productDetailVisible}
+        title={""}
+        style={{ top: 0 }}
+        onOk={this.handleOk}
+        onCancel={this.handleCancel}
+        footer={[
+          <Button key="back" type="secondary" onClick={this.handleCancel}>
+            {"<"} Products
+          </Button>,
+          <Button
+            type="primary"
+            onClick={() => this.addToCart(selectedProduct)}
+            icon={<ShoppingCartOutlined />}
+          >
+            Add to Cart
+          </Button>,
+        ]}
+      >
+        {productDetailView}
+      </Modal>,
+    ];
+    return (
+      <Card
+        className="custom-style"
+        bordered={false}
+        headStyle={{ marginBottom: 8 }}
+        bodyStyle={{ padding: 16 }}
+        title={newHeader}
+      >
+        {content}
+      </Card>
+    );
+  }
+}
+
+export default withRouter(Shop);
+
+/* 
+<Row
         style={{
           marginTop: 10,
           marginBottom: 30,
@@ -703,322 +1156,4 @@ class Shop extends Component {
         >
           <Meta title={item.name} description={item.description} />
         </Card>
-      </Row>
-    );
-  }
-
-  productCard(product) {
-    let saleCost = (Math.round(product.saleCost * 100) / 100).toFixed(2);
-
-    const saleCostLabel = [
-      <Title
-        style={{
-          width: "100%",
-          textAlign: "center",
-          marginBottom: 0,
-        }}
-        level={3}
-      >
-        ${saleCost}
-      </Title>,
-    ];
-
-    let productColors = product.colors.split(",");
-    let productSizes = product.sizes.split(",");
-    let productGenders = product.genders.split(",");
-
-    return (
-      <Row style={{ marginBottom: 35 }}>
-        <Col>
-          <Card
-            hoverable
-            key={product.id}
-            style={{
-              width: "100%",
-              borderRadius: "10px",
-              boxShadow:
-                "0 4px 8px 0 rgba(0, 0, 0, 0.4), 0 6px 20px 0 rgba(0, 0, 0, 0.39)",
-            }}
-            headStyle={{ backgroundColor: "#fafafa" }}
-            bodyStyle={{ backgroundColor: "#fafafa", height: 100 }}
-            cover={
-              <Image
-                style={{ left: -1 }}
-                width={"100%"}
-                height={"100%"}
-                src={`data:image/jpeg;base64,${this.getProductImage(
-                  product.imageId
-                )}`}
-              />
-            }
-            actions={[
-              <Row style={{ padding: 8 }}>
-                <Select
-                  align="center"
-                  style={{
-                    width: "100%",
-                    marginLeft: 0,
-                  }}
-                  placeholder="Genders"
-                  dropdownClassName="custom-style"
-                  onChange={this.changeSelectedGender(product)}
-                  //Key={eventDates.index}
-                >
-                  {productGenders.map((gender) => (
-                    <Select.Option value={gender} key={gender}>
-                      {gender}
-                    </Select.Option>
-                  ))}
-                </Select>
-                <Select
-                  align="center"
-                  style={{
-                    width: "100%",
-                    marginLeft: 0,
-                  }}
-                  placeholder="Colors"
-                  dropdownClassName="custom-style"
-                  onChange={this.changeSelectedColor(product)}
-                  //Key={eventDates.index}
-                >
-                  {productColors.map((color) => (
-                    <Select.Option value={color} key={color}>
-                      {color}
-                    </Select.Option>
-                  ))}
-                </Select>
-                <Select
-                  align="center"
-                  style={{
-                    width: "100%",
-                    marginLeft: 0,
-                  }}
-                  placeholder="Sizes"
-                  dropdownClassName="custom-style"
-                  onChange={this.changeSelectedSize(product)}
-                  //Key={eventDates.index}
-                >
-                  {productSizes.map((size) => (
-                    <Select.Option value={size} key={size}>
-                      {size}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Row>,
-              <Row style={{ marginLeft: 0 }}>
-                {saleCostLabel}
-                <Button
-                  size="default"
-                  shape="round"
-                  type="primary"
-                  onClick={() => this.addToCart(product)}
-                  style={{
-                    marginLeft: 10,
-                    marginRight: 10,
-                    marginTop: 10,
-                    width: "100%",
-                    borderRadius: "10px",
-                    boxShadow:
-                      "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
-                  }}
-                >
-                  Add to Cart
-                </Button>
-              </Row>,
-            ]}
-          >
-            <Meta title={product.name} description={product.description} />
-          </Card>
-        </Col>
-      </Row>
-    );
-  }
-
-  getTotalCartCost() {
-    const { cartItems, cartItemsQty } = this.state;
-
-    var item, itemQty;
-    var totalCost = 0;
-    for (item of cartItems) {
-      for (itemQty of cartItemsQty) {
-        if (itemQty.id == item.id) {
-          totalCost += itemQty.quantity * item.product.saleCost;
-          break;
-        }
-      }
-    }
-
-    return (Math.round(totalCost * 100) / 100).toFixed(2);
-  }
-
-  render() {
-    const {
-      products,
-      pagination,
-      totalPages,
-      search,
-      screenWidth,
-      cartItems,
-      cartItemsQty,
-      loading,
-      cartVisible,
-    } = this.state;
-
-    const stripeView = <StripeContainer />;
-
-    var productCards = [];
-    if (products) {
-      products.forEach((product) => {
-        productCards.push(this.productCard(product));
-      });
-    }
-
-    var cartCards = [];
-    if (cartItems) {
-      cartItems.forEach((item) => {
-        cartCards.push(this.cartItemCard(item));
-      });
-    }
-
-    let totalCartCost = "$" + this.getTotalCartCost();
-
-    const totals = [
-      <Row align="end" style={{ marginTop: 35, marginRight: 20 }}>
-        <Space size="small">
-          <Title level={4}>Cart Total:</Title>
-          <Title type="success" level={3}>
-            {totalCartCost}
-          </Title>
-        </Space>
-      </Row>,
-    ];
-
-    const ModalTitle = <Title level={2}>Cart</Title>;
-    const cartView = [
-      <Modal
-        className="custom-style"
-        visible={cartVisible}
-        title={ModalTitle}
-        style={{ top: 0 }}
-        bodyStyle={{ padding: 4, marginBottom: 20 }}
-        onOk={this.handleOk}
-        onCancel={this.handleCancel}
-        footer={[
-          <Button
-            key="back"
-            type="secondary"
-            onClick={this.handleCancel}
-            style={{
-              boxShadow:
-                "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
-            }}
-          >
-            Cancel
-          </Button>,
-          <Button
-            key="submit"
-            type="primary"
-            icon={<DollarCircleOutlined />}
-            disabled={this.isFormInvalid()}
-            loading={loading}
-            onClick={this.handlePurchase}
-            style={{
-              boxShadow:
-                "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
-            }}
-          >
-            Purchase
-          </Button>,
-        ]}
-      >
-        {cartCards}
-        {totals}
-        {stripeView}
-      </Modal>,
-    ];
-
-    const title = [<Title level={3}>Store</Title>];
-
-    const newHeader = [
-      <Row style={{ justifyContent: "space-around" }}>
-        {title}
-        <Divider style={{ height: 35 }} type="vertical" />
-        <Search
-          size={"small"}
-          placeholder="search"
-          onSearch={this.onSearch}
-          style={{
-            width: 120,
-            height: 32,
-          }}
-          dropdownClassName="custom-style"
-        />
-        <Select
-          align="center"
-          style={{
-            width: 120,
-            height: 32,
-          }}
-          placeholder={"type"}
-          onChange={this.handleTypeDropdownChange}
-          dropdownClassName="custom-style"
-        >
-          {children}
-        </Select>
-      </Row>,
-    ];
-    return (
-      <Card
-        className="custom-style"
-        bordered={false}
-        headStyle={{ marginBottom: 8 }}
-        bodyStyle={{ padding: 16 }}
-        title={newHeader}
-      >
-        <Spin spinning={loading}>
-          <List
-            grid={{
-              gutter: 16,
-              xs: 1,
-              sm: 2,
-              md: 3,
-              lg: 4,
-              xl: 5,
-              xxl: 6,
-            }}
-            dataSource={productCards}
-            renderItem={(item) => <List.Item>{item}</List.Item>}
-          />
-
-          <Affix
-            offsetTop={55}
-            style={{ position: "absolute", top: 0, left: -50 }}
-          >
-            <Badge count={cartItems.length}>
-              <Button
-                style={{
-                  boxShadow:
-                    "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
-                  borderRadius: "14px",
-                  height: "60px",
-                  width: "80px",
-                }}
-                size={"large"}
-                onClick={this.showModal}
-                icon={
-                  <ShoppingCartOutlined
-                    offset={[0, 0]}
-                    style={{ fontSize: "40px", marginLeft: 30 }}
-                  />
-                }
-              ></Button>
-            </Badge>
-          </Affix>
-          {cartView}
-        </Spin>
-      </Card>
-    );
-  }
-}
-
-export default withRouter(Shop);
+      </Row> */

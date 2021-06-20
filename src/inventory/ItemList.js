@@ -747,7 +747,7 @@ class NewItem extends Component {
               placeholder="detailed description"
               style={{ fontSize: "16px" }}
               showCount
-              maxLength={100}
+              maxLength={90}
               onChange={this.handleDescriptionChange}
             />
           </Form.Item>
