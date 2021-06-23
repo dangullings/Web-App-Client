@@ -102,10 +102,12 @@ class NewItem extends Component {
         {
           title: "Name",
           dataIndex: "name",
+          width: "40%",
         },
         {
           title: "Description",
           dataIndex: "description",
+          ellipsis: true,
         },
       ],
     };
@@ -747,7 +749,7 @@ class NewItem extends Component {
               placeholder="detailed description"
               style={{ fontSize: "16px" }}
               showCount
-              maxLength={90}
+              maxLength={200}
               onChange={this.handleDescriptionChange}
             />
           </Form.Item>
