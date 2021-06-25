@@ -47,13 +47,13 @@ const children = [
   <Option key={"Arts and Crafts"}>Arts and Crafts</Option>,
 ];
 const clothingSizes = [
-  <Option key={"XXS"}>XXS</Option>,
-  <Option key={"XS"}>XS</Option>,
-  <Option key={"S"}>S</Option>,
-  <Option key={"M"}>M</Option>,
-  <Option key={"L"}>L</Option>,
-  <Option key={"XL"}>XL</Option>,
-  <Option key={"XXL"}>XXL</Option>,
+  <Option key={"XX-Small"}>XX-Small</Option>,
+  <Option key={"X-Small"}>X-Small</Option>,
+  <Option key={"Small"}>Small</Option>,
+  <Option key={"Medium"}>Medium</Option>,
+  <Option key={"Large"}>Large</Option>,
+  <Option key={"X-Large"}>X-Large</Option>,
+  <Option key={"XX-Large"}>XX-Large</Option>,
 ];
 const clothingGenders = [
   <Option key={"Mens"}>Mens</Option>,

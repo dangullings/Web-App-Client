@@ -27,6 +27,11 @@
     border-radius: 6px;
     text-shadow: 0 -1px 0 rgb(0 0 0 / 12%);
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39);
+    &:hover {
+      background-color: @highlight-blue !important;
+      border-color: @border-blue !important;
+      color: white;
+    }
   }
 
   .ant-btn-primary[disabled],
@@ -51,12 +56,16 @@
 
   .ant-btn-dangerous.ant-btn-primary {
     color: #fff;
-    background: #ff4d4f;
-    border-color: #ff4d4f;
+    background: @primary-red;
+    border-color: @border-red;
     text-shadow: 0 -1px 0 rgb(0 0 0 / 12%);
     -webkit-box-shadow: 0 2px 0 rgb(0 0 0 / 5%);
     border-radius: 6px;
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39);
+    &:hover {
+      background: @primary-red;
+      border-color: @border-red;
+    }
   }
 
   .ant-btn-primary:focus {

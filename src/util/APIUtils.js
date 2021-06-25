@@ -1087,11 +1087,18 @@ export function checkEmailAvailability(email) {
   });
 }
 
-export function forgotPassword(email) {
+/* export function forgotPassword(email) {
   return request({
     url: API_BASE_URL + "/user/forgot_password",
     method: "POST",
     body: JSON.stringify(email),
+  });
+} */
+
+export function forgotPassword(email) {
+  return request({
+    url: API_BASE_URL + "/user/forgot_password/" + email,
+    method: "GET",
   });
 }
 

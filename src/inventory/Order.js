@@ -489,7 +489,7 @@ class Order extends Component {
           ${item.itemPrice} x {item.quantity}
         </div>
         <div className="list-item desc">
-          {item.size} {item.color} {item.description}
+          {item.size} {item.color} {item.gender}
         </div>
         <div className="list-item price">
           ${this.getPriceFormatted(item.price)}

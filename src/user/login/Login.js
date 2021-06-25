@@ -46,6 +46,7 @@ class LoginForm extends Component {
       forgotPasswordVisible: false,
     };
 
+    this.forgotPasswordSend = this.forgotPasswordSend.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
@@ -185,7 +186,7 @@ class LoginForm extends Component {
             icon={<SendOutlined />}
             disabled={this.isFormInvalid()}
             loading={loading}
-            onClick={this.handleSubmit}
+            onClick={this.forgotPasswordSend}
           >
             Send
           </Button>,

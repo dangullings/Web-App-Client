@@ -418,7 +418,7 @@ class OrderList extends Component {
           onChange={this.onChangeSearch}
           dropdownClassName="custom-style"
           style={{
-            width: 120,
+            width: 100,
             height: 32,
           }}
         />
@@ -429,7 +429,7 @@ class OrderList extends Component {
           dropdownClassName="custom-style"
           style={{
             marginTop: 5,
-            marginLeft: 5,
+            marginLeft: 0,
           }}
           onChange={this.toggleActive}
         ></Switch>

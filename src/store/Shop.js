@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import {
   Table,
-  Switch,
+  Popconfirm,
   message,
   Space,
   Icon,
@@ -43,6 +43,7 @@ import {
   SearchOutlined,
   EditOutlined,
   EllipsisOutlined,
+  QuestionCircleOutlined,
   DeleteOutlined,
   ShoppingCartOutlined,
   DollarCircleOutlined,
@@ -294,6 +295,7 @@ class Shop extends Component {
       cartItemsQty: [...this.state.cartItemsQty, newCartItemQty],
       cartItems: [...this.state.cartItems, newCartItem],
       productDetailVisible: false,
+      selectedProduct: "",
     });
 
     message.success("Item added to cart.");
@@ -449,7 +451,7 @@ class Shop extends Component {
       index++;
     }
 
-    if (qty >= 100) {
+    if (qty >= 99) {
       return;
     } else {
       qty++;
@@ -620,63 +622,64 @@ class Shop extends Component {
         <div className="cart-item-info-container">
           <div className="cart-item-info-one">
             <div className="cart-item-info-name">{item.name}</div>
-            <div className="cart-item-qty-container">
-              <div className="cart-item-qty-minus">
-                <Button
-                  style={{ marginRight: 35 }}
-                  size="small"
-                  onClick={() => this.reduceItemQty(itemId)}
-                  style={{
-                    boxShadow:
-                      "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 3px 6px 0 rgba(0, 0, 0, 0.39)",
-                  }}
-                >
-                  <MinusOutlined />
-                </Button>
-              </div>
-              <div className="cart-item-qty">{itemQty}</div>
-              <div className="cart-item-qty-plus">
-                <Button
-                  size="small"
-                  onClick={() => this.increaseItemQty(itemId)}
-                  style={{
-                    boxShadow:
-                      "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 3px 6px 0 rgba(0, 0, 0, 0.39)",
-                  }}
-                >
-                  <PlusOutlined />
-                </Button>
+            <div className="cart-item-qty-outer-container">
+              <div className="cart-item-qty-container">
+                <div className="cart-item-qty-minus">
+                  <Button
+                    className="custom-btn"
+                    size="small"
+                    style={{ marginRight: 35 }}
+                    onClick={() => this.reduceItemQty(itemId)}
+                    shape="circle"
+                    icon={<MinusOutlined />}
+                  ></Button>
+                </div>
+                <div className="cart-item-qty">{itemQty}</div>
+                <div className="cart-item-qty-plus">
+                  <Button
+                    className="custom-btn"
+                    size="small"
+                    onClick={() => this.increaseItemQty(itemId)}
+                    shape="circle"
+                    icon={<PlusOutlined />}
+                  ></Button>
+                </div>
               </div>
               <div className="cart-item-total">${totalItemCost}</div>
             </div>
           </div>
           <div className="cart-item-footer-container">
-            <div className="cart-item-option-container">
-              <div>{item.type}</div>
-              <div>{item.color}</div>
-              <div>{item.size}</div>
-              <div>{item.gender}</div>
-            </div>
-          </div>
-          <div className="cart-item-info-two">
-            <div className="cart-item-info-desc">{item.description}</div>
+            <div className="cart-item-option">{item.type} </div>
+            <div className="cart-item-option">{item.color} </div>
+            <div className="cart-item-option">{item.size} </div>
+            <div className="cart-item-option">{item.gender} </div>
           </div>
         </div>
         <div className="cart-item-qty-remove">
-          <Button
-            size="small"
-            type="primary"
-            danger
-            icon={<DeleteOutlined />}
-            onClick={() => this.removeCartItem(itemId)}
-            style={{
-              boxShadow:
-                "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 3px 6px 0 rgba(0, 0, 0, 0.39)",
-            }}
+          <Popconfirm
+            icon={<QuestionCircleOutlined style={{ color: "red" }} />}
+            title="Remove item?"
+            onConfirm={() => this.removeCartItem(itemId)}
+            okText="Yes"
+            okType="danger"
+            cancelText="No"
+            overlayClassName="shop-pop"
           >
-            Remove
-          </Button>
+            <Button
+              className="custom-btn"
+              size="small"
+              icon={<DeleteOutlined />}
+            >
+              Remove
+            </Button>
+          </Popconfirm>
         </div>
+        <Divider
+          style={{
+            marginTop: 5,
+            marginBottom: 5,
+          }}
+        />
       </div>
     );
   }
@@ -884,7 +887,10 @@ class Shop extends Component {
     let totalCartCost = "$" + this.getTotalCartCost();
 
     const totals = [
-      <Row align="end" style={{ marginTop: 35, marginRight: 20 }}>
+      <Row
+        align="end"
+        style={{ marginTop: 15, marginBottom: 20, marginRight: 20 }}
+      >
         <Space size="small">
           <Title level={4}>Cart Total:</Title>
           <Title type="success" level={3}>
@@ -988,6 +994,10 @@ class Shop extends Component {
             xl: 6,
             xxl: 7,
           }}
+          pagination={{
+            position: "bottom",
+            pageSize: 20,
+          }}
           dataSource={productCards}
           renderItem={(item) => <List.Item>{item}</List.Item>}
         />
@@ -1047,7 +1057,7 @@ class Shop extends Component {
         className="custom-style"
         bordered={false}
         headStyle={{ marginBottom: 8 }}
-        bodyStyle={{ padding: 16 }}
+        bodyStyle={{ paddingLeft: 16, paddingRight: 16, paddingTop: 0 }}
         title={newHeader}
       >
         {content}
@@ -1057,103 +1067,3 @@ class Shop extends Component {
 }
 
 export default withRouter(Shop);
-
-/* 
-<Row
-        style={{
-          marginTop: 10,
-          marginBottom: 30,
-          paddingLeft: 10,
-          paddingRight: 10,
-          width: "100%",
-        }}
-      >
-        <Card
-          hoverable
-          key={itemId}
-          style={{
-            width: "100%",
-            borderRadius: "10px",
-            boxShadow:
-              "0 4px 8px 0 rgba(0, 0, 0, 0.4), 0 6px 20px 0 rgba(0, 0, 0, 0.39)",
-          }}
-          headStyle={{ backgroundColor: "#fafafa" }}
-          bodyStyle={{ backgroundColor: "#fafafa" }}
-          cover={
-            <Image
-              width={"100%"}
-              height={"100%"}
-              style={{ left: -1 }}
-              src={`data:image/jpeg;base64,${this.getProductImage(
-                item.imageId
-              )}`}
-            />
-          }
-          actions={[
-            <Row style={{ width: "33%", marginLeft: 8, marginTop: -8 }}>
-              {genderLabel}
-              {colorLabel}
-              {sizeLabel}
-            </Row>,
-
-            <Row
-              justify="space-around"
-              style={{ width: "100%", marginTop: -14 }}
-            >
-              <Col style={{ width: "100%" }}>{itemQty}</Col>
-              <Col>
-                <Button
-                  style={{ marginRight: 35 }}
-                  size="small"
-                  onClick={() => this.reduceItemQty(itemId)}
-                  style={{
-                    boxShadow:
-                      "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 3px 6px 0 rgba(0, 0, 0, 0.39)",
-                  }}
-                >
-                  <MinusOutlined />
-                </Button>
-              </Col>
-              <Col>
-                <Button
-                  size="small"
-                  onClick={() => this.increaseItemQty(itemId)}
-                  style={{
-                    boxShadow:
-                      "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 3px 6px 0 rgba(0, 0, 0, 0.39)",
-                  }}
-                >
-                  <PlusOutlined />
-                </Button>
-              </Col>
-              <Col style={{ width: "100%", marginTop: 5 }}>
-                <Button
-                  size="small"
-                  type="primary"
-                  danger
-                  icon={<DeleteOutlined />}
-                  onClick={() => this.removeCartItem(itemId)}
-                  style={{
-                    boxShadow:
-                      "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 3px 6px 0 rgba(0, 0, 0, 0.39)",
-                  }}
-                >
-                  Remove
-                </Button>
-              </Col>
-            </Row>,
-
-            <Row
-              align="bottom"
-              style={{
-                marginLeft: 4,
-                marginTop: 10,
-              }}
-            >
-              {saleCostLabel}
-            </Row>,
-          ]}
-        >
-          <Meta title={item.name} description={item.description} />
-        </Card>
-      </Row> */
