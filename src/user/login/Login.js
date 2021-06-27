@@ -113,7 +113,20 @@ class LoginForm extends Component {
   forgotPasswordSend() {
     const { email } = this.state;
 
-    forgotPassword(email).then((response) => {});
+    this.setState({
+      loading: true,
+    });
+
+    forgotPassword(email).then((response) => {
+      notification.success({
+        message: "Email Sent",
+        description: "A password reset link has been emailed to " + email + ".",
+        duration: 6,
+      });
+      this.setState({
+        forgotPasswordVisible: false,
+      });
+    });
   }
 
   render() {
@@ -154,20 +167,20 @@ class LoginForm extends Component {
             placeholder="Password"
           />
         </FormItem>
-        <Button type="text" onClick={this.showModal}>
-          Forgot Password?
-        </Button>
         <FormItem>
           <Button
             type="primary"
             htmlType="submit"
-            size="large"
+            block={true}
             className="custom-style"
             onClick={this.handleSubmit}
           >
             Login
           </Button>
         </FormItem>
+        <Button type="secondary" block={true} onClick={this.showModal}>
+          Forgot Password?
+        </Button>
       </Form>,
       <Modal
         visible={forgotPasswordVisible}

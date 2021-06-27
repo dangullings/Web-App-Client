@@ -162,6 +162,7 @@ class App extends Component {
           style={{
             backgroundColor: "white",
             width: "100%",
+            justifyContent: "center",
           }}
         >
           <div>

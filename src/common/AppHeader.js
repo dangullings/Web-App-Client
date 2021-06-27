@@ -9,6 +9,8 @@ import {
   EditOutlined,
 } from "@ant-design/icons";
 
+import "../styles/style.less";
+
 const { SubMenu } = Menu;
 const Header = Layout.Header;
 const { Title, Text } = Typography;
@@ -56,13 +58,12 @@ class AppHeader extends Component {
       usersName = this.props.currentUser.name;
 
       dropdownMenu = [
-        <Dropdown.Button
-          type="text"
-          onClick={this.handleButtonClick}
-          overlay={menuItems}
+        <Link
+          style={{ marginLeft: 60, fontSize: "28px", color: "#4a4a4a" }}
+          to={`/users/${this.props.currentUser.username}`}
         >
           {usersName}
-        </Dropdown.Button>,
+        </Link>,
       ];
     }
 

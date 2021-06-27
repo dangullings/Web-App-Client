@@ -25,6 +25,7 @@
     background: @primary-blue;
     border-color: @border-blue;
     border-radius: 6px;
+    max-width: 400px;
     text-shadow: 0 -1px 0 rgb(0 0 0 / 12%);
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39);
     &:hover {
@@ -42,6 +43,7 @@
     background: #f5f5f5;
     border-color: #d9d9d9;
     text-shadow: none;
+    max-width: 400px;
     -webkit-box-shadow: none;
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39);
   }
@@ -50,6 +52,7 @@
     color: @primary-blue;
     background: white;
     border-color: @border-blue;
+    max-width: 400px;
     text-shadow: 0 -1px 0 rgb(0 0 0 / 12%);
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39);
   }
@@ -58,6 +61,7 @@
     color: #fff;
     background: @primary-red;
     border-color: @border-red;
+    max-width: 400px;
     text-shadow: 0 -1px 0 rgb(0 0 0 / 12%);
     -webkit-box-shadow: 0 2px 0 rgb(0 0 0 / 5%);
     border-radius: 6px;
@@ -84,14 +88,6 @@
     color: #fff;
     background: #ff4d4f;
     border-color: white;
-  }
-
-  .ant-btn-text {
-    color: @primary-blue;
-    background: #fff;
-    border-color: #fff;
-    margin-bottom: 10px;
-    font-weight: 500;
   }
 
   .ant-tabs-tab {
@@ -328,6 +324,10 @@
     width: 60px;
   }
 
+  .ant-card-body {
+    padding: 24px;
+  }
+
   .ant-card-actions {
     border-radius: 0px 0px 10px 10px;
   }
@@ -451,12 +451,30 @@
     border-radius: 2px 2px 2px 2px;
   }
 
+  .ant-form-item {
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    color: rgba(0, 0, 0, 0.85);
+    font-size: 14px;
+    font-variant: tabular-nums;
+    line-height: 1.5715;
+    list-style: none;
+    -webkit-font-feature-settings: "tnum";
+    font-feature-settings: "tnum";
+    margin-bottom: 24px;
+    vertical-align: top;
+    max-width: 400px;
+  }
+
   .ant-picker {
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
     margin: 0;
     height: 34px;
     width: 200px;
+    max-width: 400px;
     padding: 0;
     color: rgba(0, 0, 0, 0.85);
     font-size: 16px;
