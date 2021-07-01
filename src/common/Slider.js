@@ -2,7 +2,16 @@ import React, { Component } from "react";
 import { Link, withRouter } from "react-router-dom";
 import AppHeader from "../common/AppHeader";
 import "../styles/style.less";
-import { Layout, Menu, Divider, Drawer, Button, Affix, Typography } from "antd";
+import {
+  Layout,
+  Menu,
+  Divider,
+  Drawer,
+  Button,
+  Affix,
+  Typography,
+  Tooltip,
+} from "antd";
 
 import {
   ShopOutlined,
@@ -15,6 +24,7 @@ import {
   IdcardOutlined,
   ShoppingOutlined,
   TeamOutlined,
+  LogoutOutlined,
 } from "@ant-design/icons";
 
 const { SubMenu } = Menu;
@@ -42,7 +52,6 @@ class Slider extends Component {
   }
 
   sliderLogout = () => {
-    console.log("yay we called sliders logout");
     this.props.appLogout();
   };
 
@@ -240,6 +249,13 @@ class Slider extends Component {
       >
         Company Name
       </Title>,
+      <Tooltip title="logout">
+        <Button
+          shape="circle"
+          icon={<LogoutOutlined rotate={180} />}
+          onClick={this.sliderLogout}
+        />
+      </Tooltip>,
     ];
 
     const profile = [
