@@ -1087,13 +1087,13 @@ export function checkEmailAvailability(email) {
   });
 }
 
-/* export function forgotPassword(email) {
+export function changePassword(user) {
   return request({
-    url: API_BASE_URL + "/user/forgot_password",
+    url: API_BASE_URL + "/change_password",
     method: "POST",
-    body: JSON.stringify(email),
+    body: JSON.stringify(user),
   });
-} */
+}
 
 export function forgotPassword(email) {
   return request({

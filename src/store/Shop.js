@@ -1038,7 +1038,7 @@ class Shop extends Component {
         onCancel={this.handleCancel}
         footer={[
           <Button key="back" type="secondary" onClick={this.handleCancel}>
-            {"<"} Products
+            Cancel
           </Button>,
           <Button
             type="primary"

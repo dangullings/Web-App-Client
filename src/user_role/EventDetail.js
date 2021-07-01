@@ -61,6 +61,7 @@ class EventDetail extends Component {
     };
 
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.onChange = this.onChange.bind(this);
   }
 
   componentDidMount() {
@@ -509,26 +510,17 @@ class EventDetail extends Component {
           visible={eventSignupVisible}
           title={eventModalTitle}
           footer={[
-            <Button
-              key="back"
-              type="secondary"
-              onClick={this.handleCancel}
-              style={{
-                boxShadow: "0px 0px 5px rgba(0,0,0,0.2)",
-              }}
-            >
+            <Button key="back" type="secondary" onClick={this.handleCancel}>
               Cancel
             </Button>,
             <Button
               key="submit"
               type="primary"
+              style={{ marginLeft: 0, marginTop: 10 }}
               icon={<SaveOutlined />}
               disabled={this.isFormInvalid()}
               loading={loading}
               onClick={this.handleSubmit}
-              style={{
-                boxShadow: "0px 0px 5px rgba(0,0,0,0.2)",
-              }}
             >
               Submit
             </Button>,

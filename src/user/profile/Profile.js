@@ -17,6 +17,7 @@ import {
   getUserProfile,
   updateUser,
   createStudentUser,
+  changePassword,
 } from "../../util/APIUtils";
 import "../../styles/style.less";
 import moment from "moment";
@@ -28,6 +29,7 @@ import {
   SaveOutlined,
   PlusCircleOutlined,
   LoadingOutlined,
+  EditOutlined,
 } from "@ant-design/icons";
 
 const { Title, Text } = Typography;
@@ -41,8 +43,13 @@ class Profile extends Component {
       user: null,
       loading: false,
       password: "",
+      newPassword1: "",
+      newPassword2: "",
+      changePasswordVisible: false,
     };
+
     this.loadUserProfile = this.loadUserProfile.bind(this);
+    this.changeUserPassword = this.changeUserPassword.bind(this);
   }
 
   loadUserProfile(username) {
@@ -82,6 +89,61 @@ class Profile extends Component {
       this.loadUserProfile(nextProps.match.params.username);
     }
   }
+
+  changeUserPassword() {
+    const { newPassword1, user } = this.state;
+
+    let name = this.formRef.current.getFieldValue("name");
+    let username = this.formRef.current.getFieldValue("username");
+    let email = this.formRef.current.getFieldValue("email");
+    let phoneNumber = this.formRef.current.getFieldValue("phoneNumber");
+    let address = this.formRef.current.getFieldValue("address");
+
+    this.setState({
+      loading: true,
+    });
+
+    const data = {
+      id: user.id,
+      name: name,
+      username: username,
+      email: email,
+      phoneNumber: phoneNumber,
+      address: address,
+      createdAt: user.createdAt,
+      updatedAt: moment().format("YYY-MM-DD, h:mm a"),
+      password: newPassword1,
+      enabled: user.enabled,
+      role: user.role,
+    };
+
+    changePassword(data).then((response) => {
+      notification.success({
+        message: "Password Changed",
+        description: "",
+        duration: 2,
+      });
+      this.setState({
+        changePasswordVisible: false,
+        loading: false,
+      });
+    });
+  }
+
+  handleCancel = () => {
+    this.setState({
+      newPasword1: "",
+      newPassword2: "",
+      loading: false,
+      changePasswordVisible: false,
+    });
+  };
+
+  showModal = () => {
+    this.setState({
+      changePasswordVisible: true,
+    });
+  };
 
   handleSubmit() {
     const { user, password } = this.state;
@@ -127,14 +189,30 @@ class Profile extends Component {
       });
   }
 
-  handlePasswordChange(value) {
-    this.setState({
-      password: value,
-    });
+  isPasswordChangeInvalid() {
+    const { newPassword1, newPassword2 } = this.state;
+
+    if (newPassword1.length < 6) {
+      return true;
+    }
+
+    if (newPassword1 !== newPassword2) {
+      return true;
+    }
+
+    return false;
   }
 
   render() {
-    const { user, loading } = this.state;
+    const { user, loading, changePasswordVisible } = this.state;
+
+    const modalTitle = [
+      <Title level={2}>
+        <div>
+          Change Password <EditOutlined />
+        </div>
+      </Title>,
+    ];
 
     var content = [];
     if (!user) {
@@ -196,35 +274,6 @@ class Profile extends Component {
               placeholder="Username"
               style={{ fontSize: "16px" }}
               autosize={{ minRows: 1, maxRows: 1 }}
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="password"
-            style={{ marginBottom: 6 }}
-            label={
-              <Title style={{ marginBottom: 0 }} level={5}>
-                {"Password"}
-                <Text
-                  style={{ fontSize: 12, marginLeft: 10, color: "darkgray" }}
-                >
-                  (Hidden. Save to change.)
-                </Text>
-              </Title>
-            }
-            hasFeedback
-            rules={[
-              {
-                required: true,
-                message: "Please enter a password.",
-              },
-            ]}
-          >
-            <Input
-              placeholder="Password"
-              style={{ fontSize: "16px" }}
-              autosize={{ minRows: 1, maxRows: 1 }}
-              onChange={this.handlePasswordChange}
             />
           </Form.Item>
 
@@ -298,12 +347,57 @@ class Profile extends Component {
           <Button
             type="primary"
             loading={loading}
+            block={true}
             icon={<SaveOutlined />}
             onClick={this.handleSubmit}
           >
             Save
           </Button>
+          <Button
+            type="primary"
+            icon={<EditOutlined />}
+            onClick={this.showModal}
+            block={true}
+            style={{ marginTop: 10 }}
+          >
+            Change Password
+          </Button>
         </Form>,
+        <Modal
+          visible={changePasswordVisible}
+          className="custom-style"
+          title={modalTitle}
+          closable={false}
+          onCancel={this.handleCancel}
+          footer={[
+            <Button key="back" type="secondary" onClick={this.handleCancel}>
+              Cancel
+            </Button>,
+            <Button
+              key="submit"
+              htmlType="submit"
+              type="primary"
+              loading={loading}
+              icon={<SaveOutlined />}
+              disabled={this.isPasswordChangeInvalid()}
+              onClick={this.changeUserPassword}
+            >
+              Save
+            </Button>,
+          ]}
+        >
+          <Input
+            size="large"
+            onChange={(e) => this.setState({ newPassword1: e.target.value })}
+            placeholder="new password"
+            style={{ marginBottom: 15 }}
+          />
+          <Input
+            size="large"
+            onChange={(e) => this.setState({ newPassword2: e.target.value })}
+            placeholder="new password"
+          />
+        </Modal>,
       ];
     }
 
