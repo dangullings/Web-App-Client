@@ -425,7 +425,7 @@ class SessionDetail extends Component {
   }
 
   getSessionSignupForm(session) {
-    if (!session) {
+    if (!session || !this.state.sessionSignupVisible) {
       return;
     }
 
@@ -472,16 +472,28 @@ class SessionDetail extends Component {
       }
     }
 
-    const { myPeeps } = this.state;
+    const { myPeeps, peepSessions } = this.state;
 
     var myPeepOptions = [];
     let peep,
       notAllowedRank = true,
-      notAllowedAge = true;
+      notAllowedAge = true,
+      notAllowedAlreadySignedUp = false;
     for (peep of myPeeps) {
       let peepAge = moment().diff(peep.birthDate, "years");
       notAllowedRank = true;
       notAllowedAge = true;
+
+      let peepSess;
+      for (peepSess of peepSessions) {
+        if (peepSess.peepId == peep.id) {
+          if (peepSess.sessionId == session.id) {
+            notAllowedAlreadySignedUp = true;
+            break;
+          }
+        }
+      }
+
       for (rank of ranksAllowed) {
         if (peep.ranks == rank) {
           notAllowedRank = false;
@@ -497,8 +509,32 @@ class SessionDetail extends Component {
       }
 
       let notAllowed = false;
-      if (notAllowedAge || notAllowedRank) {
+      if (notAllowedAge || notAllowedRank || notAllowedAlreadySignedUp) {
         notAllowed = true;
+      }
+
+      if (notAllowedAge) {
+        notification["info"]({
+          message: peep.firstName,
+          description: "Age not allowed.",
+          duration: 6,
+        });
+      }
+
+      if (notAllowedRank) {
+        notification["info"]({
+          message: peep.firstName,
+          description: "Rank not allowed.",
+          duration: 6,
+        });
+      }
+
+      if (notAllowedAlreadySignedUp) {
+        notification["info"]({
+          message: peep.firstName,
+          description: "Already signed up.",
+          duration: 6,
+        });
       }
 
       let lastLetter = peep.lastName.split("");
@@ -633,6 +669,7 @@ class SessionDetail extends Component {
           loading={loading}
           visible={sessionSignupVisible}
           title={sessionModalTitle}
+          closable={false}
           footer={[
             <Button key="back" type="secondary" onClick={this.handleCancel}>
               Cancel

@@ -340,7 +340,7 @@ class LocationList extends Component {
         columns={columns}
         dataSource={locations}
         size="small"
-        scroll={{ y: 400 }}
+        scroll={{ y: 500 }}
         onRow={(record, rowIndex) => {
           return {
             onClick: (event) => {

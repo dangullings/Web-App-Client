@@ -797,7 +797,7 @@ class StudentList extends Component {
         columns={columns}
         dataSource={students}
         size="small"
-        scroll={{ y: 400 }}
+        scroll={{ y: 500 }}
         onChange={this.handleTableChange}
         onRow={(record, rowIndex) => {
           return {

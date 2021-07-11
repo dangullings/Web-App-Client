@@ -296,7 +296,7 @@ class EventDetail extends Component {
   getEventSignupForm(event) {
     const { peepEvents } = this.state;
 
-    if (!event) {
+    if (!event || !this.state.eventSignupVisible) {
       return;
     }
 
@@ -348,7 +348,8 @@ class EventDetail extends Component {
     var myPeepOptions = [];
     let peep,
       notAllowedRank = true,
-      notAllowedAge = true;
+      notAllowedAge = true,
+      notAllowedAlreadySignedUp = false;
     for (peep of myPeeps) {
       let peepAge = moment().diff(peep.birthDate, "years");
       notAllowedRank = true;
@@ -360,6 +361,16 @@ class EventDetail extends Component {
         }
       }
 
+      let peepEvent;
+      for (peepEvent of peepEvents) {
+        if (peepEvent.peepId == peep.id) {
+          if (peepEvent.eventId == event.id) {
+            notAllowedAlreadySignedUp = true;
+            break;
+          }
+        }
+      }
+
       for (age of agesAllowed) {
         if (peepAge == age) {
           notAllowedAge = false;
@@ -368,8 +379,32 @@ class EventDetail extends Component {
       }
 
       let notAllowed = false;
-      if (notAllowedAge || notAllowedRank) {
+      if (notAllowedAge || notAllowedRank || notAllowedAlreadySignedUp) {
         notAllowed = true;
+      }
+
+      if (notAllowedAge) {
+        notification["info"]({
+          message: peep.firstName,
+          description: "Age not allowed.",
+          duration: 6,
+        });
+      }
+
+      if (notAllowedRank) {
+        notification["info"]({
+          message: peep.firstName,
+          description: "Rank not allowed.",
+          duration: 6,
+        });
+      }
+
+      if (notAllowedAlreadySignedUp) {
+        notification["info"]({
+          message: peep.firstName,
+          description: "Already signed up.",
+          duration: 6,
+        });
       }
 
       let pe;
@@ -509,6 +544,7 @@ class EventDetail extends Component {
           loading={loading}
           visible={eventSignupVisible}
           title={eventModalTitle}
+          closable={false}
           footer={[
             <Button key="back" type="secondary" onClick={this.handleCancel}>
               Cancel

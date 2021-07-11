@@ -10,6 +10,7 @@ img {
   height: 100%;
   margin: 0px;
   padding: 0px;
+  border-radius: 4px 4px 0px 0px;
 }
 
 .product-detail-options-container {
@@ -22,6 +23,7 @@ img {
   background-color: rgb(50, 50, 50);
   border-radius: 8px 8px 0px 0px;
   border: rgb(100, 100, 100) solid 2px;
+  box-shadow: 0 -1px 6px 0 rgba(0, 0, 0, 0.4);
 }
 
 .product-detail-info {

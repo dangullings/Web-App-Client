@@ -1408,7 +1408,7 @@ class TestList extends Component {
         columns={testCols}
         dataSource={tests}
         size="small"
-        scroll={{ y: 350 }}
+        scroll={{ y: 500 }}
         onChange={this.handleTableChange}
         onRow={(record, rowIndex) => {
           return {

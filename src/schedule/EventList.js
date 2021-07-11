@@ -1503,7 +1503,7 @@ class EventList extends Component {
                   dataSource={studentEventList}
                   size="small"
                   style={{ width: "100%" }}
-                  scroll={{ x: 400 }}
+                  scroll={{ x: 300 }}
                   onChange={this.handleTableChange}
                   onRow={(record, rowIndex) => {
                     return {
@@ -1531,7 +1531,7 @@ class EventList extends Component {
         columns={eventCols}
         dataSource={events}
         size="small"
-        scroll={{ y: 400 }}
+        scroll={{ y: 500 }}
         onChange={this.handleTableChange}
         onRow={(record, rowIndex) => {
           return {

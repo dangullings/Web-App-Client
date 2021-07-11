@@ -2792,7 +2792,7 @@ class SessionList extends Component {
                   dataSource={studentSessionList}
                   size="small"
                   style={{ width: "100%" }}
-                  scroll={{ x: 400 }}
+                  scroll={{ x: 300 }}
                   onChange={this.handleTableChange}
                   onRow={(record, rowIndex) => {
                     return {
@@ -2821,7 +2821,7 @@ class SessionList extends Component {
         columns={sessionCols}
         dataSource={sessions}
         size="small"
-        scroll={{ y: 400 }}
+        scroll={{ y: 500 }}
         onChange={this.handleTableChange}
         onRow={(record, rowIndex) => {
           return {

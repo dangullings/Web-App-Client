@@ -47,6 +47,7 @@ class Attendance extends Component {
       year: moment().year(),
       month: moment().month(),
       week: "",
+      isLoading: true,
       classSessions: [],
       classDates: [],
       sessions: [],
