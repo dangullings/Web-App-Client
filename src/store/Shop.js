@@ -57,7 +57,7 @@ const children = [
   <Option key={"All"}>All</Option>,
   <Option key={"Clothing"}>Clothing</Option>,
   <Option key={"Drinkware"}>Drinkware</Option>,
-  <Option key={"Training Gear"}>Training Gear</Option>,
+  <Option key={"Training Gear"}>Gear</Option>,
   <Option key={"Arts and Crafts"}>Arts and Crafts</Option>,
 ];
 

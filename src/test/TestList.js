@@ -1389,7 +1389,7 @@ class TestList extends Component {
             >
               {filteredOptions.map((item) => (
                 <Select.Option key={item.id} value={item.id}>
-                  {item.firstName + " " + item.lastName}
+                  {item.firstName + " " + item.lastName + " | " + item.ranks}
                 </Select.Option>
               ))}
             </Select>
