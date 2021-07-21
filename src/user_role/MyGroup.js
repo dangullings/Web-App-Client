@@ -702,10 +702,10 @@ class MyGroup extends Component {
         }
       }
 
-      let startTime = pe.startTime.replace(/ /g, "");
-      startTime = startTime.slice(0, -1);
-      let endTime = pe.endTime.replace(/ /g, "");
-      endTime = endTime.slice(0, -1);
+      //let startTime = pe.startTime.replace(/ /g, "");
+      //startTime = startTime.slice(0, -1);
+      //let endTime = pe.endTime.replace(/ /g, "");
+      //endTime = endTime.slice(0, -1);
 
       const eventWithLocation = {
         key: pe.id,
@@ -713,8 +713,8 @@ class MyGroup extends Component {
         title: pe.title,
         description: pe.description,
         date: pe.date,
-        startTime: startTime,
-        endTime: endTime,
+        startTime: pe.startTime,
+        endTime: pe.endTime,
         location: pe.location,
         address: peAddress,
       };
@@ -801,14 +801,6 @@ class MyGroup extends Component {
       return;
     }
 
-    // show next up to 5 dates including individual class dates and events
-
-    // then show tests coming up
-
-    // then show all sessions signed up for
-
-    // then show all events signed up for
-
     const {
       myPeepSessions,
       myPeepEvents,
@@ -847,7 +839,7 @@ class MyGroup extends Component {
 
     var upcomingTestsWithLocation = [];
     let ut, utAddress;
-    for (ut of peepsTests) {
+    for (ut of upcomingTests) {
       for (loc of testLocations) {
         if (loc.name == ut.location) {
           utAddress = loc.address;

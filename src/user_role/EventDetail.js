@@ -32,7 +32,9 @@ import { Link, withRouter } from "react-router-dom";
 import StripeContainer from "../stripe/StripeContainer";
 import {
   SaveOutlined,
+  LikeOutlined,
   DollarOutlined,
+  UnorderedListOutlined,
   LeftOutlined,
   LoadingOutlined,
 } from "@ant-design/icons";
@@ -181,7 +183,7 @@ class EventDetail extends Component {
 
     const signupBtn = [
       <Button
-        icon={<DollarOutlined />}
+        icon={<LikeOutlined />}
         type="primary"
         onClick={this.showEventSignupModal(event)}
       >
@@ -195,9 +197,9 @@ class EventDetail extends Component {
           <Button
             style={{ marginTop: 10, marginBottom: 10 }}
             type="secondary"
-            icon={<LeftOutlined />}
+            icon={<UnorderedListOutlined />}
           >
-            event list
+            Event List
           </Button>
         }
       </Link>,
@@ -206,7 +208,6 @@ class EventDetail extends Component {
     const eventCard = [
       <Card
         className="event-detail"
-        hoverable
         bordered={false}
         key={event.id}
         cover={
@@ -354,6 +355,7 @@ class EventDetail extends Component {
       let peepAge = moment().diff(peep.birthDate, "years");
       notAllowedRank = true;
       notAllowedAge = true;
+      notAllowedAlreadySignedUp = false;
       for (rank of ranksAllowed) {
         if (peep.ranks == rank) {
           notAllowedRank = false;
@@ -553,12 +555,12 @@ class EventDetail extends Component {
               key="submit"
               type="primary"
               style={{ marginLeft: 0, marginTop: 10 }}
-              icon={<SaveOutlined />}
+              icon={<DollarOutlined />}
               disabled={this.isFormInvalid()}
               loading={loading}
               onClick={this.handleSubmit}
             >
-              Submit
+              Submit Order
             </Button>,
           ]}
         >

@@ -667,6 +667,7 @@ class TestList extends Component {
         testStudents: [],
         selectedItems: [],
         selectedTestStudent: "",
+        testId: "",
       },
       this.setFormValues
     );

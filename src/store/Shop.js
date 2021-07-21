@@ -701,7 +701,7 @@ class Shop extends Component {
         <div className="product-detail-options-container">
           <Select
             align="center"
-            placeholder="Genders"
+            placeholder="Gender"
             dropdownClassName="custom-style"
             onChange={this.changeSelectedGender(product)}
             //Key={eventDates.index}
@@ -714,7 +714,7 @@ class Shop extends Component {
           </Select>
           <Select
             align="center"
-            placeholder="Colors"
+            placeholder="Color"
             dropdownClassName="custom-style"
             onChange={this.changeSelectedColor(product)}
             //Key={eventDates.index}
@@ -727,7 +727,7 @@ class Shop extends Component {
           </Select>
           <Select
             align="center"
-            placeholder="Sizes"
+            placeholder="Size"
             dropdownClassName="custom-style"
             onChange={this.changeSelectedSize(product)}
             //Key={eventDates.index}

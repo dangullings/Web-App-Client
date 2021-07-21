@@ -33,7 +33,9 @@ import { Link, withRouter } from "react-router-dom";
 import StripeContainer from "../stripe/StripeContainer";
 import {
   SaveOutlined,
+  LikeOutlined,
   DollarOutlined,
+  UnorderedListOutlined,
   LeftOutlined,
   LoadingOutlined,
 } from "@ant-design/icons";
@@ -307,7 +309,7 @@ class SessionDetail extends Component {
 
     const signupBtn = [
       <Button
-        icon={<DollarOutlined />}
+        icon={<LikeOutlined />}
         type="primary"
         onClick={this.showSessionSignupModal(session)}
       >
@@ -321,9 +323,9 @@ class SessionDetail extends Component {
           <Button
             style={{ marginTop: 10, marginBottom: 10 }}
             type="secondary"
-            icon={<LeftOutlined />}
+            icon={<UnorderedListOutlined />}
           >
-            session list
+            Session List
           </Button>
         }
       </Link>,
@@ -336,7 +338,6 @@ class SessionDetail extends Component {
     const sessionCard = [
       <Card
         className="session-detail"
-        hoverable
         bordered={false}
         key={session.id}
         cover={
@@ -483,7 +484,7 @@ class SessionDetail extends Component {
       let peepAge = moment().diff(peep.birthDate, "years");
       notAllowedRank = true;
       notAllowedAge = true;
-
+      notAllowedAlreadySignedUp = false;
       let peepSess;
       for (peepSess of peepSessions) {
         if (peepSess.peepId == peep.id) {
@@ -678,12 +679,12 @@ class SessionDetail extends Component {
               key="submit"
               type="primary"
               style={{ marginLeft: 0, marginTop: 10 }}
-              icon={<SaveOutlined />}
+              icon={<DollarOutlined />}
               disabled={this.isFormInvalid()}
               loading={loading}
               onClick={this.handleSubmit}
             >
-              Submit
+              Submit Order
             </Button>,
           ]}
         >
