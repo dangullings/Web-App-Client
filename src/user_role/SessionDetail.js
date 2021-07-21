@@ -94,7 +94,20 @@ class SessionDetail extends Component {
 
   getMyPeepsList() {
     let promise;
-    promise = getMyPeeps(this.state.currentUser.id); // this.state.currentUser.id
+    let userId;
+
+    if (
+      this.state.currentUser &&
+      this.state.currentUser !== "null" &&
+      this.state.currentUser !== "undefined"
+    ) {
+      userId = this.state.currentUser.id;
+    } else {
+      userId = this.props.currentUser;
+    }
+
+    promise = getMyPeeps(userId);
+
     if (!promise) {
       return;
     }
@@ -684,7 +697,7 @@ class SessionDetail extends Component {
               loading={loading}
               onClick={this.handleSubmit}
             >
-              Submit Order
+              Submit Signup
             </Button>,
           ]}
         >
