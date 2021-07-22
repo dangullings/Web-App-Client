@@ -4,6 +4,7 @@ export const API_BASE_URL =
 export const ACCESS_TOKEN = "accessToken";
 
 export const STUDENT_LIST_SIZE = 50;
+export const STORE_LIST_SIZE = 20;
 
 export const POLL_LIST_SIZE = 30;
 export const MAX_CHOICES = 6;

@@ -150,6 +150,11 @@ class OrderList extends Component {
 
   getOrderList() {
     let promise;
+
+    this.setState({
+      loading: true,
+    });
+
     promise = getAllOrdersByFulfilled(
       this.state.current,
       this.state.pageSize,
@@ -159,10 +164,6 @@ class OrderList extends Component {
     if (!promise) {
       return;
     }
-
-    this.setState({
-      loading: true,
-    });
 
     promise
       .then((response) => {

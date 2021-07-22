@@ -38,6 +38,7 @@ import {
   DeleteOutlined,
   ExclamationCircleOutlined,
   LeftOutlined,
+  UnorderedListOutlined,
 } from "@ant-design/icons";
 
 const { TabPane } = Tabs;
@@ -712,39 +713,58 @@ class Student extends Component {
 
         <Divider />
 
-        <Row>
-          <Form.Item>
+        <Row
+          style={{
+            display: "flex",
+            justifyContent: "space-around",
+          }}
+        >
+          <Form.Item
+            style={{
+              marginBottom: 15,
+            }}
+          >
+            <Link to={"/students"}>
+              {
+                <Button
+                  type="secondary"
+                  block={true}
+                  icon={<UnorderedListOutlined />}
+                >
+                  Student List
+                </Button>
+              }
+            </Link>
+          </Form.Item>
+
+          <Form.Item
+            style={{
+              marginBottom: 15,
+            }}
+          >
             <Button
-              shape="round"
+              type="primary"
+              danger
+              icon={<DeleteOutlined />}
+              onClick={this.showConfirm}
+            >
+              Delete
+            </Button>
+          </Form.Item>
+          <Form.Item
+            style={{
+              marginBottom: 15,
+            }}
+          >
+            <Button
               type="primary"
               icon={<SaveOutlined />}
               disabled={this.isFormInvalid()}
               loading={loading}
               onClick={this.handleSubmit}
               disabled={this.isFormInvalid()}
-              style={{
-                marginTop: 10,
-                marginLeft: 0,
-              }}
             >
-              Update Student
-            </Button>
-          </Form.Item>
-          <Form.Item>
-            <Button
-              shape="round"
-              type="primary"
-              danger
-              icon={<DeleteOutlined />}
-              onClick={this.showConfirm}
-              style={{
-                marginTop: 10,
-                marginLeft: 10,
-                boxShadow:
-                  "0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39)",
-              }}
-            >
-              Remove Student
+              Save
             </Button>
           </Form.Item>
         </Row>
@@ -765,19 +785,6 @@ class Student extends Component {
       />,
     ];
 
-    const back = [
-      <Link to={"/students"}>
-        {
-          <Button
-            style={{ marginTop: 10, marginBottom: 10 }}
-            type="text"
-            icon={<LeftOutlined />}
-          >
-            student list
-          </Button>
-        }
-      </Link>,
-    ];
     const title = [
       <Title style={{ marginBottom: 0, marginTop: 10 }} level={3}>
         {firstName + " " + lastName}
@@ -785,24 +792,22 @@ class Student extends Component {
     ];
 
     return (
-      <div className="custom-style">
-        {back}
-        <Card
-          className="custom-style"
-          bordered={false}
-          bodyStyle={{ padding: 8 }}
-          title={title}
-        >
-          <Tabs defaultActiveKey="Bios" onChange={this.onTabChange}>
-            <TabPane tab="Bios" key="Bios">
-              {contentBios}
-            </TabPane>
-            <TabPane tab="Tests" key="Tests">
-              {contentTests}
-            </TabPane>
-          </Tabs>
-        </Card>
-      </div>
+      <Card
+        headStyle={{ borderBottom: 0 }}
+        className="custom-style"
+        bordered={false}
+        bodyStyle={{ padding: 15 }}
+        title={title}
+      >
+        <Tabs defaultActiveKey="Bios" onChange={this.onTabChange}>
+          <TabPane tab="Bios" key="Bios">
+            {contentBios}
+          </TabPane>
+          <TabPane tab="Tests" key="Tests">
+            {contentTests}
+          </TabPane>
+        </Tabs>
+      </Card>
     );
   }
 

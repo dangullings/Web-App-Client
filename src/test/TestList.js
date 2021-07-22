@@ -449,9 +449,9 @@ class TestList extends Component {
     let title = this.formRef.current.getFieldValue("title");
     let location = this.formRef.current.getFieldValue("location");
     let startTime = this.formRef.current.getFieldValue("startTime");
-    let formattedStartTime = moment(startTime, "H:mm:ss").format("LT");
+    let formattedStartTime = moment(startTime, "h:mm a").format("LT");
     let endTime = this.formRef.current.getFieldValue("endTime");
-    let formattedEndTime = moment(endTime, "H:mm:ss").format("LT");
+    let formattedEndTime = moment(endTime, "h:mm a").format("LT");
     let date = this.formRef.current.getFieldValue("date").format("YYYY-MM-DD");
     let type = this.formRef.current.getFieldValue("type");
 

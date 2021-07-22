@@ -100,7 +100,7 @@ class EventList extends Component {
       allStudents: [],
       locations: [],
       selectedLocation: "select a location",
-      type: "Camp",
+      type: "Event",
 
       photo: "",
       imageId: "",
@@ -459,6 +459,7 @@ class EventList extends Component {
           description: "Event was saved.",
           duration: 2,
         });
+        this.getEventList(this.state.page);
         this.props.history.push("/schedule/events");
         this.setState({ loading: false, eventModalVisible: false });
         this.handleCancel();
@@ -521,6 +522,7 @@ class EventList extends Component {
         eventModalVisible: true,
         isSavedEvent: false,
         signupStudents: [],
+        eventId: "",
       },
       this.setFormValues
     );
@@ -606,7 +608,7 @@ class EventList extends Component {
       endTime: endTime,
       selectedLocation: this.state.locations[0],
       date: moment(),
-      type: "Camp",
+      type: "Event",
     });
   };
 
@@ -1163,8 +1165,7 @@ class EventList extends Component {
                   onChange={this.handleTypeChange}
                   dropdownClassName="custom-style"
                 >
-                  <Option value="Camp">Camp</Option>
-                  <Option value="Misc">Misc</Option>
+                  <Option value="Event">Event</Option>
                 </Select>
               </Form.Item>
 

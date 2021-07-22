@@ -29,7 +29,7 @@ import {
 } from "../util/APIUtils";
 
 import {
-  LeftOutlined,
+  UnorderedListOutlined,
   SaveOutlined,
   QuestionCircleOutlined,
   LikeOutlined,
@@ -369,9 +369,10 @@ class Order extends Component {
       <Link to={"/orders"}>
         {
           <Button
-            style={{ marginTop: 0, marginBottom: 30, marginLeft: -10 }}
-            type="text"
-            icon={<LeftOutlined />}
+            style={{ marginTop: 15 }}
+            type="secondary"
+            block={true}
+            icon={<UnorderedListOutlined />}
           >
             Order List
           </Button>
@@ -462,7 +463,6 @@ class Order extends Component {
 
     return (
       <div className="order">
-        {back}
         <div>{businessContent}</div>
         <div>{userContent}</div>
         <div>{orderDate}</div>
@@ -477,6 +477,7 @@ class Order extends Component {
         {fulFillAlert}
         <div>{fulfill}</div>
         <div>{deleteOrderBtn}</div>
+        <div>{back}</div>
       </div>
     );
   }

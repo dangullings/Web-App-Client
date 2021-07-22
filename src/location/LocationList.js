@@ -119,7 +119,7 @@ class LocationList extends Component {
     }
 
     this.setState({
-      isLoading: true,
+      loading: true,
     });
 
     promise
@@ -131,12 +131,12 @@ class LocationList extends Component {
           totalElements: response.totalElements,
           totalPages: response.totalPages,
           last: response.last,
-          isLoading: false,
+          loading: false,
         });
       })
       .catch((error) => {
         this.setState({
-          isLoading: false,
+          loading: false,
         });
       });
   }
@@ -333,7 +333,7 @@ class LocationList extends Component {
       </Modal>,
 
       <Table
-        loading={this.state.loading}
+        loading={loading}
         rowClassName={(record, index) => this.getRowColor(record, index)}
         rowKey={locations.id}
         bordered

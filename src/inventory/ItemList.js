@@ -32,6 +32,7 @@ import {
   PlusOutlined,
   SaveOutlined,
   UploadOutlined,
+  QuestionCircleOutlined,
 } from "@ant-design/icons";
 import "../styles/style.less";
 
@@ -528,24 +529,25 @@ class NewItem extends Component {
     }
 
     const warningText = [
-      <Text type="warning">*consistant picture size recommended</Text>,
+      <Text type="warning">*only last image uploaded will save with item</Text>,
     ];
 
     const renderButton = () => {
       if (isSavedItem) {
         return (
           <Popconfirm
-            title="Delete location?"
+            icon={<QuestionCircleOutlined style={{ color: "red" }} />}
+            title="Delete item?"
             onConfirm={this.removeItem}
             okText="Yes"
             cancelText="No"
+            overlayClassName="custom-style"
           >
             <Button
               type="primary"
               danger
               icon={<DeleteOutlined />}
               loading={loading}
-              onClick={this.onFill}
             >
               Delete
             </Button>

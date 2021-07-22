@@ -623,6 +623,7 @@ class SessionList extends Component {
         sessionModalVisible: true,
         isSavedSession: false,
         signupStudents: [],
+        sessionId: "",
       },
       this.setFormValues
     );
@@ -848,6 +849,7 @@ class SessionList extends Component {
 
         Promise.all(promises).then((values) => {
           this.handleCancel();
+          this.getSessionList(this.state.page);
           this.props.history.push("/schedule/sessions");
         });
       })

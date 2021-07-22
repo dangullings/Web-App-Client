@@ -36,13 +36,10 @@ import "../styles/style.less";
 import { getRanks } from "../util/Helpers.js";
 
 import {
-  SaveOutlined,
-  ReloadOutlined,
-  CarryOutOutlined,
-  PlusCircleOutlined,
-  PlusOutlined,
-  DeleteOutlined,
-  EnvironmentOutlined,
+  ClockCircleOutlined,
+  AlertOutlined,
+  SmileOutlined,
+  EyeOutlined,
 } from "@ant-design/icons";
 
 const Option = Select.Option;
@@ -432,7 +429,11 @@ class EventCalendar extends Component {
       firstLine = [
         <div className="day-event-container">
           <div className="day-event-info">
-            <Tag className="tag" color={this.getTypeColor(date.type)}>
+            <Tag
+              className="tag"
+              icon={this.getTypeIcon(date.type)}
+              color={this.getTypeColor(date.type)}
+            >
               {date.title}
             </Tag>
             <div className="day-event-time">
@@ -450,7 +451,11 @@ class EventCalendar extends Component {
       firstLine = [
         <div className="day-event-container">
           <div className="day-event-info">
-            <Tag className="tag" color={this.getTypeColor(date.type)}>
+            <Tag
+              className="tag"
+              icon={this.getTypeIcon(date.type)}
+              color={this.getTypeColor(date.type)}
+            >
               {date.title}
             </Tag>
             <div className="day-event-time">
@@ -459,11 +464,15 @@ class EventCalendar extends Component {
           </div>
         </div>,
       ];
-    } else if (date.type == "Camp") {
+    } else if (date.type == "Event") {
       firstLine = [
         <div className="day-event-container">
           <div className="day-event-info">
-            <Tag className="tag" color={this.getTypeColor(date.type)}>
+            <Tag
+              className="tag"
+              icon={this.getTypeIcon(date.type)}
+              color={this.getTypeColor(date.type)}
+            >
               {date.title}
             </Tag>
             <div className="day-event-time">
@@ -534,7 +543,7 @@ class EventCalendar extends Component {
           }}
           placeholder="Events / Classes"
           optionFilterProp="children"
-          dropdownClassName="custom-style"
+          dropdownClassName="calendar-event"
           onChange={this.changeSelectedEvent}
           Key={valueEventsDate.index}
         >
@@ -544,19 +553,6 @@ class EventCalendar extends Component {
             </Select.Option>
           ))}
         </Select>
-      </Row>,
-      <Row style={{ marginTop: 10, marginLeft: 10 }}>
-        <DatePicker
-          onChange={this.onMonthYearChange}
-          picker="month"
-          inputReadOnly="true"
-          dropdownClassName="custom-style"
-          defaultValue={moment().format("YYYY-MM")}
-          value={datepickerValue}
-          style={{
-            marginLeft: 0,
-          }}
-        />
       </Row>,
 
       <Calendar
@@ -593,25 +589,41 @@ class EventCalendar extends Component {
     var shortName = moment.monthsShort(parseInt(selectedMoment.month(), 10));
     var cardTitle = "Calendar " + shortName + " '" + String(year).slice(-2);
 
+    var cardHeader = [
+      <Row style={{ display: "flex", justifyContent: "space-between" }}>
+        <Title level={3}>{cardTitle}</Title>
+        <DatePicker
+          onChange={this.onMonthYearChange}
+          picker="month"
+          inputReadOnly="true"
+          dropdownClassName="calendar-event"
+          defaultValue={moment().format("YYYY-MM")}
+          value={datepickerValue}
+          style={{
+            height: 35,
+            width: 110,
+          }}
+        />
+      </Row>,
+    ];
+
     return (
       <Content className="calendar-event">
         <Card
           bodyStyle={{ padding: 0 }}
           bordered={false}
-          title={<Title level={3}>{cardTitle}</Title>}
+          title={cardHeader}
+          loading={loading}
         >
-          <Row justify="space-around" style={{ marginBottom: 10 }}>
+          <Row justify="space-around" style={{ marginBottom: 5, marginTop: 5 }}>
             <Col span={4}>
-              <Tag color="gray">Session</Tag>
+              <Tag color="default">Session</Tag>
             </Col>
             <Col span={4}>
               <Tag color="red">Test</Tag>
             </Col>
             <Col span={4}>
-              <Tag color="lime">Camp</Tag>
-            </Col>
-            <Col span={4}>
-              <Tag color="cyan">Event</Tag>
+              <Tag color="green">Event</Tag>
             </Col>
           </Row>
 
@@ -667,7 +679,12 @@ class EventCalendar extends Component {
         <ul className="events">
           {valueEventsDate.map((date) => (
             <li key={date.id}>
-              <Tag color={this.getTypeColor(date.type)}>{date.title}</Tag>
+              <Tag
+                color={this.getTypeColor(date.type)}
+                icon={this.getTypeIcon(date.type)}
+              >
+                {date.title}
+              </Tag>
             </li>
           ))}
         </ul>
@@ -675,15 +692,26 @@ class EventCalendar extends Component {
     }
   }
 
+  getTypeIcon(type) {
+    if (type == "Event") {
+      return <SmileOutlined />;
+    } else if (type == "Test") {
+      return <AlertOutlined />;
+    } else if (type == "Misc") {
+      return "cyan";
+    }
+    return <ClockCircleOutlined />;
+  }
+
   getTypeColor(type) {
-    if (type == "Camp") {
-      return "lime";
+    if (type == "Event") {
+      return "green";
     } else if (type == "Test") {
       return "red";
     } else if (type == "Misc") {
       return "cyan";
     }
-    return "gray";
+    return "default";
   }
 
   onMonthYearChange(date, dateString) {

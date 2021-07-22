@@ -29,7 +29,7 @@ import {
   createLineItem,
 } from "../util/APIUtils";
 import moment from "moment";
-import { STUDENT_LIST_SIZE } from "../constants";
+import { STORE_LIST_SIZE } from "../constants";
 import { withRouter } from "react-router-dom";
 
 import StripeContainer from "../stripe/StripeContainer";
@@ -43,6 +43,7 @@ import {
   SearchOutlined,
   EditOutlined,
   EllipsisOutlined,
+  LoadingOutlined,
   QuestionCircleOutlined,
   DeleteOutlined,
   ShoppingCartOutlined,
@@ -57,7 +58,7 @@ const children = [
   <Option key={"All"}>All</Option>,
   <Option key={"Clothing"}>Clothing</Option>,
   <Option key={"Drinkware"}>Drinkware</Option>,
-  <Option key={"Training Gear"}>Gear</Option>,
+  <Option key={"Gear"}>Gear</Option>,
   <Option key={"Arts and Crafts"}>Arts and Crafts</Option>,
 ];
 
@@ -79,7 +80,7 @@ class Shop extends Component {
       cartItems: [],
       cartItemsQty: [],
       productImages: [],
-      size: STUDENT_LIST_SIZE,
+      size: STORE_LIST_SIZE,
       search: "",
       page: 0,
       searchText: "",
@@ -113,15 +114,15 @@ class Shop extends Component {
     const { page, pageSize } = this.state;
     let promise;
 
+    this.setState({
+      loading: true,
+    });
+
     promise = getAllItemsByActive(page, pageSize);
 
     if (!promise) {
       return;
     }
-
-    this.setState({
-      loading: true,
-    });
 
     promise.then((response) => {
       this.setState(
@@ -508,6 +509,10 @@ class Shop extends Component {
   getProductsBySearch(search) {
     let promise;
 
+    this.setState({
+      loading: true,
+    });
+
     promise = getAllItemsByActiveSearch(
       this.state.page,
       this.state.pageSize,
@@ -517,10 +522,6 @@ class Shop extends Component {
     if (!promise) {
       return;
     }
-
-    this.setState({
-      loading: true,
-    });
 
     promise.then((response) => {
       this.setState(
@@ -980,10 +981,8 @@ class Shop extends Component {
       </Row>,
     ];
 
-    var content = [];
-
-    content = [
-      <Spin spinning={loading}>
+    var content = [
+      <div>
         <List
           grid={{
             gutter: 16,
@@ -996,7 +995,7 @@ class Shop extends Component {
           }}
           pagination={{
             position: "bottom",
-            pageSize: 20,
+            pageSize: STORE_LIST_SIZE,
           }}
           dataSource={productCards}
           renderItem={(item) => <List.Item>{item}</List.Item>}
@@ -1004,7 +1003,7 @@ class Shop extends Component {
 
         <Affix
           offsetTop={55}
-          style={{ position: "absolute", top: 0, left: -50 }}
+          style={{ position: "absolute", top: 0, left: -35 }}
         >
           <Badge count={cartItems.length}>
             <Button
@@ -1027,7 +1026,7 @@ class Shop extends Component {
           </Badge>
         </Affix>
         {cartView}
-      </Spin>,
+      </div>,
       <Modal
         className="shop"
         closable={false}
@@ -1052,10 +1051,17 @@ class Shop extends Component {
         {productDetailView}
       </Modal>,
     ];
+
+    let productLoading = loading;
+    if (productCards.length == 0) {
+      productLoading = true;
+    }
+
     return (
       <Card
         className="custom-style"
         bordered={false}
+        loading={productLoading}
         headStyle={{ marginBottom: 8 }}
         bodyStyle={{ paddingLeft: 16, paddingRight: 16, paddingTop: 0 }}
         title={newHeader}

@@ -13,6 +13,7 @@ import {
   Button,
   Layout,
   Divider,
+  Spin,
   Affix,
 } from "antd";
 import {
@@ -743,6 +744,7 @@ class Attendance extends Component {
         <Card
           bodyStyle={{ padding: 1 }}
           bordered={false}
+          loading={isLoading}
           title={newHeader}
           tabList={tabList}
           activeTabKey={this.state.key}

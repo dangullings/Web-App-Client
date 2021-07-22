@@ -25,6 +25,7 @@ import {
   ShoppingOutlined,
   TeamOutlined,
   LogoutOutlined,
+  CarryOutOutlined,
 } from "@ant-design/icons";
 
 const { SubMenu } = Menu;
@@ -125,6 +126,14 @@ class Slider extends Component {
       >
         <Link to={"/user/events"}>Events</Link>
       </Menu.Item>,
+      <Menu.Item
+        className="menu-item"
+        key="/schedule/calendar"
+        icon={<CalendarOutlined />}
+        onClick={this.onClose}
+      >
+        <Link to={"/schedule/calendar"}>Event Calendar</Link>
+      </Menu.Item>,
     ];
     //} else {
     adminMenuItems = [
@@ -136,7 +145,32 @@ class Slider extends Component {
       >
         <Link to={"/students"}>Students</Link>
       </Menu.Item>,
-
+      <SubMenu key="schedule" icon={<CalendarOutlined />} title="Schedule">
+        <Menu.Item
+          className="menu-item"
+          key="/schedule/attendance"
+          icon={<CarryOutOutlined />}
+          onClick={this.onClose}
+        >
+          <Link to={"/schedule/attendance"}>Attendance</Link>
+        </Menu.Item>
+        <Menu.Item
+          className="menu-item"
+          key="/schedule/Sessions"
+          icon={<ProfileOutlined />}
+          onClick={this.onClose}
+        >
+          <Link to={"/schedule/Sessions"}>Sessions</Link>
+        </Menu.Item>
+        <Menu.Item
+          className="menu-item"
+          key="/schedule/Events"
+          icon={<ProfileOutlined />}
+          onClick={this.onClose}
+        >
+          <Link to={"/schedule/Events"}>Events</Link>
+        </Menu.Item>
+      </SubMenu>,
       <Menu.Item
         className="menu-item"
         key="/tests"
@@ -161,37 +195,6 @@ class Slider extends Component {
       >
         <Link to={"/items"}>Items</Link>
       </Menu.Item>,
-      <SubMenu key="schedule" icon={<CalendarOutlined />} title="Schedule">
-        <Menu.Item
-          className="menu-item"
-          key="/schedule/calendar"
-          onClick={this.onClose}
-        >
-          <Link to={"/schedule/calendar"}>Event Calendar</Link>
-        </Menu.Item>
-        <Menu.Item
-          className="menu-item"
-          key="/schedule/attendance"
-          onClick={this.onClose}
-        >
-          <Link to={"/schedule/attendance"}>Attendance</Link>
-        </Menu.Item>
-        <Menu.Item
-          className="menu-item"
-          key="/schedule/Sessions"
-          onClick={this.onClose}
-        >
-          <Link to={"/schedule/Sessions"}>Sessions</Link>
-        </Menu.Item>
-        <Menu.Item
-          className="menu-item"
-          key="/schedule/Events"
-          onClick={this.onClose}
-        >
-          <Link to={"/schedule/Events"}>Events</Link>
-        </Menu.Item>
-      </SubMenu>,
-
       <Menu.Item
         className="menu-item"
         key="/locations"
