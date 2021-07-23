@@ -33,9 +33,11 @@ import {
   SaveOutlined,
   UploadOutlined,
   QuestionCircleOutlined,
+  ExclamationCircleOutlined,
 } from "@ant-design/icons";
 import "../styles/style.less";
 
+const { confirm } = Modal;
 const { Title, Text } = Typography;
 const Compress = require("compress.js");
 const compress = new Compress();
@@ -202,6 +204,24 @@ class NewItem extends Component {
         });
       });
   }
+
+  showConfirm = () => {
+    confirm({
+      className: "confirm-custom-style",
+      title: "Do you want to remove this item?",
+      icon: <ExclamationCircleOutlined />,
+      okText: "Yes",
+      okType: "danger",
+      cancelText: "No",
+      content: "This will erase all records of this item.",
+      onOk: () => {
+        return this.removeItem();
+      },
+      onCancel: () => {
+        return console.log("");
+      },
+    });
+  };
 
   removeItem() {
     const { item } = this.state;
@@ -535,23 +555,14 @@ class NewItem extends Component {
     const renderButton = () => {
       if (isSavedItem) {
         return (
-          <Popconfirm
-            icon={<QuestionCircleOutlined style={{ color: "red" }} />}
-            title="Delete item?"
-            onConfirm={this.removeItem}
-            okText="Yes"
-            cancelText="No"
-            overlayClassName="custom-style"
+          <Button
+            type="primary"
+            danger
+            icon={<DeleteOutlined />}
+            onClick={this.showConfirm}
           >
-            <Button
-              type="primary"
-              danger
-              icon={<DeleteOutlined />}
-              loading={loading}
-            >
-              Delete
-            </Button>
-          </Popconfirm>
+            Delete
+          </Button>
         );
       } else {
         return [];

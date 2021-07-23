@@ -49,9 +49,10 @@ import {
   DeleteOutlined,
   CloseOutlined,
   LoadingOutlined,
-  QuestionCircleOutlined,
+  ExclamationCircleOutlined,
 } from "@ant-design/icons";
 
+const { confirm } = Modal;
 const ranks = getRanks();
 const Option = Select.Option;
 const { Title, Text } = Typography;
@@ -728,6 +729,24 @@ class TestList extends Component {
     });
   }
 
+  showConfirm = () => {
+    confirm({
+      className: "confirm-custom-style",
+      title: "Do you want to remove this test?",
+      icon: <ExclamationCircleOutlined />,
+      okText: "Yes",
+      okType: "danger",
+      cancelText: "No",
+      content: "This will erase all records of this test.",
+      onOk: () => {
+        return this.removeTest();
+      },
+      onCancel: () => {
+        return console.log("");
+      },
+    });
+  };
+
   removeTest = () => {
     const id = this.state.testId;
     removeTest(id)
@@ -1096,23 +1115,14 @@ class TestList extends Component {
     const renderButton = () => {
       if (isSavedTest) {
         return (
-          <Popconfirm
-            icon={<QuestionCircleOutlined style={{ color: "red" }} />}
-            title="Delete test?"
-            onConfirm={this.removeTest}
-            okText="Yes"
-            cancelText="No"
-            overlayClassName="custom-style"
+          <Button
+            type="primary"
+            danger
+            icon={<DeleteOutlined />}
+            onClick={this.showConfirm}
           >
-            <Button
-              type="primary"
-              danger
-              icon={<DeleteOutlined />}
-              loading={loading}
-            >
-              Delete
-            </Button>
-          </Popconfirm>
+            Delete
+          </Button>
         );
       } else {
         return [];

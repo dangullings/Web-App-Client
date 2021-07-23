@@ -13,6 +13,8 @@
       background-color: @highlight-blue !important;
       border-color: @border-blue !important;
       color: white;
+      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.4),
+        0 2px 4px 0 rgba(0, 0, 0, 0.39);
     }
   }
 
@@ -21,6 +23,12 @@
     background: white;
     border-color: @border-blue;
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39);
+    &:hover {
+      background: @border-blue !important;
+      border-color: white !important;
+      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.4),
+        0 2px 4px 0 rgba(0, 0, 0, 0.39);
+    }
   }
 
   .ant-btn-primary:active {

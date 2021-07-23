@@ -31,7 +31,7 @@ import {
 import {
   UnorderedListOutlined,
   SaveOutlined,
-  QuestionCircleOutlined,
+  ExclamationCircleOutlined,
   LikeOutlined,
   DislikeOutlined,
   DeleteOutlined,
@@ -223,6 +223,24 @@ class Order extends Component {
     );
   }
 
+  showConfirm = () => {
+    confirm({
+      className: "confirm-custom-style",
+      title: "Do you want to remove this order?",
+      icon: <ExclamationCircleOutlined />,
+      okText: "Yes",
+      okType: "danger",
+      cancelText: "No",
+      content: "This will erase all records of this order.",
+      onOk: () => {
+        return this.deleteOrder();
+      },
+      onCancel: () => {
+        return console.log("");
+      },
+    });
+  };
+
   deleteOrder() {
     const { order } = this.state;
 
@@ -339,24 +357,16 @@ class Order extends Component {
     ];
 
     const deleteOrderBtn = [
-      <Popconfirm
-        icon={<QuestionCircleOutlined style={{ color: "red" }} />}
-        title="Delete order?"
-        onConfirm={this.deleteOrder}
-        okText="Yes"
-        cancelText="No"
-        overlayClassName="custom-style"
+      <Button
+        type="primary"
+        block={true}
+        style={{ marginTop: 15 }}
+        danger
+        icon={<DeleteOutlined />}
+        onClick={this.showConfirm}
       >
-        <Button
-          type="primary"
-          danger
-          icon={<DeleteOutlined />}
-          block={true}
-          style={{ marginTop: 15 }}
-        >
-          Delete Order
-        </Button>
-      </Popconfirm>,
+        Delete
+      </Button>,
     ];
 
     if (noteAlertVisible) {

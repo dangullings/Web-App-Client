@@ -1003,7 +1003,7 @@ class Shop extends Component {
 
         <Affix
           offsetTop={55}
-          style={{ position: "absolute", top: 0, left: -35 }}
+          style={{ position: "absolute", top: 50, left: -35 }}
         >
           <Badge count={cartItems.length}>
             <Button

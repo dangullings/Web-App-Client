@@ -28,9 +28,10 @@ import {
   DeleteOutlined,
   EnvironmentOutlined,
   SaveOutlined,
-  QuestionCircleOutlined,
+  ExclamationCircleOutlined,
 } from "@ant-design/icons";
 
+const { confirm } = Modal;
 const { Title, Text } = Typography;
 
 class LocationList extends Component {
@@ -145,6 +146,24 @@ class LocationList extends Component {
     this.getLocationList(this.state.page);
   }
 
+  showConfirm = () => {
+    confirm({
+      className: "confirm-custom-style",
+      title: "Do you want to remove this location?",
+      icon: <ExclamationCircleOutlined />,
+      okText: "Yes",
+      okType: "danger",
+      cancelText: "No",
+      content: "This will erase all records of this location.",
+      onOk: () => {
+        return this.removeLocation();
+      },
+      onCancel: () => {
+        return console.log("");
+      },
+    });
+  };
+
   removeLocation() {
     const { location } = this.state;
     removeLocation(location.id)
@@ -221,23 +240,14 @@ class LocationList extends Component {
     const renderButton = () => {
       if (isSavedLocation) {
         return (
-          <Popconfirm
-            icon={<QuestionCircleOutlined style={{ color: "red" }} />}
-            title="Delete location?"
-            onConfirm={this.removeLocation}
-            okText="Yes"
-            cancelText="No"
-            overlayClassName="custom-style"
+          <Button
+            type="primary"
+            danger
+            icon={<DeleteOutlined />}
+            onClick={this.showConfirm}
           >
-            <Button
-              type="primary"
-              danger
-              icon={<DeleteOutlined />}
-              loading={loading}
-            >
-              Delete
-            </Button>
-          </Popconfirm>
+            Delete
+          </Button>
         );
       } else {
         return [];

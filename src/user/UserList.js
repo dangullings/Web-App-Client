@@ -33,8 +33,10 @@ import {
   TeamOutlined,
   SaveOutlined,
   PlusCircleOutlined,
+  ExclamationCircleOutlined,
 } from "@ant-design/icons";
 
+const { confirm } = Modal;
 const { Title, Text } = Typography;
 
 class UserList extends Component {
@@ -326,20 +328,6 @@ class UserList extends Component {
     this.getUserList(this.state.page);
   }
 
-  removeUser() {
-    const { user } = this.state;
-    removeUser(user.id)
-      .then((response) => {
-        message.success("User deleted.");
-        this.handleCancel;
-        this.getUserList(this.state.page);
-        this.setState({ loading: false, visible: false });
-      })
-      .catch((error) => {
-        message.error("Error [" + error.message + "]");
-      });
-  }
-
   handleSubmit() {
     let name = this.formRef.current.getFieldValue("name");
     let username = this.formRef.current.getFieldValue("username");
@@ -505,21 +493,14 @@ class UserList extends Component {
     const renderButton = () => {
       if (isSavedUser) {
         return (
-          <Popconfirm
-            title="Delete User?"
-            onConfirm={this.removeUser}
-            okText="Yes"
-            cancelText="No"
+          <Button
+            type="primary"
+            danger
+            icon={<DeleteOutlined />}
+            onClick={this.showConfirm}
           >
-            <Button
-              type="primary"
-              danger
-              icon={<DeleteOutlined />}
-              loading={loading}
-            >
-              Delete
-            </Button>
-          </Popconfirm>
+            Delete
+          </Button>
         );
       } else {
         return [];
@@ -742,6 +723,38 @@ class UserList extends Component {
       </Card>
     );
   }
+
+  removeUser() {
+    const { user } = this.state;
+    removeUser(user.id)
+      .then((response) => {
+        message.success("User deleted.");
+        this.handleCancel;
+        this.getUserList(this.state.page);
+        this.setState({ loading: false, visible: false });
+      })
+      .catch((error) => {
+        message.error("Error [" + error.message + "]");
+      });
+  }
+
+  showConfirm = () => {
+    confirm({
+      className: "confirm-custom-style",
+      title: "Do you want to remove this user?",
+      icon: <ExclamationCircleOutlined />,
+      okText: "Yes",
+      okType: "danger",
+      cancelText: "No",
+      content: "This will erase all records of this user.",
+      onOk: () => {
+        return this.removeUser();
+      },
+      onCancel: () => {
+        return console.log("");
+      },
+    });
+  };
 
   handleRowClick(user) {
     this.getMyPeepsList(user);

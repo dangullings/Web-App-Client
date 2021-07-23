@@ -47,7 +47,7 @@ import {
   DeleteOutlined,
   UploadOutlined,
   ReloadOutlined,
-  QuestionCircleOutlined,
+  ExclamationCircleOutlined,
   PlusCircleOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
@@ -55,7 +55,7 @@ import "../styles/style.less";
 
 const Compress = require("compress.js");
 const compress = new Compress();
-
+const { confirm } = Modal;
 const ranks = getRanks();
 const { Title, Text } = Typography;
 const { TextArea } = Input;
@@ -798,6 +798,24 @@ class EventList extends Component {
       });
   }
 
+  showConfirm = () => {
+    confirm({
+      className: "confirm-custom-style",
+      title: "Do you want to remove this event?",
+      icon: <ExclamationCircleOutlined />,
+      okText: "Yes",
+      okType: "danger",
+      cancelText: "No",
+      content: "This will erase all records of this event.",
+      onOk: () => {
+        return this.removeEvent();
+      },
+      onCancel: () => {
+        return console.log("");
+      },
+    });
+  };
+
   removeEvent = () => {
     const id = this.state.eventId;
     const { event } = this.state;
@@ -1006,23 +1024,14 @@ class EventList extends Component {
     const renderButton = () => {
       if (isSavedEvent) {
         return (
-          <Popconfirm
-            icon={<QuestionCircleOutlined style={{ color: "red" }} />}
-            title="Delete event?"
-            onConfirm={this.removeEvent}
-            okText="Yes"
-            cancelText="No"
-            overlayClassName="custom-style"
+          <Button
+            type="primary"
+            danger
+            icon={<DeleteOutlined />}
+            onClick={this.showConfirm}
           >
-            <Button
-              type="primary"
-              danger
-              icon={<DeleteOutlined />}
-              loading={loading}
-            >
-              Delete
-            </Button>
-          </Popconfirm>
+            Delete
+          </Button>
         );
       } else {
         return [];

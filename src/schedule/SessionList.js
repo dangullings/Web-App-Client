@@ -58,12 +58,13 @@ import {
   PlusCircleOutlined,
   PlusOutlined,
   QuestionCircleOutlined,
+  ExclamationCircleOutlined,
 } from "@ant-design/icons";
 import "../styles/style.less";
 
 const Compress = require("compress.js");
 const compress = new Compress();
-
+const { confirm } = Modal;
 const { Panel } = Collapse;
 
 const ranks = getRanks();
@@ -1647,6 +1648,24 @@ class SessionList extends Component {
     });
   }
 
+  showConfirm = () => {
+    confirm({
+      className: "confirm-custom-style",
+      title: "Do you want to remove this session?",
+      icon: <ExclamationCircleOutlined />,
+      okText: "Yes",
+      okType: "danger",
+      cancelText: "No",
+      content: "This will erase all records of this session.",
+      onOk: () => {
+        return this.removeSession();
+      },
+      onCancel: () => {
+        return console.log("");
+      },
+    });
+  };
+
   removeSession = () => {
     const id = this.state.sessionId;
     const { session } = this.state;
@@ -2274,23 +2293,14 @@ class SessionList extends Component {
     const renderDeleteButton = () => {
       if (isSavedSession) {
         return (
-          <Popconfirm
-            icon={<QuestionCircleOutlined style={{ color: "red" }} />}
-            title="Delete event?"
-            onConfirm={this.removeSession}
-            okText="Yes"
-            cancelText="No"
-            overlayClassName="custom-style"
+          <Button
+            type="primary"
+            danger
+            icon={<DeleteOutlined />}
+            onClick={this.showConfirm}
           >
-            <Button
-              type="primary"
-              danger
-              icon={<DeleteOutlined />}
-              loading={loading}
-            >
-              Delete
-            </Button>
-          </Popconfirm>
+            Delete
+          </Button>
         );
       } else {
         return [];

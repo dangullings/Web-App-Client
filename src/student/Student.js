@@ -893,16 +893,18 @@ class Student extends Component {
 
   showConfirm = () => {
     confirm({
+      className: "confirm-custom-style",
       title: "Do you want to remove this student?",
       icon: <ExclamationCircleOutlined />,
       okText: "Yes",
+      okType: "danger",
       cancelText: "No",
       content: "This will erase all records of this student.",
       onOk: () => {
         return this.removeStudent();
       },
       onCancel: () => {
-        return console.log("student " + this.state.student.firstName);
+        return console.log("");
       },
     });
   };

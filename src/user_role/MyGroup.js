@@ -233,18 +233,6 @@ class MyGroup extends Component {
     });
   };
 
-  handleSubmit() {}
-
-  handleOk = () => {
-    this.setState({
-      loading: false,
-      visible: false,
-      peepScheduleVisible: false,
-      peepAttendanceVisible: false,
-      peepTestsVisible: false,
-    });
-  };
-
   handleCancel = () => {
     this.setState({
       loading: false,
@@ -1203,7 +1191,7 @@ class MyGroup extends Component {
   }
 
   resetFields() {
-    this.formRef.current.resetFields();
+    //this.formRef.current.resetFields();
     this.setState({
       firstName: {
         text: "",
@@ -1332,11 +1320,7 @@ class MyGroup extends Component {
     }
   }
 
-  handleCancel = () => {
-    this.setState({ visible: false });
-  };
-
-  handleSubmit(event) {
+  handleSubmit() {
     this.setState({ loading: true });
 
     var d = new Date();
@@ -1357,17 +1341,6 @@ class MyGroup extends Component {
     createStudent(studentData)
       .then((response) => {
         this.createUserStudent(response.id);
-        notification.success({
-          message: "Add Successful!",
-          description:
-            this.state.firstName.text +
-            " " +
-            this.state.lastName.text +
-            " was added.",
-          duration: 4,
-        });
-        this.resetFields();
-        this.setState({ loading: false, visible: false });
       })
       .catch((error) => {
         if (error.status === 401) {
@@ -1395,6 +1368,17 @@ class MyGroup extends Component {
     createUserStudent(userStudent)
       .then((response) => {
         this.getMyPeepsList();
+        notification.success({
+          message: "Add Successful!",
+          description:
+            this.state.firstName.text +
+            " " +
+            this.state.lastName.text +
+            " was added.",
+          duration: 4,
+        });
+        this.resetFields();
+        this.setState({ visible: false });
       })
       .catch((error) => {});
   }
@@ -2015,10 +1999,9 @@ class MyGroup extends Component {
       <Modal
         className="my-group"
         visible={visible}
+        destroyOnClose={true}
         title={newStudentTitle}
         style={{ top: 0 }}
-        onOk={this.handleOk}
-        onCancel={this.handleCancel}
         footer={[
           <Button key="back" type="secondary" onClick={this.handleCancel}>
             Cancel
@@ -2216,8 +2199,6 @@ class MyGroup extends Component {
         <Modal
           visible={peepScheduleVisible}
           title="Schedule"
-          onOk={this.handleOk}
-          onCancel={this.handleCancel}
           footer={[
             <Button key="back" onClick={this.handleCancel}>
               Ok
@@ -2229,8 +2210,6 @@ class MyGroup extends Component {
         <Modal
           visible={peepTestsVisible}
           title="Tests"
-          onOk={this.handleOk}
-          onCancel={this.handleCancel}
           footer={[
             <Button type="primary" key="back" onClick={this.handleCancel}>
               Ok
@@ -2242,8 +2221,6 @@ class MyGroup extends Component {
         <Modal
           visible={peepAttendanceVisible}
           title="Attendance"
-          onOk={this.handleOk}
-          onCancel={this.handleCancel}
           footer={[
             <Button type="primary" key="back" onClick={this.handleCancel}>
               Ok

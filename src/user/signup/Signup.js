@@ -16,7 +16,9 @@ import {
   PASSWORD_MAX_LENGTH,
 } from "../../constants";
 
-import { Form, Input, Button, notification } from "antd";
+import { Form, Input, Button, notification, Typography } from "antd";
+const { Title } = Typography;
+
 const FormItem = Form.Item;
 
 const key = "updatable";
@@ -113,19 +115,22 @@ class Signup extends Component {
       this.state.username.validateStatus === "success" &&
       this.state.email.validateStatus === "success" &&
       this.state.password.validateStatus === "success" &&
-      this.state.address.validateStatus === "success" &&
-      this.state.phoneNumber.validateStatus === "success"
+      this.state.address.validateStatus === "success"
     );
   }
 
   render() {
     return (
-      <div className="custom-style">
+      <div className="custom-style" style={{ padding: 20 }}>
         <h1 className="custom-style">Sign Up</h1>
         <div className="custom-style">
           <Form onSubmit={this.handleSubmit} className="custom-style">
             <Form.Item
-              label="Full Name"
+              label={
+                <Title style={{ marginBottom: 0 }} level={5}>
+                  {"Full Name"}
+                </Title>
+              }
               validateStatus={this.state.name.validateStatus}
               help={this.state.name.errorMsg}
               hasFeedback
@@ -147,8 +152,17 @@ class Signup extends Component {
               />
             </Form.Item>
             <Form.Item
-              label="Username"
+              label={
+                <Title style={{ marginBottom: 0 }} level={5}>
+                  {"Username"}
+                </Title>
+              }
               hasFeedback
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
               validateStatus={this.state.username.validateStatus}
               help={this.state.username.errorMsg}
             >
@@ -165,7 +179,16 @@ class Signup extends Component {
               />
             </Form.Item>
             <Form.Item
-              label="Password"
+              label={
+                <Title style={{ marginBottom: 0 }} level={5}>
+                  {"Password"}
+                </Title>
+              }
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
               validateStatus={this.state.password.validateStatus}
               help={this.state.password.errorMsg}
             >
@@ -182,7 +205,11 @@ class Signup extends Component {
               />
             </Form.Item>
             <Form.Item
-              label="Email"
+              label={
+                <Title style={{ marginBottom: 0 }} level={5}>
+                  {"Email"}
+                </Title>
+              }
               hasFeedback
               validateStatus={this.state.email.validateStatus}
               help={this.state.email.errorMsg}
@@ -194,6 +221,11 @@ class Signup extends Component {
                 autoComplete="off"
                 placeholder="Your email"
                 value={this.state.email.value}
+                rules={[
+                  {
+                    required: true,
+                  },
+                ]}
                 onBlur={this.validateEmailAvailability}
                 onChange={(event) =>
                   this.handleInputChange(event, this.validateEmail)
@@ -201,7 +233,11 @@ class Signup extends Component {
               />
             </Form.Item>
             <Form.Item
-              label="Address"
+              label={
+                <Title style={{ marginBottom: 0 }} level={5}>
+                  {"Address"}
+                </Title>
+              }
               hasFeedback
               validateStatus={this.state.address.validateStatus}
               help={this.state.address.errorMsg}
@@ -218,7 +254,11 @@ class Signup extends Component {
               />
             </Form.Item>
             <Form.Item
-              label="Phone Number"
+              label={
+                <Title style={{ marginBottom: 0 }} level={5}>
+                  {"Phone Number"}
+                </Title>
+              }
               hasFeedback
               validateStatus={this.state.phoneNumber.validateStatus}
               help={this.state.phoneNumber.errorMsg}

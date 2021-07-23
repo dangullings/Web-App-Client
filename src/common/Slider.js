@@ -91,135 +91,178 @@ class Slider extends Component {
     if (currentUser == "visitor") {
       welcome = [<div>Welcome, visitor!</div>];
     }
-    //if (currentUser.role == "user") {
-    userMenuItems = [
-      welcome,
-      <Menu.Item
-        className="menu-item"
-        key="/user/group"
-        icon={<TeamOutlined />}
-        onClick={this.onClose}
-      >
-        <Link to={"/user/group"}>My Group</Link>
-      </Menu.Item>,
-      <Menu.Item
-        className="menu-item"
-        key="/store/Shop"
-        icon={<ShopOutlined />}
-        onClick={this.onClose}
-      >
-        <Link to={"/store/Shop"}>Store</Link>
-      </Menu.Item>,
-      <Menu.Item
-        icon={<ProfileOutlined />}
-        className="menu-item"
-        key="/user/sessions"
-        onClick={this.onClose}
-      >
-        <Link to={"/user/sessions"}>Sessions</Link>
-      </Menu.Item>,
-      <Menu.Item
-        icon={<ProfileOutlined />}
-        className="menu-item"
-        key="/user/events"
-        onClick={this.onClose}
-      >
-        <Link to={"/user/events"}>Events</Link>
-      </Menu.Item>,
-      <Menu.Item
-        className="menu-item"
-        key="/schedule/calendar"
-        icon={<CalendarOutlined />}
-        onClick={this.onClose}
-      >
-        <Link to={"/schedule/calendar"}>Event Calendar</Link>
-      </Menu.Item>,
-    ];
-    //} else {
-    adminMenuItems = [
-      <Menu.Item
-        className="menu-item"
-        key="/students"
-        icon={<TeamOutlined />}
-        onClick={this.onClose}
-      >
-        <Link to={"/students"}>Students</Link>
-      </Menu.Item>,
-      <SubMenu key="schedule" icon={<CalendarOutlined />} title="Schedule">
+    if (currentUser.role == "user") {
+      userMenuItems = [
+        welcome,
         <Menu.Item
           className="menu-item"
-          key="/schedule/attendance"
-          icon={<CarryOutOutlined />}
+          key="/user/group"
+          icon={<TeamOutlined />}
           onClick={this.onClose}
         >
-          <Link to={"/schedule/attendance"}>Attendance</Link>
-        </Menu.Item>
+          <Link to={"/user/group"}>My Group</Link>
+        </Menu.Item>,
         <Menu.Item
           className="menu-item"
-          key="/schedule/Sessions"
+          key="/store/Shop"
+          icon={<ShopOutlined />}
+          onClick={this.onClose}
+        >
+          <Link to={"/store/Shop"}>Store</Link>
+        </Menu.Item>,
+        <Menu.Item
+          icon={<ProfileOutlined />}
+          className="menu-item"
+          key="/user/sessions"
+          onClick={this.onClose}
+        >
+          <Link to={"/user/sessions"}>Sessions</Link>
+        </Menu.Item>,
+        <Menu.Item
+          icon={<ProfileOutlined />}
+          className="menu-item"
+          key="/user/events"
+          onClick={this.onClose}
+        >
+          <Link to={"/user/events"}>Events</Link>
+        </Menu.Item>,
+        <Menu.Item
+          className="menu-item"
+          key="/schedule/calendar"
+          icon={<CalendarOutlined />}
+          onClick={this.onClose}
+        >
+          <Link to={"/schedule/calendar"}>Event Calendar</Link>
+        </Menu.Item>,
+      ];
+    } else {
+      userMenuItems = [
+        welcome,
+        <Menu.Item
+          className="menu-item"
+          key="/user/group"
+          icon={<TeamOutlined />}
+          onClick={this.onClose}
+        >
+          <Link to={"/user/group"}>My Group</Link>
+        </Menu.Item>,
+        <Menu.Item
+          className="menu-item"
+          key="/store/Shop"
+          icon={<ShopOutlined />}
+          onClick={this.onClose}
+        >
+          <Link to={"/store/Shop"}>Store</Link>
+        </Menu.Item>,
+        <Menu.Item
+          icon={<ProfileOutlined />}
+          className="menu-item"
+          key="/user/sessions"
+          onClick={this.onClose}
+        >
+          <Link to={"/user/sessions"}>Sessions</Link>
+        </Menu.Item>,
+        <Menu.Item
+          icon={<ProfileOutlined />}
+          className="menu-item"
+          key="/user/events"
+          onClick={this.onClose}
+        >
+          <Link to={"/user/events"}>Events</Link>
+        </Menu.Item>,
+        <Menu.Item
+          className="menu-item"
+          key="/schedule/calendar"
+          icon={<CalendarOutlined />}
+          onClick={this.onClose}
+        >
+          <Link to={"/schedule/calendar"}>Event Calendar</Link>
+        </Menu.Item>,
+      ];
+      adminMenuItems = [
+        <Menu.Item
+          className="menu-item"
+          key="/students"
+          icon={<TeamOutlined />}
+          onClick={this.onClose}
+        >
+          <Link to={"/students"}>Students</Link>
+        </Menu.Item>,
+        <SubMenu key="schedule" icon={<CalendarOutlined />} title="Schedule">
+          <Menu.Item
+            className="menu-item"
+            key="/schedule/attendance"
+            icon={<CarryOutOutlined />}
+            onClick={this.onClose}
+          >
+            <Link to={"/schedule/attendance"}>Attendance</Link>
+          </Menu.Item>
+          <Menu.Item
+            className="menu-item"
+            key="/schedule/Sessions"
+            icon={<ProfileOutlined />}
+            onClick={this.onClose}
+          >
+            <Link to={"/schedule/Sessions"}>Sessions</Link>
+          </Menu.Item>
+          <Menu.Item
+            className="menu-item"
+            key="/schedule/Events"
+            icon={<ProfileOutlined />}
+            onClick={this.onClose}
+          >
+            <Link to={"/schedule/Events"}>Events</Link>
+          </Menu.Item>
+        </SubMenu>,
+        <Menu.Item
+          className="menu-item"
+          key="/tests"
           icon={<ProfileOutlined />}
           onClick={this.onClose}
         >
-          <Link to={"/schedule/Sessions"}>Sessions</Link>
-        </Menu.Item>
+          <Link to={"/tests"}>Tests</Link>
+        </Menu.Item>,
         <Menu.Item
           className="menu-item"
-          key="/schedule/Events"
-          icon={<ProfileOutlined />}
+          key="/orders"
+          icon={<ShoppingOutlined />}
           onClick={this.onClose}
         >
-          <Link to={"/schedule/Events"}>Events</Link>
-        </Menu.Item>
-      </SubMenu>,
-      <Menu.Item
-        className="menu-item"
-        key="/tests"
-        icon={<ProfileOutlined />}
-        onClick={this.onClose}
-      >
-        <Link to={"/tests"}>Tests</Link>
-      </Menu.Item>,
-      <Menu.Item
-        className="menu-item"
-        key="/orders"
-        icon={<ShoppingOutlined />}
-        onClick={this.onClose}
-      >
-        <Link to={"/orders"}>Orders</Link>
-      </Menu.Item>,
-      <Menu.Item
-        className="menu-item"
-        key="/items"
-        icon={<AppstoreOutlined />}
-        onClick={this.onClose}
-      >
-        <Link to={"/items"}>Items</Link>
-      </Menu.Item>,
-      <Menu.Item
-        className="menu-item"
-        key="/locations"
-        icon={<EnvironmentOutlined />}
-        onClick={this.onClose}
-      >
-        <Link to={"/locations"}>Locations</Link>
-      </Menu.Item>,
+          <Link to={"/orders"}>Orders</Link>
+        </Menu.Item>,
+        <Menu.Item
+          className="menu-item"
+          key="/items"
+          icon={<AppstoreOutlined />}
+          onClick={this.onClose}
+        >
+          <Link to={"/items"}>Items</Link>
+        </Menu.Item>,
+        <Menu.Item
+          className="menu-item"
+          key="/locations"
+          icon={<EnvironmentOutlined />}
+          onClick={this.onClose}
+        >
+          <Link to={"/locations"}>Locations</Link>
+        </Menu.Item>,
 
-      <Menu.Item
-        className="menu-item"
-        key="/users"
-        icon={<TeamOutlined />}
-        onClick={this.onClose}
-      >
-        <Link to={"/users"}>Users</Link>
-      </Menu.Item>,
-    ];
+        <Menu.Item
+          className="menu-item"
+          key="/users"
+          icon={<TeamOutlined />}
+          onClick={this.onClose}
+        >
+          <Link to={"/users"}>Users</Link>
+        </Menu.Item>,
+      ];
 
-    adminMenu = [
-      <SubMenu key="admin" icon={<IdcardOutlined />} title="Admin">
-        {adminMenuItems}
-      </SubMenu>,
-    ];
-    //}
+      adminMenu = [
+        <SubMenu key="admin" icon={<IdcardOutlined />} title="Admin">
+          {adminMenuItems}
+        </SubMenu>,
+      ];
+    }
 
     /*     if (this.props.currentUser) {
       menuItems = [
