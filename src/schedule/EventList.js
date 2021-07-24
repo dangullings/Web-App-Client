@@ -4,9 +4,7 @@ import {
   Table,
   Typography,
   DatePicker,
-  Divider,
   Select,
-  List,
   Modal,
   message,
   Form,
@@ -15,7 +13,6 @@ import {
   TimePicker,
   Button,
   Card,
-  Space,
   Popconfirm,
   Image,
   Upload,
@@ -46,7 +43,6 @@ import {
   SaveOutlined,
   DeleteOutlined,
   UploadOutlined,
-  ReloadOutlined,
   ExclamationCircleOutlined,
   PlusCircleOutlined,
   PlusOutlined,
@@ -66,8 +62,6 @@ const ages = [];
 for (let i = 0; i < 100; i++) {
   ages.push(<Option key={i}>{i}</Option>);
 }
-
-//after delete, select allstudents list needs updating
 
 class EventList extends Component {
   formRef = React.createRef();
@@ -402,32 +396,6 @@ class EventList extends Component {
     let month = parts[1];
     let year = parts[0];
 
-    console.log(
-      title +
-        " " +
-        type +
-        " " +
-        description +
-        " " +
-        location +
-        " " +
-        date +
-        " " +
-        startTime +
-        " " +
-        endTime +
-        " " +
-        youngestAge +
-        " " +
-        oldestAge +
-        " " +
-        lowestRank +
-        " " +
-        highestRank +
-        " " +
-        price
-    );
-
     let eventId;
     if (this.state.isSavedEvent) {
       eventId = this.state.event.id;
@@ -682,7 +650,7 @@ class EventList extends Component {
       loading: true,
     });
 
-    const { studentEvents, signupStudents, allStudents } = this.state;
+    const { studentEvents, signupStudents } = this.state;
 
     let signup, student;
     let newSignupList = signupStudents;

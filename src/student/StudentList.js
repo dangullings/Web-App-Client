@@ -3,27 +3,22 @@ import moment from "moment";
 import {
   Table,
   Typography,
-  Popconfirm,
   Divider,
   Select,
   Switch,
   Row,
   Modal,
-  Space,
   Form,
   notification,
   Input,
   Button,
   Card,
-  Spin,
-  Pagination,
 } from "antd";
 import {
   getAllStudents,
   getAllStudentsBySearch,
   createStudent,
   removeStudent,
-  removeStudentTestScore,
   removeUserPeepsByStudentId,
   removeStudentTestsByStudentId,
   removeAttendanceByStudentId,
@@ -35,12 +30,7 @@ import { STUDENT_LIST_SIZE } from "../constants";
 import { withRouter } from "react-router-dom";
 import "../styles/style.less";
 
-import {
-  SaveOutlined,
-  PlusOutlined,
-  DeleteOutlined,
-  EnvironmentOutlined,
-} from "@ant-design/icons";
+import { SaveOutlined, PlusOutlined } from "@ant-design/icons";
 
 const Option = Select.Option;
 const ranks = getRanks();
@@ -855,11 +845,5 @@ class StudentList extends Component {
     );
   };
 }
-
-const mapStateToProps = (state) => {
-  return {
-    studentObject: state.student,
-  };
-};
 
 export default withRouter(StudentList);

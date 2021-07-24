@@ -1,18 +1,14 @@
 import React, { Component } from "react";
-import ReactDOM from "react-dom";
 import {
   Table,
   Typography,
   DatePicker,
   Row,
-  Popconfirm,
   TimePicker,
   Divider,
   Select,
-  Switch,
   Radio,
   Modal,
-  Space,
   message,
   Form,
   notification,
@@ -29,7 +25,6 @@ import {
   saveStudentTestScores,
   getAllStudentsByActive,
   getAllStudentsByTestId,
-  getAllStudents,
   getAllLocations,
   getAllSessionsByDate,
   getSessionStudents,
@@ -48,13 +43,11 @@ import {
   SaveOutlined,
   DeleteOutlined,
   CloseOutlined,
-  LoadingOutlined,
   ExclamationCircleOutlined,
 } from "@ant-design/icons";
 
 const { confirm } = Modal;
 const ranks = getRanks();
-const Option = Select.Option;
 const { Title, Text } = Typography;
 
 class TestList extends Component {
@@ -766,7 +759,7 @@ class TestList extends Component {
   };
 
   render() {
-    const { pagination, visible, loading, size } = this.state;
+    const { pagination, visible, loading } = this.state;
     const {
       testStudentScoring,
       form,
@@ -788,8 +781,6 @@ class TestList extends Component {
       students,
       testStudents,
       sessions,
-      sessionStudents,
-      title,
     } = this.state;
     const filteredOptions = students.filter((o) => !selectedItems.includes(o));
 

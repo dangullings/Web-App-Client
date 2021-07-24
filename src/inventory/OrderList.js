@@ -1,12 +1,10 @@
 import React, { Component } from "react";
 import {
   Table,
-  Popconfirm,
   Typography,
   message,
   Row,
   Divider,
-  Spin,
   Input,
   Switch,
   Button,
@@ -15,8 +13,6 @@ import {
   Alert,
 } from "antd";
 import {
-  getOrders,
-  getOrderLineItems,
   getOrderUsers,
   removeOrder,
   getAllOrdersBySearch,
@@ -27,12 +23,7 @@ import { withRouter } from "react-router-dom";
 import Order from "./Order";
 import "../styles/style.less";
 
-import {
-  PlusOutlined,
-  DeleteOutlined,
-  ShoppingOutlined,
-  SaveOutlined,
-} from "@ant-design/icons";
+import { ShoppingOutlined, SaveOutlined } from "@ant-design/icons";
 
 const { Title, Text } = Typography;
 const { Search } = Input;
@@ -43,7 +34,6 @@ class OrderList extends Component {
 
     this.state = {
       orderList: [],
-      //orderLineItems: [],
       selectedOrder: "",
       search: "",
       searchText: "",
@@ -96,7 +86,6 @@ class OrderList extends Component {
   }
 
   getFulfillRender(fulfilled) {
-    console.log("get render " + fulfilled);
     if (fulfilled) {
       return <Alert message="YES" type="success" />;
     } else {
@@ -138,7 +127,6 @@ class OrderList extends Component {
     promise.then((response) => {
       this.setState(
         {
-          //current: response.number,
           pageSize: response.size,
           total: response.totalElements,
           totalPages: response.totalPages,
@@ -173,15 +161,9 @@ class OrderList extends Component {
           });
           return;
         }
-        /* let value;
-        for (value of response.content) {
-          this.getOrderLineItemList(value);
-        } */
 
         this.setState(
           {
-            //orders: response.content,
-            //current: response.number,
             pageSize: response.size,
             total: response.totalElements,
             totalPages: response.totalPages,
@@ -241,44 +223,6 @@ class OrderList extends Component {
     });
   }
 
-  /* getOrderLineItemList(order) {
-    let promise,
-      lineItems = [];
-    promise = getOrderLineItems(order.id);
-
-    if (!promise) {
-      return;
-    }
-
-    promise
-      .then((response) => {
-        let value;
-        for (value of response) {
-          const lineItem = {
-            id: value.id,
-            color: value.color,
-            size: value.size,
-            itemId: value.itemId,
-            price: value.price,
-            quantity: value.quantity,
-          };
-
-          lineItems.push(lineItem);
-        }
-
-        const orderData = {
-          order: order,
-          lineItems: lineItems,
-        };
-
-        this.setState({
-          orders: this.state.orders.concat(orderData),
-          orderLineItems: lineItems,
-        });
-      })
-      .catch((error) => {});
-  } */
-
   removeOrder() {
     const { selectedOrder } = this.state;
     removeOrder(selectedOrder.id)
@@ -292,42 +236,6 @@ class OrderList extends Component {
         message.error("Error [" + error.message + "]");
       });
   }
-
-  /*   expandedRowRender = (order) => {
-    const lineItems = order.lineItems;
-    const data = [];
-    for (let i = 0; i < lineItems.length; ++i) {
-      data.push({
-        key: i,
-        id: lineItems[i].id,
-        itemId: lineItems[i].itemId,
-        color: lineItems[i].color,
-        size: lineItems[i].size,
-        price: lineItems[i].price,
-        quantity: lineItems[i].quantity,
-      });
-    }
-
-    return (
-      <List
-        size="small"
-        header={
-          <Text strong style={{ marginLeft: 10 }}>
-            Line Items
-          </Text>
-        }
-        bordered
-        dataSource={data}
-        renderItem={(lineItem) => (
-          <List.Item>
-            <Text style={{ textShadow: "0px 1px 0px rgba(255,255,255,1.0)" }}>
-              {lineItem.itemId} {lineItem.price} | {lineItem.quantity}
-            </Text>
-          </List.Item>
-        )}
-      />
-    );
-  }; */
 
   handleTableChange = (pagination) => {
     const { pageSize, current } = pagination;
@@ -384,7 +292,6 @@ class OrderList extends Component {
       current,
       total,
       totalPages,
-      columns,
       selectedOrder,
       orderCols,
     } = this.state;
@@ -395,10 +302,6 @@ class OrderList extends Component {
       total: total,
       totalPages: totalPages,
     };
-
-    /* const tableProps = {
-      expandedRowRender: (record) => this.expandedRowRender(record),
-    }; */
 
     const title = [
       <Title level={3}>
@@ -460,7 +363,6 @@ class OrderList extends Component {
             //onMouseLeave: event => { }, // mouse leave row
           };
         }}
-        //{...tableProps}
       />,
     ];
 
@@ -536,7 +438,6 @@ class OrderList extends Component {
 
   handleRowClick(order) {
     this.props.history.push(`/orders/${order.id}`);
-    //this.showOrder(order);
   }
 
   showOrder(order) {

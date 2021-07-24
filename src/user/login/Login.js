@@ -1,7 +1,6 @@
 import React, { Component } from "react";
-import { login, getCurrentUser, forgotPassword } from "../../util/APIUtils";
+import { login, forgotPassword } from "../../util/APIUtils";
 import "../../styles/style.less";
-import { Link, withRouter } from "react-router-dom";
 import { ACCESS_TOKEN } from "../../constants";
 
 import {
@@ -17,7 +16,7 @@ import {
 import { SendOutlined } from "@ant-design/icons";
 
 const FormItem = Form.Item;
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 class Login extends Component {
   constructor(props) {

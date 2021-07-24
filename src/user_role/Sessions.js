@@ -1,16 +1,12 @@
 import React, { Component } from "react";
-import ReactDOM from "react-dom";
 import moment from "moment";
-import { getRanks } from "../util/Helpers.js";
 import { Typography, Image, Card, List } from "antd";
 import { getAllSessionsByDateAsc, getImage } from "../util/APIUtils";
 import { withRouter, Link } from "react-router-dom";
-
 import "../styles/style.less";
 
 const { Meta } = Card;
-
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 class Sessions extends Component {
   constructor(props) {
@@ -138,7 +134,7 @@ class Sessions extends Component {
   }
 
   render() {
-    const { loading, currentUser, sessions } = this.state;
+    const { loading, sessions } = this.state;
 
     var sessionCards = [];
     if (sessions) {

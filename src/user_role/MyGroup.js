@@ -30,9 +30,7 @@ import {
   createUserStudent,
 } from "../util/APIUtils";
 import { withRouter } from "react-router-dom";
-
 import { SaveOutlined, TeamOutlined, UserAddOutlined } from "@ant-design/icons";
-
 import "../styles/style.less";
 import testImage from "../img/TestImage.png";
 import eventImage from "../img/EventImage.png";
@@ -1872,7 +1870,6 @@ class MyGroup extends Component {
       myPeepCards,
       visible,
       loading,
-      currentUser,
       peepScheduleVisible,
       peepTestsVisible,
       peepAttendanceVisible,

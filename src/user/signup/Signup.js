@@ -5,7 +5,6 @@ import {
   checkEmailAvailability,
 } from "../../util/APIUtils";
 import "../../styles/style.less";
-import { Link } from "react-router-dom";
 import {
   NAME_MIN_LENGTH,
   NAME_MAX_LENGTH,
@@ -18,8 +17,6 @@ import {
 
 import { Form, Input, Button, notification, Typography } from "antd";
 const { Title } = Typography;
-
-const FormItem = Form.Item;
 
 const key = "updatable";
 const openNotification = () => {

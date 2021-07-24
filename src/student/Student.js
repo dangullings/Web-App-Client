@@ -30,21 +30,19 @@ import {
   removeStudentEventByStudentId,
   removeStudentSessionByStudentId,
 } from "../util/APIUtils";
-import { STUDENT_LIST_SIZE } from "../constants";
 import { NAME_MIN_LENGTH, NAME_MAX_LENGTH } from "../constants";
 
 import {
   SaveOutlined,
   DeleteOutlined,
   ExclamationCircleOutlined,
-  LeftOutlined,
   UnorderedListOutlined,
 } from "@ant-design/icons";
 
 const { TabPane } = Tabs;
 const Option = Select.Option;
 const rankList = getRanks();
-const { Title, Text } = Typography;
+const { Title } = Typography;
 const children = [
   <Option key={1}>January</Option>,
   <Option key={2}>February</Option>,
@@ -62,7 +60,6 @@ const children = [
 
 const { confirm } = Modal;
 
-const FormItem = Form.Item;
 const key = "updatable";
 const openNotification = () => {
   notification.open({
@@ -418,10 +415,8 @@ class Student extends Component {
   isFormInvalid() {}
 
   render() {
-    const { id, firstName, lastName, email, ranks, active } =
-      this.state.student;
-    const { firstNameText, lastNameText, emailText, ranksText, activeText } =
-      this.state;
+    const { firstName, lastName, email, ranks, active } = this.state.student;
+    const { firstNameText, lastNameText, emailText, activeText } = this.state;
     const {
       testData,
       size,

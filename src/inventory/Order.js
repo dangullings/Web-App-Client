@@ -9,14 +9,10 @@ import {
   Form,
   Card,
   List,
-  Row,
-  Col,
-  Divider,
   Alert,
   Input,
   Button,
   message,
-  Popconfirm,
 } from "antd";
 import {
   getItem,
@@ -39,11 +35,7 @@ import {
 
 const { TextArea } = Input;
 
-const { Title, Text } = Typography;
-
 const { confirm } = Modal;
-
-const FormItem = Form.Item;
 
 class Order extends Component {
   constructor(props) {
@@ -121,7 +113,6 @@ class Order extends Component {
     let newItems = [];
     let lineItem;
     for (lineItem of lineItems) {
-      console.log("line item " + lineItem.id);
       let promise = getItem(lineItem.itemId);
       promises.push(promise);
     }
@@ -131,7 +122,6 @@ class Order extends Component {
       for (value of values) {
         if (value != "null") {
           newItems.push(value);
-          console.log("value id " + value.id);
         }
       }
       this.setState(

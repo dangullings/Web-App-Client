@@ -1,24 +1,18 @@
 import React, { Component } from "react";
-import ReactDOM from "react-dom";
 import moment from "moment";
 import { getRanks } from "../util/Helpers.js";
 import {
   Typography,
-  Popconfirm,
   Modal,
   Row,
   Select,
   Divider,
   Space,
-  message,
   Image,
   Checkbox,
   notification,
-  Col,
   Button,
   Card,
-  List,
-  Spin,
 } from "antd";
 import {
   getMyPeeps,
@@ -32,19 +26,15 @@ import {
 import { Link, withRouter } from "react-router-dom";
 import StripeContainer from "../stripe/StripeContainer";
 import {
-  SaveOutlined,
   LikeOutlined,
   DollarOutlined,
   UnorderedListOutlined,
-  LeftOutlined,
   LoadingOutlined,
 } from "@ant-design/icons";
-
 import "../styles/style.less";
 
 const ranks = getRanks();
 const { Title, Text } = Typography;
-const Option = Select.Option;
 
 class SessionDetail extends Component {
   constructor(props) {
@@ -646,14 +636,7 @@ class SessionDetail extends Component {
   }
 
   render() {
-    const {
-      loading,
-      currentUser,
-      session,
-      sessionSignupVisible,
-      myPeeps,
-      image,
-    } = this.state;
+    const { loading, session, sessionSignupVisible, image } = this.state;
 
     var sessionCard = [
       <Row style={{ color: "#c9c9c9", fontSize: 28, justifyContent: "center" }}>

@@ -1,10 +1,8 @@
 import React, { Component } from "react";
 import {
-  Table,
   Popconfirm,
   message,
   Space,
-  Icon,
   notification,
   List,
   Badge,
@@ -17,7 +15,6 @@ import {
   Select,
   Divider,
   Affix,
-  Spin,
   Modal,
   Image,
 } from "antd";
@@ -38,19 +35,13 @@ import "../styles/style.less";
 import "../styles/components/Shop.less";
 import "../styles/components/Shop.css";
 
-import Highlighter from "react-highlight-words";
 import {
-  SearchOutlined,
-  EditOutlined,
-  EllipsisOutlined,
-  LoadingOutlined,
   QuestionCircleOutlined,
   DeleteOutlined,
   ShoppingCartOutlined,
   DollarCircleOutlined,
   MinusOutlined,
   PlusOutlined,
-  TagsFilled,
 } from "@ant-design/icons";
 
 const Option = Select.Option;
@@ -63,12 +54,7 @@ const children = [
 ];
 
 const { Search } = Input;
-const { Title, Text } = Typography;
-const { Meta } = Card;
-
-const handleResize = (e) => {
-  this.setState({ windowWidth: window.innerWidth });
-};
+const { Title } = Typography;
 
 class Shop extends Component {
   constructor(props) {
@@ -862,13 +848,7 @@ class Shop extends Component {
 
   render() {
     const {
-      products,
-      pagination,
-      totalPages,
-      search,
-      screenWidth,
       cartItems,
-      cartItemsQty,
       loading,
       cartVisible,
       selectedProduct,

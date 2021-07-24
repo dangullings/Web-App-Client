@@ -16,12 +16,8 @@ import {
   Form,
   Input,
   Button,
-  Icon,
   Image,
   Select,
-  Col,
-  notification,
-  Popconfirm,
   Typography,
   Switch,
   message,
@@ -32,7 +28,6 @@ import {
   PlusOutlined,
   SaveOutlined,
   UploadOutlined,
-  QuestionCircleOutlined,
   ExclamationCircleOutlined,
 } from "@ant-design/icons";
 import "../styles/style.less";
@@ -454,12 +449,6 @@ class NewItem extends Component {
   };
 
   isFormInvalid() {
-    console.log("type " + this.state.selectedType);
-    console.log("name " + this.state.name);
-    console.log("salecost " + this.state.saleCost);
-    console.log("des " + this.state.description);
-    console.log("photo " + this.state.photo);
-    console.log("act " + this.state.active);
     if (this.state.selectedType == "") {
       return true;
     }
@@ -525,19 +514,13 @@ class NewItem extends Component {
       columns,
       pagination,
       active,
-      fileList,
       loading,
       visible,
       items,
       isClothingSelected,
       isSavedItem,
-      name,
-      description,
-      saleCost,
       selectedColors,
       selectedSizes,
-      selectedGenders,
-      selectedType,
       itemImage,
     } = this.state;
 

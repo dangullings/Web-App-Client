@@ -1,8 +1,7 @@
 import React, { Component } from "react";
 import "../styles/style.less";
-import { Route, Link, withRouter, Switch } from "react-router-dom";
+import { Route, withRouter, Switch } from "react-router-dom";
 
-import { Image, message } from "antd";
 import { getCurrentUser, getUserProfile } from "../util/APIUtils";
 import { ACCESS_TOKEN } from "../constants";
 
@@ -30,15 +29,13 @@ import Signup from "../user/signup/Signup";
 import Profile from "../user/profile/Profile";
 import AppHeader from "../common/AppHeader";
 import Slider from "../common/Slider";
-import NotFound from "../common/NotFound";
 import LoadingIndicator from "../common/LoadingIndicator";
 import PrivateRoute from "../common/PrivateRoute";
 import Footer from "../common/Footer";
 
-import { Layout, notification, Menu } from "antd";
+import { Layout, notification } from "antd";
 
-const { Header, Content, Sider } = Layout;
-const { SubMenu } = Menu;
+const { Content } = Layout;
 
 class App extends Component {
   constructor(props) {
@@ -406,16 +403,6 @@ class App extends Component {
             </Switch>
           </div>
         </Content>
-
-        {/* <Content style={{ margin: '0 16px' }}>
-            <Breadcrumb style={{ margin: '16px 0' }}>
-              <Breadcrumb.Item>User</Breadcrumb.Item>
-              <Breadcrumb.Item>Bill</Breadcrumb.Item>
-            </Breadcrumb>
-            <div className="site-layout-background" style={{ padding: 24, minHeight: 360 }}>
-              Bill is a cat.
-            </div>
-          </Content> */}
 
         <Footer></Footer>
       </Layout>

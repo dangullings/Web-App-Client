@@ -5,7 +5,6 @@ import {
   Typography,
   message,
   Select,
-  Icon,
   notification,
   Form,
   Input,
@@ -37,7 +36,7 @@ import {
 } from "@ant-design/icons";
 
 const { confirm } = Modal;
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 class UserList extends Component {
   formRef = React.createRef();

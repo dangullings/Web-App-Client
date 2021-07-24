@@ -1,34 +1,13 @@
 import React, { Component } from "react";
-import ReactDOM from "react-dom";
 import moment from "moment";
-import { getRanks } from "../util/Helpers.js";
-import {
-  Typography,
-  Popconfirm,
-  Modal,
-  Row,
-  Select,
-  Divider,
-  Space,
-  message,
-  Image,
-  Checkbox,
-  notification,
-  Col,
-  Button,
-  Card,
-  List,
-} from "antd";
+import { Typography, Image, Card, List } from "antd";
 import { getAllEventsByDateAsc, getImage } from "../util/APIUtils";
-import { Link, withRouter, Route } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 import {} from "@ant-design/icons";
-
 import "../styles/style.less";
 
 const { Meta } = Card;
-
-const { Title, Text } = Typography;
-const Option = Select.Option;
+const { Title } = Typography;
 
 class Events extends Component {
   constructor(props) {
@@ -153,7 +132,7 @@ class Events extends Component {
   }
 
   render() {
-    const { loading, currentUser, events } = this.state;
+    const { loading, events } = this.state;
 
     var eventCards = [];
     if (events) {

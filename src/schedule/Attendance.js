@@ -9,12 +9,9 @@ import {
   Table,
   Checkbox,
   Row,
-  Col,
   Button,
   Layout,
   Divider,
-  Spin,
-  Affix,
 } from "antd";
 import {
   createAttendanceRecord,
@@ -24,22 +21,13 @@ import {
   getAllAttendanceByClassDateAndStudent,
   getAllSessionsByDate,
   getSessionStudents,
-  getAllClassDatesBySessionId,
 } from "../util/APIUtils";
 import "../styles/style.less";
 
-import {
-  SaveOutlined,
-  DeleteOutlined,
-  ReloadOutlined,
-  CarryOutOutlined,
-  PlusCircleOutlined,
-} from "@ant-design/icons";
+import { CarryOutOutlined } from "@ant-design/icons";
 
 const { Title, Text } = Typography;
-const { Header, Footer, Sider, Content } = Layout;
-
-const style = { background: "#0092ff", padding: "8px 0" };
+const { Content } = Layout;
 
 class Attendance extends Component {
   constructor(props) {
@@ -160,7 +148,6 @@ class Attendance extends Component {
   };
 
   onChange(date, dateString) {
-    console.log("on change call session id " + this.state.selectedSessionId);
     this.setState(
       {
         year: date.year(),
@@ -183,7 +170,6 @@ class Attendance extends Component {
   }
 
   getAllClassDatesBySessionId(month, year, sessionId) {
-    console.log("class date call session id " + sessionId);
     if (sessionId > -1) {
       this.getAllClassDatesByMonthYearAndSession(month, year, sessionId);
     }
@@ -555,7 +541,6 @@ class Attendance extends Component {
       week3Dates,
       week4Dates,
       selectedWeek,
-      dataSource,
       dateCols,
       sessions,
       selectedSessionId,
@@ -876,7 +861,7 @@ class Attendance extends Component {
   }
 
   handleAddColumn = (cols) => {
-    const { dateCols, classDates, month, year } = this.state;
+    const { dateCols, classDates } = this.state;
     var newCols = [];
     var day1App, day2App, day3App, day4App, day5App, day6App;
 
@@ -1419,7 +1404,3 @@ class Attendance extends Component {
 }
 
 export default Attendance;
-
-function onChange(e) {
-  console.log(`checked = ${e.target.checked}`);
-}

@@ -3,34 +3,24 @@ import moment from "moment";
 import { Link } from "react-router-dom";
 import {
   Modal,
-  notification,
   Calendar,
   Select,
-  Badge,
   Typography,
   DatePicker,
-  TimePicker,
-  message,
   Card,
   Input,
-  Table,
   List,
   Tag,
   Row,
   Col,
   Button,
   Layout,
-  Divider,
-  Form,
-  Spin,
-  Alert,
 } from "antd";
 import {
   getAllEventsByMonthYear,
   getAllTestsByMonthYear,
   getAllClassDatesByMonthYear,
   getAllLocations,
-  createEvent,
 } from "../util/APIUtils";
 import "../styles/style.less";
 import { getRanks } from "../util/Helpers.js";
@@ -39,31 +29,15 @@ import {
   ClockCircleOutlined,
   AlertOutlined,
   SmileOutlined,
-  EyeOutlined,
 } from "@ant-design/icons";
 
 const Option = Select.Option;
-
 const ages = [];
 for (let i = 0; i < 100; i++) {
   ages.push(<Option key={i}>{i}</Option>);
 }
-const ranks = getRanks();
-const { TextArea } = Input;
-const { Title, Text } = Typography;
-
-const layout = {
-  labelCol: {
-    span: 8,
-  },
-  wrapperCol: {
-    span: 16,
-  },
-};
-
-const { Header, Footer, Sider, Content } = Layout;
-
-const style = { background: "#0092ff", padding: "8px 0" };
+const { Title } = Typography;
+const { Content } = Layout;
 
 class EventCalendar extends Component {
   formRef = React.createRef();
@@ -229,9 +203,6 @@ class EventCalendar extends Component {
         for (con of value.content) {
           eventList.push(con);
         }
-        //if (value != "null") {
-        //  eventList.push(value);
-        //}
       }
       this.setState(
         {
@@ -293,15 +264,12 @@ class EventCalendar extends Component {
       eventDates: newEventDates,
       loading: false,
     });
-
-    console.log("update event list " + newEventDates.length);
   }
 
   changeSelectedEvent(value) {
     let parts = value.split("-");
     let year = parts[0];
     let month = parts[1];
-    let day = parts[2];
 
     this.setState(
       {
@@ -318,7 +286,6 @@ class EventCalendar extends Component {
     let parts = dateString.split("-");
     let year = parts[0];
     let month = parts[1];
-    let day = parts[2];
 
     this.setState({
       newEventDate: dateString,
@@ -406,7 +373,6 @@ class EventCalendar extends Component {
       }
     }
 
-    //<Divider style={{ marginTop: 8, marginBottom: 8 }} />
     let daysEvents = [];
     if (valueEventsDate.length > 0) {
       <ul>
@@ -499,7 +465,6 @@ class EventCalendar extends Component {
     const {
       selectedDate,
       selectedMoment,
-      month,
       year,
       loading,
       dayModalVisible,

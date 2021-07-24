@@ -8,10 +8,7 @@ import {
   Popconfirm,
   Divider,
   Select,
-  List,
-  Radio,
   Modal,
-  Space,
   message,
   Form,
   notification,
@@ -31,7 +28,6 @@ import {
   getAllLocations,
   getAllStudentsByActive,
   getAllSessions,
-  getSessionStudents,
   getAllClassDatesBySessionId,
   getAllStudentsBySessionId,
   createStudentSession,
@@ -57,7 +53,6 @@ import {
   CarryOutOutlined,
   PlusCircleOutlined,
   PlusOutlined,
-  QuestionCircleOutlined,
   ExclamationCircleOutlined,
 } from "@ant-design/icons";
 import "../styles/style.less";
@@ -76,15 +71,6 @@ const ages = [];
 for (let i = 0; i < 100; i++) {
   ages.push(<Option key={i}>{i}</Option>);
 }
-
-const layout = {
-  labelCol: {
-    span: 6,
-  },
-  wrapperCol: {
-    span: 60,
-  },
-};
 
 class SessionList extends Component {
   formRef = React.createRef();
@@ -729,31 +715,6 @@ class SessionList extends Component {
     } else {
       sessionId = 0;
     }
-
-    console.log(
-      "sessionId" +
-        sessionId +
-        " title" +
-        title +
-        " des" +
-        description +
-        " location" +
-        location +
-        " startDate" +
-        formattedStartDate +
-        " endDate" +
-        formattedEndDate +
-        " ageRange" +
-        ageRange +
-        " rankRange" +
-        rankRange +
-        " price" +
-        price +
-        " days" +
-        days +
-        " imageId" +
-        this.state.imageId
-    );
 
     const SessionData = {
       id: sessionId,
@@ -1693,7 +1654,6 @@ class SessionList extends Component {
     const {
       selectedDate,
       specific,
-      dates,
       classDates,
       sessions,
       monday,
@@ -1711,7 +1671,7 @@ class SessionList extends Component {
       sessionModalVisible,
       image,
     } = this.state;
-    const { pagination, visible, loading, size } = this.state;
+    const { pagination, loading } = this.state;
 
     var studentSessionList = [];
     let student, ss, studSession;

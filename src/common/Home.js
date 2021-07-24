@@ -1,22 +1,10 @@
 import React, { Component } from "react";
-import { Carousel, Image, Typography, Space } from "antd";
+import { Carousel, Image } from "antd";
 
-import imgSplash from "../img/MainBackground.jpg";
 import imgSplashOne from "../img/BackgroundOne.jpg";
-import imgSplashTwo from "../img/BackgroundTwo.jpg";
 import imgSplashThree from "../img/BackgroundThree.jpg";
 
 import "../styles/style.less";
-
-const { Text, Link } = Typography;
-
-const contentStyle = {
-  height: "160px",
-  color: "#fff",
-  lineHeight: "160px",
-  textAlign: "center",
-  background: "#364d79",
-};
 
 class Home extends Component {
   constructor(props) {

@@ -2,16 +2,7 @@ import React, { Component } from "react";
 import { Link, withRouter } from "react-router-dom";
 import AppHeader from "../common/AppHeader";
 import "../styles/style.less";
-import {
-  Layout,
-  Menu,
-  Divider,
-  Drawer,
-  Button,
-  Affix,
-  Typography,
-  Tooltip,
-} from "antd";
+import { Menu, Drawer, Button, Affix, Typography } from "antd";
 
 import {
   ShopOutlined,
@@ -19,7 +10,6 @@ import {
   ProfileOutlined,
   EnvironmentOutlined,
   CalendarOutlined,
-  UserOutlined,
   MenuOutlined,
   IdcardOutlined,
   ShoppingOutlined,
@@ -79,11 +69,7 @@ class Slider extends Component {
 
   render() {
     const { visible, currentUser } = this.state;
-    let menuItems,
-      authorizedMenuItems,
-      userMenuItems,
-      adminMenuItems,
-      adminMenu;
+    let menuItems, userMenuItems, adminMenuItems, adminMenu;
 
     if (currentUser.role == "user") {
       userMenuItems = [
@@ -269,30 +255,6 @@ class Slider extends Component {
         </SubMenu>,
       ];
     }
-
-    /*     if (this.props.currentUser) {
-      menuItems = [
-        <SubMenu
-          key="profile"
-          icon={<UserOutlined />}
-          title={this.props.currentUser.name}
-        >
-          <ProfileDropdownMenu
-            currentUser={this.props.currentUser}
-            handleMenuClick={this.handleMenuClick}
-          />
-        </SubMenu>,
-      ];
-    } else {
-      menuItems = [
-        <Menu.Item key="/login" onClick={this.onClose}>
-          <Link to="/login">Login</Link>
-        </Menu.Item>,
-        <Menu.Item key="/signup" onClick={this.onClose}>
-          <Link to="/signup">Signup</Link>
-        </Menu.Item>,
-      ];
-    } */
 
     const title = [
       <Title

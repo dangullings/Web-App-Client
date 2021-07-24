@@ -1,12 +1,8 @@
 import React, { Component } from "react";
 import {
   Table,
-  Popconfirm,
   Typography,
   message,
-  Space,
-  Icon,
-  notification,
   Form,
   Input,
   Button,
@@ -15,7 +11,6 @@ import {
 } from "antd";
 import {
   getAllLocations,
-  getLocation,
   createLocation,
   removeLocation,
 } from "../util/APIUtils";
@@ -32,7 +27,7 @@ import {
 } from "@ant-design/icons";
 
 const { confirm } = Modal;
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 class LocationList extends Component {
   formRef = React.createRef();
@@ -217,18 +212,11 @@ class LocationList extends Component {
 
   clearInput(event) {
     event.target.value = "";
-    console.log("clear");
   }
 
   render() {
-    const {
-      locations,
-      visible,
-      loading,
-      pagination,
-      columns,
-      isSavedLocation,
-    } = this.state;
+    const { locations, visible, loading, columns, isSavedLocation } =
+      this.state;
 
     var ModalTitle;
     if (isSavedLocation) {

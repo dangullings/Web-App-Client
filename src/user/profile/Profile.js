@@ -1,11 +1,7 @@
 import React, { Component } from "react";
 import {
-  Table,
-  Popconfirm,
   Typography,
   message,
-  Select,
-  Icon,
   notification,
   Form,
   Input,
@@ -16,23 +12,19 @@ import {
 import {
   getUserProfile,
   updateUser,
-  createStudentUser,
   changePassword,
 } from "../../util/APIUtils";
 import "../../styles/style.less";
 import moment from "moment";
 
 import {
-  PlusOutlined,
-  DeleteOutlined,
   UserOutlined,
   SaveOutlined,
-  PlusCircleOutlined,
   LoadingOutlined,
   EditOutlined,
 } from "@ant-design/icons";
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 class Profile extends Component {
   formRef = React.createRef();
