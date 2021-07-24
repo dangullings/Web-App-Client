@@ -1,16 +1,7 @@
 import React, { Component } from "react";
 import { Link, withRouter } from "react-router-dom";
 
-import {
-  Layout,
-  Menu,
-  Typography,
-  Dropdown,
-  Button,
-  message,
-  Row,
-  Tooltip,
-} from "antd";
+import { Menu, Typography, message, Row } from "antd";
 import {
   LoginOutlined,
   LogoutOutlined,
@@ -20,9 +11,7 @@ import {
 
 import "../styles/style.less";
 
-const { SubMenu } = Menu;
-const Header = Layout.Header;
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 class AppHeader extends Component {
   constructor(props) {
@@ -35,7 +24,6 @@ class AppHeader extends Component {
   render() {
     const login = [
       <Row>
-        <LoginOutlined />
         <Title style={{ color: "#383838" }} level={5}>
           Login
         </Title>
@@ -43,27 +31,29 @@ class AppHeader extends Component {
     ];
     const signup = [
       <Row>
-        <EditOutlined />
         <Title style={{ color: "#383838" }} level={5}>
           Signup
         </Title>
       </Row>,
     ];
 
-    let menuItems = this.ProfileDropdownMenu(this.props.currentUser);
     let usersName = "";
-    let dropdownMenu = [
-      <Menu onClick={this.handleClick} mode="horizontal">
-        <Menu.Item>
-          <Link to="/login">{login}</Link>
-        </Menu.Item>
+    let dropdownMenu = [];
 
-        <Menu.Item>
-          <Link to="/signup">{signup}</Link>
-        </Menu.Item>
-      </Menu>,
-    ];
-    if (this.props.currentUser) {
+    if (this.props.currentUser == null) {
+      dropdownMenu = [
+        <Menu mode="horizontal">
+          <Menu.Item>
+            <Link to="/login">{login}</Link>
+          </Menu.Item>
+
+          <Menu.Item>
+            <Link to="/signup">{signup}</Link>
+          </Menu.Item>
+        </Menu>,
+      ];
+    }
+    if (this.props.currentUser !== null) {
       usersName = this.props.currentUser.name;
 
       dropdownMenu = [
@@ -80,10 +70,8 @@ class AppHeader extends Component {
     //  {menuItems}
     //</Menu>;
     // this.props.onLogout();
-    return <div>{dropdownMenu}</div>;
+    return <div className="custom-style">{dropdownMenu}</div>;
   }
-
-  handleClick() {}
 
   logout = () => {
     this.props.parentLogout();
@@ -129,24 +117,3 @@ class AppHeader extends Component {
 }
 
 export default withRouter(AppHeader);
-
-{
-  /* <div>
-  <Menu.Item key="user-info" className="dropdown-item" disabled>
-    <div className="username-info">
-      {currentUser.username} {role}
-    </div>
-  </Menu.Item>
-  <Menu.Divider />
-  <Menu.Item key="profile" className="dropdown-item">
-    <Link to={`/users/${currentUser.username}`}>Profile</Link>
-  </Menu.Item>
-  <Menu.Item
-    key="logout"
-    className="dropdown-item"
-    onClick={this.props.onLogout()}
-  >
-    Logout
-  </Menu.Item>
-</div>; */
-}

@@ -44,6 +44,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      windowHeight: window.innerHeight,
       currentUser: null,
       isAuthenticated: false,
       isLoading: false,
@@ -63,6 +64,12 @@ class App extends Component {
     this.loadCurrentUser();
   }
 
+  handleResize = (e) => {
+    this.setState({ windowHeight: window.innerHeight });
+
+    console.log("resize" + window.innerHeight);
+  };
+
   handleLogout = () => {
     notification.success({
       message: "Dans App",
@@ -72,7 +79,7 @@ class App extends Component {
     localStorage.removeItem(ACCESS_TOKEN);
 
     this.setState({
-      currentUser: "null",
+      currentUser: null,
       isAuthenticated: false,
     });
 
@@ -107,6 +114,12 @@ class App extends Component {
           currentUser: response,
           isLoading: false,
         });
+        notification.success({
+          message: "Welcome " + response.name,
+          description: "You're successfully logged in.",
+          duration: 3,
+        });
+        this.props.history.push("/");
       })
       .catch((error) => {
         this.setState({
@@ -116,13 +129,7 @@ class App extends Component {
   }
 
   handleLogin() {
-    notification.success({
-      message: "Dans App",
-      description: "You're successfully logged in.",
-      duration: 2,
-    });
     this.loadCurrentUser();
-    this.props.history.push("/");
   }
 
   render() {
@@ -163,6 +170,7 @@ class App extends Component {
             backgroundColor: "white",
             width: "100%",
             justifyContent: "center",
+            minHeight: this.state.windowHeight - 150,
           }}
         >
           <div>

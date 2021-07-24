@@ -42,8 +42,6 @@ class Slider extends Component {
       collapsed: false,
       visible: this.props.visible,
     };
-
-    this.sliderLogout = this.sliderLogout.bind(this);
   }
 
   componentDidMount() {
@@ -87,13 +85,15 @@ class Slider extends Component {
       adminMenuItems,
       adminMenu;
 
-    var welcome;
-    if (currentUser == "visitor") {
-      welcome = [<div>Welcome, visitor!</div>];
-    }
     if (currentUser.role == "user") {
       userMenuItems = [
-        welcome,
+        <Menu.Item
+          className="menu-item"
+          icon={<LogoutOutlined rotate={180} />}
+          onClick={this.sliderLogout}
+        >
+          Logout
+        </Menu.Item>,
         <Menu.Item
           className="menu-item"
           key="/user/group"
@@ -132,12 +132,18 @@ class Slider extends Component {
           icon={<CalendarOutlined />}
           onClick={this.onClose}
         >
-          <Link to={"/schedule/calendar"}>Event Calendar</Link>
+          <Link to={"/schedule/calendar"}>Calendar</Link>
         </Menu.Item>,
       ];
     } else {
       userMenuItems = [
-        welcome,
+        <Menu.Item
+          className="menu-item"
+          icon={<LogoutOutlined rotate={180} />}
+          onClick={this.sliderLogout}
+        >
+          Logout
+        </Menu.Item>,
         <Menu.Item
           className="menu-item"
           key="/user/group"
@@ -295,13 +301,6 @@ class Slider extends Component {
       >
         Company Name
       </Title>,
-      <Tooltip title="logout">
-        <Button
-          shape="circle"
-          icon={<LogoutOutlined rotate={180} />}
-          onClick={this.sliderLogout}
-        />
-      </Tooltip>,
     ];
 
     const profile = [

@@ -65,18 +65,20 @@ class LoginForm extends Component {
       password: this.state.password,
     };
 
-    //const loginRequest = Object.assign({}, values);
+    if (this.state.usernameOrEmail == "" || this.state.password == "") {
+      return;
+    }
+
     login(loginRequest)
       .then((response) => {
-        if (response.message !== "Bad credentials") {
-          localStorage.setItem(ACCESS_TOKEN, response.accessToken);
-          this.props.onLogin();
-        } else {
+        if (response.message == "Bad credentials") {
           notification.error({
             message: "Dans App",
-            description:
-              "Your Username or Password is incorrect. Please try again!",
+            description: "Your username or password is incorrect.",
           });
+        } else {
+          localStorage.setItem(ACCESS_TOKEN, response.accessToken);
+          this.props.onLogin();
         }
       })
       .catch((error) => {
@@ -173,7 +175,6 @@ class LoginForm extends Component {
             htmlType="submit"
             block={true}
             className="custom-style"
-            onClick={this.handleSubmit}
           >
             Login
           </Button>
