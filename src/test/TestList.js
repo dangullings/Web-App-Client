@@ -1009,7 +1009,7 @@ class TestList extends Component {
       } else {
         return (
           <Button
-            style={{ backgroundColor: "#50C878" }}
+            style={{ backgroundColor: "#50C878", borderColor: "limegreen" }}
             type="primary"
             icon={<CheckOutlined />}
             block={true}
@@ -1591,8 +1591,6 @@ class TestList extends Component {
   }
 
   changeSelectedTestStudent(value) {
-    //this.saveAllStudentTestScores(this.state.selectedTestStudent);
-
     this.setState({ testStudentScoring: [] });
     this.loadStudentTestScores(this.state.testId, value);
 
@@ -1604,7 +1602,6 @@ class TestList extends Component {
   }
 
   loadStudentTestScores(testId, studentId) {
-    console.log("load test scores " + testId + " " + studentId);
     this.setState({
       isLoading: true,
     });

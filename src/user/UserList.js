@@ -149,7 +149,7 @@ class UserList extends Component {
     const { userId } = this.state;
     removeStudentUserByUserIdAndStudentId(userId, studentId)
       .then((response) => {
-        message.success("Student removed from assign.");
+        message.success("Student removed from assignments.");
         this.handleAfterDeletion(studentId);
       })
       .catch((error) => {

@@ -168,7 +168,7 @@ class Slider extends Component {
           icon={<CalendarOutlined />}
           onClick={this.onClose}
         >
-          <Link to={"/schedule/calendar"}>Event Calendar</Link>
+          <Link to={"/schedule/calendar"}>Calendar</Link>
         </Menu.Item>,
       ];
       adminMenuItems = [

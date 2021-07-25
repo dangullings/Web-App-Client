@@ -276,6 +276,7 @@ class Signup extends Component {
                 type="primary"
                 htmlType="submit"
                 size="large"
+                block={true}
                 className="custom-style"
                 onClick={this.handleSubmit}
                 disabled={this.isFormInvalid()}
