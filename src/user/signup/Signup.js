@@ -437,7 +437,6 @@ class Signup extends Component {
         }
       })
       .catch((error) => {
-        // Marking validateStatus as success, Form will be recchecked at server
         this.setState({
           username: {
             value: usernameValue,

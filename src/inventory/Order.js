@@ -3,17 +3,7 @@ import "../styles/components/Order.css";
 import "../styles/style.less";
 import moment from "moment";
 import { Link, withRouter } from "react-router-dom";
-import {
-  Typography,
-  Modal,
-  Form,
-  Card,
-  List,
-  Alert,
-  Input,
-  Button,
-  message,
-} from "antd";
+import { Modal, Card, List, Alert, Input, Button, message } from "antd";
 import {
   getItem,
   getUser,
@@ -396,7 +386,7 @@ class Order extends Component {
       </div>,
     ];
 
-    const userContent = [
+    var userContent = [
       <div className="info user">
         <div className="info user-header">{user.name}</div>
         <div>{user.address}</div>
@@ -424,6 +414,7 @@ class Order extends Component {
             itemPrice: item.saleCost,
             color: lineItem.color,
             size: lineItem.size,
+            gender: lineItem.gender,
             quantity: lineItem.quantity,
           });
           break;

@@ -70,6 +70,15 @@ class LoginForm extends Component {
 
     login(loginRequest)
       .then((response) => {
+        if (response.message == "user not enabled") {
+          notification.error({
+            message: "Registration required",
+            description:
+              "Check your email to complete registration for this user.",
+            duration: 4,
+          });
+          return;
+        }
         if (response.message == "Bad credentials") {
           notification.error({
             message: "Dans App",

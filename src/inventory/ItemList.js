@@ -893,10 +893,10 @@ class NewItem extends Component {
   resizeImageFn(file) {
     compress
       .compress([file], {
-        size: 0.1, // the max size in MB, defaults to 2MB
+        size: 0.5, // the max size in MB, defaults to 2MB
         quality: 1, // the quality of the image, max is 1,
-        maxWidth: 200, // the max width of the output image, defaults to 1920px
-        maxHeight: 200, // the max height of the output image, defaults to 1920px
+        maxWidth: 400, // the max width of the output image, defaults to 1920px
+        maxHeight: 400, // the max height of the output image, defaults to 1920px
         resize: true, // defaults to true, set false if you do not want to resize the image width and height
       })
       .then((data) => {

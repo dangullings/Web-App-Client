@@ -203,6 +203,17 @@ class OrderList extends Component {
 
     for (order of orders) {
       for (user of users) {
+        if (user == null) {
+          const newOrder = {
+            id: order.id,
+            date: order.date,
+            user: "no record",
+            price: "$" + order.price,
+            isFulfilled: order.isFulfilled,
+          };
+          orderList.push(newOrder);
+          break;
+        }
         if (order.userId == user.id) {
           const newOrder = {
             id: order.id,
