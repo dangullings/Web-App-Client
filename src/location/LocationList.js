@@ -94,7 +94,7 @@ class LocationList extends Component {
   };
 
   handleCancel = () => {
-    this.formRef.current.resetFields();
+    //this.formRef.current.resetFields();
 
     this.setState({
       name: "",
@@ -259,6 +259,7 @@ class LocationList extends Component {
         visible={visible}
         title={ModalTitle}
         closable={false}
+        destroyOnClose={true}
         onCancel={this.handleCancel}
         footer={[
           <Button key="back" type="secondary" onClick={this.handleCancel}>
