@@ -211,7 +211,7 @@ class Order extends Component {
       okText: "Yes",
       okType: "danger",
       cancelText: "No",
-      content: "This will erase all records of this order.",
+      content: "This will erase all records of this order. [Order List]",
       onOk: () => {
         return this.deleteOrder();
       },

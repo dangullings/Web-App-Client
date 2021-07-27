@@ -730,7 +730,8 @@ class TestList extends Component {
       okText: "Yes",
       okType: "danger",
       cancelText: "No",
-      content: "This will erase all records of this test.",
+      content:
+        "This will erase all records of this test. [Student Test Records, My Group, Calendar, Test List]",
       onOk: () => {
         return this.removeTest();
       },

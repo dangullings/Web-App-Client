@@ -905,26 +905,91 @@ export function getAllOrdersBySearch(page, size, searchText, fulfilled) {
   });
 }
 
-export function getAllItemsByActiveSearch(page, size, search) {
-  page = page || 0;
+export function getAllItemsBySearchAndType(
+  page,
+  size,
+  searchText,
+  type,
+  active
+) {
+  //page = page || 0;
+  let newPage = page - 1;
   size = size || STUDENT_LIST_SIZE;
-  console.log("page " + page + " size " + size + " search " + search);
+
+  console.log("search and type" + searchText + " " + type);
+
   return request({
     url:
       API_BASE_URL +
       "/items/search/" +
-      search +
+      searchText +
+      "/type/" +
+      type +
+      "/active/" +
+      active +
       "?page=" +
-      page +
+      newPage +
       "&size=" +
       size,
     method: "GET",
   });
 }
 
-export function getAllItemsByActive() {
+export function getAllItemsByType(page, size, type, active) {
+  //page = page || 0;
+  let newPage = page - 1;
+  size = size || STUDENT_LIST_SIZE;
+
   return request({
-    url: API_BASE_URL + "/items/active",
+    url:
+      API_BASE_URL +
+      "/items/type/" +
+      type +
+      "/active/" +
+      active +
+      "?page=" +
+      newPage +
+      "&size=" +
+      size,
+    method: "GET",
+  });
+}
+
+export function getAllItemsBySearch(page, size, searchText, active) {
+  //page = page || 0;
+  let newPage = page - 1;
+  size = size || STUDENT_LIST_SIZE;
+
+  console.log("search" + searchText);
+
+  return request({
+    url:
+      API_BASE_URL +
+      "/items/search/" +
+      searchText +
+      "/active/" +
+      active +
+      "?page=" +
+      newPage +
+      "&size=" +
+      size,
+    method: "GET",
+  });
+}
+
+export function getAllItemsByActive(page, size, active) {
+  page = page || 0;
+  size = size || STUDENT_LIST_SIZE;
+  console.log("active " + active);
+  return request({
+    url:
+      API_BASE_URL +
+      "/items/active/" +
+      active +
+      "?page=" +
+      page +
+      "&size=" +
+      size,
     method: "GET",
   });
 }
@@ -1009,7 +1074,7 @@ export function getAllItems(page, size) {
   });
 }
 
-export function getAllItemsBySearch(page, size, search) {
+export function getAllItemsByOnlySearch(page, size, search) {
   page = page || 0;
   size = size || STUDENT_LIST_SIZE;
 

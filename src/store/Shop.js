@@ -21,7 +21,9 @@ import {
 import {
   getAllItemsByActive,
   getImageByItem,
-  getAllItemsByActiveSearch,
+  getAllItemsBySearchAndType,
+  getAllItemsByType,
+  getAllItemsBySearch,
   createOrder,
   createLineItem,
 } from "../util/APIUtils";
@@ -68,6 +70,7 @@ class Shop extends Component {
       productImages: [],
       size: STORE_LIST_SIZE,
       search: "",
+      type: "All",
       page: 0,
       searchText: "",
       searchedColumn: "",
@@ -104,7 +107,7 @@ class Shop extends Component {
       loading: true,
     });
 
-    promise = getAllItemsByActive(page, pageSize);
+    promise = getAllItemsByActive(page, pageSize, true);
 
     if (!promise) {
       return;
@@ -475,41 +478,91 @@ class Shop extends Component {
     }
   }
 
-  onSearch = (value) => {
-    if (value == "") {
-      this.getProducts();
-      return;
-    }
+  onSearchChange = (value) => {
+    this.setState({
+      search: value.target.value,
+    });
 
-    this.getProductsBySearch(value);
+    //if (value == "") {
+    //  this.getProducts();
+    //  return;
+    //}
+    this.getProductsBySearch(value.target.value, this.state.type);
+  };
+
+  onSearch = (value) => {
+    this.setState({
+      search: value,
+    });
+
+    //if (value == "") {
+    //  this.getProducts();
+    //  return;
+    //}
+
+    this.getProductsBySearch(value, this.state.type);
   };
 
   handleTypeDropdownChange = (value) => {
-    if (value == "All") {
-      this.getProducts();
-      return;
-    }
-    this.getProductsBySearch(value);
+    this.setState({
+      type: value,
+    });
+
+    //if (value == "All") {
+    //  this.getProducts();
+    //  return;
+    //}
+    this.getProductsBySearch(this.state.search, value);
   };
 
-  getProductsBySearch(search) {
+  getProductsBySearch(search, type) {
     let promise;
 
     this.setState({
       loading: true,
     });
 
-    promise = getAllItemsByActiveSearch(
-      this.state.page,
-      this.state.pageSize,
-      search
-    );
+    if (search == "") {
+      if (type == "All") {
+        this.getProducts();
+        return;
+      } else {
+        promise = getAllItemsByType(
+          this.state.page,
+          this.state.pageSize,
+          type,
+          true
+        );
+      }
+    } else {
+      if (type == "All") {
+        promise = getAllItemsBySearch(
+          this.state.page,
+          this.state.pageSize,
+          search,
+          true
+        );
+      } else {
+        promise = getAllItemsBySearchAndType(
+          this.state.page,
+          this.state.pageSize,
+          search,
+          type,
+          true
+        );
+      }
+    }
 
     if (!promise) {
       return;
     }
 
     promise.then((response) => {
+      if (response.content == "") {
+        this.setState({ loading: false, products: [], productCards: [] });
+        console.log("response returned here " + response.content);
+        return;
+      }
       this.setState(
         {
           products: response.content,
@@ -940,6 +993,7 @@ class Shop extends Component {
           size={"small"}
           placeholder="search"
           onSearch={this.onSearch}
+          onChange={this.onSearchChange}
           style={{
             width: 120,
             height: 32,
@@ -1034,7 +1088,7 @@ class Shop extends Component {
 
     let productLoading = loading;
     if (productCards.length == 0) {
-      productLoading = true;
+      //productLoading = true;
     }
 
     return (

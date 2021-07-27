@@ -894,7 +894,8 @@ class Student extends Component {
       okText: "Yes",
       okType: "danger",
       cancelText: "No",
-      content: "This will erase all records of this student.",
+      content:
+        "This will erase all records of this student. [Test Student Record, My Group, Student List]",
       onOk: () => {
         return this.removeStudent();
       },

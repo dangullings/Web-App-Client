@@ -4,8 +4,10 @@ import {
   createItemImage,
   removeItemById,
   getAllItems,
+  getAllItemsByActive,
   removeItemImage,
   getItemImage,
+  getAllItemsBySearch,
 } from "../util/APIUtils";
 import {
   Upload,
@@ -21,6 +23,7 @@ import {
   Typography,
   Switch,
   message,
+  Row,
 } from "antd";
 import { withRouter } from "react-router-dom";
 import {
@@ -32,6 +35,7 @@ import {
 } from "@ant-design/icons";
 import "../styles/style.less";
 
+const { Search } = Input;
 const { confirm } = Modal;
 const { Title, Text } = Typography;
 const Compress = require("compress.js");
@@ -95,6 +99,8 @@ class NewItem extends Component {
       imageId: "",
       itemImage: "",
       isSavedItem: false,
+      activeView: true,
+      search: "",
 
       columns: [
         {
@@ -164,7 +170,17 @@ class NewItem extends Component {
 
   getItemList(page, pageSize) {
     let promise;
-    promise = getAllItems(page, pageSize);
+
+    if (this.state.search !== "") {
+      promise = this.getAllItemsBySearch(
+        this.state.page,
+        this.state.pageSize,
+        this.state.search,
+        this.state.activeView
+      );
+    } else {
+      promise = getAllItemsByActive(page, pageSize, this.state.activeView);
+    }
 
     if (!promise) {
       return;
@@ -208,7 +224,8 @@ class NewItem extends Component {
       okText: "Yes",
       okType: "danger",
       cancelText: "No",
-      content: "This will erase all records of this item.",
+      content:
+        "This will erase all records of this item. [Orders, Store, Item List]",
       onOk: () => {
         return this.removeItem();
       },
@@ -349,7 +366,7 @@ class NewItem extends Component {
   }
 
   resetForm() {
-    this.formRef.current.resetFields();
+    //this.formRef.current.resetFields();
     this.setState({
       name: "",
       type: "",
@@ -422,7 +439,12 @@ class NewItem extends Component {
     if (value == "Clothing") {
       this.setState({ isClothingSelected: true });
     } else {
-      this.setState({ isClothingSelected: false });
+      this.setState({
+        isClothingSelected: false,
+        selectedSizes: "",
+        selectedGenders: "",
+        selectedColor: "",
+      });
     }
   };
 
@@ -502,6 +524,7 @@ class NewItem extends Component {
       selectedGenders: "",
       photo: "",
       itemImage: "",
+      itemId: "",
       active: false,
       visible: false,
       loading: false,
@@ -819,12 +842,41 @@ class NewItem extends Component {
       </Title>,
     ];
 
+    const newHeader = [
+      <Row style={{ justifyContent: "space-between" }}>
+        {title}
+        <Divider style={{ height: 35 }} type="vertical" />
+        <Search
+          size={"small"}
+          placeholder="name"
+          onSearch={this.onSearch}
+          onChange={this.onChangeSearch}
+          dropdownClassName="custom-style"
+          style={{
+            width: 120,
+            height: 32,
+          }}
+        />
+        <Text type="secondary" style={{ marginTop: 5, marginLeft: 8 }}>
+          Active
+        </Text>
+        <Switch
+          className="custom-style"
+          defaultChecked
+          style={{
+            marginTop: 5,
+          }}
+          onChange={this.toggleActive}
+        ></Switch>
+      </Row>,
+    ];
+
     return (
       <Card
         className="custom-style"
         bordered={false}
         bodyStyle={{ padding: 1 }}
-        title={title}
+        title={newHeader}
       >
         {contentList}
       </Card>
@@ -883,11 +935,77 @@ class NewItem extends Component {
     );
   }
 
+  getAllItemsBySearchList(search) {
+    let promise;
+
+    promise = getAllItemsBySearch(
+      this.state.current,
+      this.state.pageSize,
+      search,
+      this.state.activeView
+    );
+
+    if (!promise) {
+      return;
+    }
+
+    this.setState({
+      loading: true,
+    });
+
+    promise.then((response) => {
+      this.setState({
+        items: response.content,
+        //current: response.number,
+        pageSize: response.size,
+        total: response.totalElements,
+        totalPages: response.totalPages,
+        loading: false,
+      });
+    });
+  }
+
+  onSearch = (value) => {
+    this.setState({
+      search: value,
+    });
+
+    if (value == "") {
+      this.getItemList();
+      return;
+    }
+
+    this.getAllItemsBySearchList(value);
+  };
+
+  onChangeSearch = (value) => {
+    this.setState({
+      search: value.target.value,
+    });
+
+    if (value.target.value == "") {
+      this.setState({ search: "" }, () => this.getItemList());
+    } else {
+      this.getAllItemsBySearchList(value.target.value);
+    }
+  };
+
   toggle = () => {
     console.log("switch to" + !this.state.active);
     this.setState({
       active: !this.state.active,
     });
+  };
+
+  toggleActive = () => {
+    console.log("switch---------" + !this.state.activeView);
+    this.setState(
+      {
+        activeView: !this.state.activeView,
+        search: "",
+      },
+      () => this.getItemList()
+    );
   };
 
   resizeImageFn(file) {

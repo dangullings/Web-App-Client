@@ -94,7 +94,7 @@ class LocationList extends Component {
   };
 
   handleCancel = () => {
-    //this.formRef.current.resetFields();
+    this.formRef.current.resetFields();
 
     this.setState({
       name: "",
@@ -149,7 +149,8 @@ class LocationList extends Component {
       okText: "Yes",
       okType: "danger",
       cancelText: "No",
-      content: "This will erase all records of this location.",
+      content:
+        "This will erase all records of this location. [Session Location, Event Location, Test Location, Location List]",
       onOk: () => {
         return this.removeLocation();
       },
@@ -187,8 +188,9 @@ class LocationList extends Component {
     createLocation(location)
       .then((response) => {
         message.success("Location saved.");
-        this.getLocationList(this.state.page);
+        this.formRef.current.resetFields();
         this.handleCancel;
+        this.getLocationList(this.state.page);
         this.setState({ loading: false, visible: false });
       })
       .catch((error) => {
@@ -259,7 +261,7 @@ class LocationList extends Component {
         visible={visible}
         title={ModalTitle}
         closable={false}
-        destroyOnClose={true}
+        //destroyOnClose={true}
         onCancel={this.handleCancel}
         footer={[
           <Button key="back" type="secondary" onClick={this.handleCancel}>

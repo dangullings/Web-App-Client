@@ -506,8 +506,9 @@ class UserList extends Component {
       }
     };
 
-    const contentList = [
-      <Button
+    // users should not be creatable, users have to signup themselves. Admin can then edit/assign students to user
+    {
+      /* <Button
         type="primary"
         icon={<PlusOutlined />}
         onClick={this.showModal}
@@ -516,8 +517,10 @@ class UserList extends Component {
         }}
       >
         New User
-      </Button>,
+      </Button>, */
+    }
 
+    const contentList = [
       <Modal
         className="custom-style"
         visible={visible}
