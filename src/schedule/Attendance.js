@@ -148,6 +148,7 @@ class Attendance extends Component {
   };
 
   onChange(date, dateString) {
+    if (dateString == "") return;
     this.setState(
       {
         year: date.year(),

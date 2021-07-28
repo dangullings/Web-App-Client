@@ -680,6 +680,7 @@ class EventCalendar extends Component {
   }
 
   onMonthYearChange(date, dateString) {
+    if (dateString == "") return;
     let parts = dateString.split("-");
     let month = parts[1];
     let year = parts[0];

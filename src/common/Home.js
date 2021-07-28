@@ -14,7 +14,7 @@ class Home extends Component {
 
   render() {
     const contentStyle = {
-      height: "580px",
+      height: "100%",
       width: "100%",
       color: "#fff",
       lineHeight: "160px",
