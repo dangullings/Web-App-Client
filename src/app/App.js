@@ -17,6 +17,8 @@ import EventCalendar from "../schedule/EventCalendar";
 import LocationList from "../location/LocationList";
 import SessionList from "../schedule/SessionList";
 import EventList from "../schedule/EventList";
+import Blog from "../blog/Blog";
+import BlogList from "../blog/BlogList";
 import Attendance from "../schedule/Attendance";
 import TestList from "../test/TestList";
 import Shop from "../store/Shop";
@@ -327,6 +329,28 @@ class App extends Component {
                 path="/locations"
                 render={(props) => (
                   <LocationList
+                    isAuthenticated={this.state.isAuthenticated}
+                    currentUser={this.state.currentUser}
+                    {...props}
+                  />
+                )}
+              ></Route>
+              <Route
+                exact
+                path="/blog"
+                render={(props) => (
+                  <Blog
+                    isAuthenticated={this.state.isAuthenticated}
+                    currentUser={this.state.currentUser}
+                    {...props}
+                  />
+                )}
+              ></Route>
+              <Route
+                exact
+                path="/blogs"
+                render={(props) => (
+                  <BlogList
                     isAuthenticated={this.state.isAuthenticated}
                     currentUser={this.state.currentUser}
                     {...props}

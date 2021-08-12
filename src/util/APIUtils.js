@@ -79,6 +79,58 @@ const requestImage = (options) => {
     reject(error)
   }) */
 
+export function getAllBlogsByActive(page, size, active) {
+  page = page || 0;
+  size = size || STUDENT_LIST_SIZE;
+
+  console.log("getAllBlogsByActive " + page + " " + size + " active " + active);
+
+  return request({
+    url:
+      API_BASE_URL +
+      "/blogs/active/" +
+      active +
+      "?page=" +
+      page +
+      "&size=" +
+      size,
+    method: "GET",
+  });
+}
+
+export function saveBlog(data) {
+  console.log("savedata ", data);
+  return request({
+    url:
+      API_BASE_URL +
+      "/blogs/save/id/" +
+      data.id +
+      "/active/" +
+      data.active +
+      "/date/" +
+      data.date +
+      "/author/" +
+      data.author,
+    method: "POST",
+    body: JSON.stringify(data.data),
+  });
+}
+
+export function getBlog(id) {
+  return request({
+    url: API_BASE_URL + "/blogs/" + id,
+    method: "GET",
+  });
+}
+
+export function removeBlog(id) {
+  return request({
+    url: API_BASE_URL + "/blogs/" + id,
+    method: "DELETE",
+    body: JSON.stringify(id),
+  });
+}
+
 export function chargePayment(payment) {
   console.log("chargePayment " + payment);
   return request({

@@ -31,5 +31,13 @@
   },
   "engines": {
     "node": "14.x"
+  },
+  "devDependencies": {
+    "@editorjs/editorjs": "^2.22.2",
+    "@editorjs/header": "^2.6.1",
+    "@editorjs/image": "^2.6.0",
+    "@editorjs/link": "^2.3.1",
+    "@editorjs/paragraph": "^2.8.0",
+    "react-editor-js": "^1.10.0"
   }
 }
