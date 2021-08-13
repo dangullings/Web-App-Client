@@ -1,73 +1,121 @@
 import React, { Component } from "react";
-import { Typography, Button, Card } from "antd";
-import { saveBlog, getBlog } from "../util/APIUtils";
+import { Typography, Button, Card, List, Divider } from "antd";
+import { getBlog, getAllBlogsByActive } from "../util/APIUtils";
 import { withRouter } from "react-router-dom";
 import "../styles/style.less";
-import { SaveOutlined, FormOutlined } from "@ant-design/icons";
+import "../styles/components/Blog.css";
+import { FormOutlined } from "@ant-design/icons";
+import { STUDENT_LIST_SIZE } from "../constants";
 import EditorJs from "react-editor-js";
 import { EDITOR_JS_TOOLS } from "./Tools";
-
-import imgSplashOne from "../img/BackgroundOne.jpg";
 
 const { Title } = Typography;
 
 class Blog extends Component {
-  formRef = React.createRef();
-
   constructor(props) {
     super(props);
 
     this.state = {
-      blogId: "",
-      active: "",
-      date: "",
-      author: "",
-      dataState: {},
-      checked: false,
+      blogs: [],
+      blogCards: [],
+      size: STUDENT_LIST_SIZE,
+      page: 0,
+      pagination: {
+        showSizeChanger: true,
+        current: 1,
+        pageSize: 10,
+        pageSizeOptions: ["10", "25", "50", "100"],
+      },
+      total: 0,
     };
-
-    this.loadBlog();
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    this.getBlogList(this.state.page);
+  }
 
-  loadBlog() {
+  getBlogList(page) {
     let promise;
-    promise = getBlog(3);
+    promise = getAllBlogsByActive(page, this.state.size, true);
+
+    if (!promise) {
+      return;
+    }
+
+    this.setState({
+      loading: true,
+    });
 
     promise
       .then((response) => {
-        this.setState({
-          blogId: response.id,
-          active: response.active,
-          author: response.author,
-          date: response.date,
-          dataState: JSON.parse(response.jsonData),
-        });
+        console.log("response " + response.content);
+        this.setState(
+          {
+            page: response.page,
+            size: response.size,
+            totalElements: response.totalElements,
+            totalPages: response.totalPages,
+            last: response.last,
+            loading: false,
+          },
+          () => this.setBlogHeader(response.content)
+        );
       })
-      .catch((error) => {});
+      .catch((error) => {
+        this.setState({
+          loading: false,
+        });
+      });
   }
 
-  async onSave() {
-    const outputData = await this.editorInstance.save();
+  setBlogHeader(blogs) {
+    console.log("setblogheader " + blogs[0]);
+    let newBlogs = [];
+    let blog;
+    for (blog of blogs) {
+      const data = {
+        id: blog.id,
+        date: blog.date,
+        author: blog.author,
+        dataState: JSON.parse(blog.jsonData),
+        header: JSON.parse(blog.jsonData).blocks[0].data.text,
+      };
 
-    const data = {
-      id: 3,
-      active: this.state.active,
-      data: outputData,
-      author: this.state.author,
-      date: this.state.date,
-    };
+      newBlogs.push(data);
+    }
 
-    saveBlog(data)
-      .then((response) => {
-        console.log("response " + response);
-      })
-      .catch((error) => {});
+    this.setState({ blogs: newBlogs });
+  }
+
+  blogCard(blog) {
+    return (
+      <div className="blog-item-container">
+        <div className="blog-item-header">{blog.header}</div>
+        <div className="blog-item-footer">
+          <div className="blog-item-author">{blog.author}</div>
+          <div className="blog-item-date">{blog.date}</div>
+        </div>
+        <Divider
+          style={{
+            marginTop: 5,
+            marginBottom: 5,
+          }}
+        />
+      </div>
+    );
   }
 
   render() {
-    const { dataState, active, date, author } = this.state;
+    const { blogs } = this.state;
+
+    var blogCards = [];
+    if (blogs) {
+      blogs.forEach((blog) => {
+        blogCards.push(this.blogCard(blog));
+      });
+    }
+
+    const blogView = [<div className="blog-container">{blogCards}</div>];
 
     const title = [
       <Title level={3}>
@@ -84,24 +132,19 @@ class Blog extends Component {
         bodyStyle={{ padding: 20 }}
         title={title}
       >
-        <EditorJs
-          instanceRef={(instance) => (this.editorInstance = instance)}
-          tools={EDITOR_JS_TOOLS}
-          data={dataState}
-          enableReInitialize={true}
-          onChange={this.onSave.bind(this)}
-        />
-        <Button
-          type="primary"
-          block={true}
-          icon={<SaveOutlined />}
-          onClick={this.onSave.bind(this)}
-        >
-          Save
-        </Button>
+        {blogView}
       </Card>
     );
   }
 }
 
 export default withRouter(Blog);
+
+{
+  /* <EditorJs
+  tools={EDITOR_JS_TOOLS}
+  data={dataState}
+  enableReInitialize={true}
+  readOnly={true}
+/>; */
+}

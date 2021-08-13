@@ -116,10 +116,18 @@ class Slider extends Component {
         <Menu.Item
           className="menu-item"
           key="/schedule/calendar"
-          icon={<CalendarOutlined />}
+          icon={<FormOutlined />}
           onClick={this.onClose}
         >
           <Link to={"/schedule/calendar"}>Calendar</Link>
+        </Menu.Item>,
+        <Menu.Item
+          className="menu-item"
+          key="/blog"
+          icon={<FormOutlined />}
+          onClick={this.onClose}
+        >
+          <Link to={"/blog"}>Blog</Link>
         </Menu.Item>,
       ];
     } else {
@@ -170,6 +178,14 @@ class Slider extends Component {
           onClick={this.onClose}
         >
           <Link to={"/schedule/calendar"}>Calendar</Link>
+        </Menu.Item>,
+        <Menu.Item
+          className="menu-item"
+          key="/blog"
+          icon={<FormOutlined />}
+          onClick={this.onClose}
+        >
+          <Link to={"/blog"}>Blog</Link>
         </Menu.Item>,
       ];
       adminMenuItems = [

@@ -10,13 +10,7 @@ import {
   Divider,
   Switch,
 } from "antd";
-import {
-  getAllBlogsByActive,
-  saveBlog,
-  removeBlog,
-  getBlog,
-} from "../util/APIUtils";
-import Blog from "../blog/Blog";
+import { getAllBlogsByActive, saveBlog, removeBlog } from "../util/APIUtils";
 import { STUDENT_LIST_SIZE } from "../constants";
 import { withRouter } from "react-router-dom";
 import "../styles/style.less";
@@ -66,23 +60,41 @@ class BlogList extends Component {
       blogId: "",
       date: "",
       dataState: {},
-      author: this.props.currentUser.name,
+      author: "",
       header: "",
 
       columns: [
         {
-          title: "date",
+          title: "Date",
           dataIndex: "date",
+          width: "40%",
+          ellipsis: true,
         },
         {
-          title: "author",
+          title: "Author",
           dataIndex: "author",
+          width: "20%",
+          ellipsis: true,
+        },
+        {
+          title: "Header",
+          dataIndex: "header",
+          ellipsis: true,
         },
       ],
     };
     this.onSave = this.onSave.bind(this);
     this.removeBlog = this.removeBlog.bind(this);
     this.getBlogList = this.getBlogList.bind(this);
+  }
+
+  componentDidMount() {
+    if (this.props.currentUser !== null) {
+      this.setState({
+        author: this.props.currentUser.name,
+      });
+    }
+    this.getBlogList(this.state.page);
   }
 
   onFill = () => {
@@ -121,18 +133,22 @@ class BlogList extends Component {
       loading: true,
     });
 
+    console.log("getblog list");
+
     promise
       .then((response) => {
-        console.log("response " + response.content.id);
-        this.setState({
-          blogs: response.content,
-          page: response.page,
-          size: response.size,
-          totalElements: response.totalElements,
-          totalPages: response.totalPages,
-          last: response.last,
-          loading: false,
-        });
+        this.setState(
+          {
+            //blogs: response.content,
+            page: response.page,
+            size: response.size,
+            totalElements: response.totalElements,
+            totalPages: response.totalPages,
+            last: response.last,
+            loading: false,
+          },
+          () => this.setBlogHeader(response.content)
+        );
       })
       .catch((error) => {
         this.setState({
@@ -141,8 +157,24 @@ class BlogList extends Component {
       });
   }
 
-  componentDidMount() {
-    this.getBlogList(this.state.page);
+  setBlogHeader(blogs) {
+    //const { blogs } = this.state;
+
+    let newBlogs = [];
+    let blog;
+    for (blog of blogs) {
+      const data = {
+        id: blog.id,
+        date: blog.date,
+        author: blog.author,
+        dataState: JSON.parse(blog.jsonData),
+        header: JSON.parse(blog.jsonData).blocks[0].data.text,
+      };
+
+      newBlogs.push(data);
+    }
+
+    this.setState({ blogs: newBlogs });
   }
 
   showConfirm = () => {
@@ -208,6 +240,11 @@ class BlogList extends Component {
   render() {
     const { blogs, visible, loading, active, columns, isSavedBlog, dataState } =
       this.state;
+
+    let b;
+    for (b of blogs) {
+      console.log("blogs " + b.dataState.blocks[0].data.text);
+    }
 
     var ModalTitle;
     if (isSavedBlog) {
@@ -316,17 +353,20 @@ class BlogList extends Component {
     ];
 
     const newHeader = [
-      <Row style={{ justifyContent: "space-between" }}>
+      <Row>
         {title}
-        <Divider style={{ height: 35 }} type="vertical" />
-        <Text type="secondary" style={{ marginTop: 5 }}>
+        <Divider
+          style={{ height: 35, marginLeft: 20, marginRight: 10 }}
+          type="vertical"
+        />
+        <Text type="secondary" style={{ marginLeft: 10, marginTop: 5 }}>
           Published
         </Text>
         <Switch
           dropdownClassName="custom-style"
           style={{
-            marginTop: 5,
-            marginLeft: 0,
+            marginTop: 6,
+            marginLeft: 6,
           }}
           onChange={this.toggleActiveView}
         ></Switch>
@@ -365,7 +405,7 @@ class BlogList extends Component {
         date: blog.date,
         loading: false,
         author: blog.author,
-        dataState: JSON.parse(blog.jsonData),
+        dataState: blog.dataState,
         isSavedBlog: true,
         visible: true,
       },
@@ -380,9 +420,12 @@ class BlogList extends Component {
   };
 
   toggleActiveView = () => {
-    this.setState({
-      activeView: !this.state.activeView,
-    });
+    this.setState(
+      {
+        activeView: !this.state.activeView,
+      },
+      () => this.getBlogList(this.state.page)
+    );
   };
 }
 
