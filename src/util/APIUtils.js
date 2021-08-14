@@ -60,30 +60,9 @@ const requestImage = (options) => {
     });
 };
 
-/* .then(response => 
-    response.json().then(json => {
-        if(!response.ok) {
-            return Promise.reject(json);
-        }
-        return json;
-    })
-); */
-
-/* .then(response => {
-    return response.text()
-  })
-  .then((data) => {
-    resolve(data ? JSON.parse(data) : {})
-  })
-  .catch((error) => {
-    reject(error)
-  }) */
-
 export function getAllBlogsByActive(page, size, active) {
   page = page || 0;
   size = size || STUDENT_LIST_SIZE;
-
-  console.log("getAllBlogsByActive " + page + " " + size + " active " + active);
 
   return request({
     url:
@@ -99,7 +78,6 @@ export function getAllBlogsByActive(page, size, active) {
 }
 
 export function saveBlog(data) {
-  console.log("savedata ", data);
   return request({
     url:
       API_BASE_URL +
@@ -132,7 +110,6 @@ export function removeBlog(id) {
 }
 
 export function chargePayment(payment) {
-  console.log("chargePayment " + payment);
   return request({
     url: API_BASE_URL + "/payment/create-payment-intent",
     method: "POST",
@@ -173,7 +150,6 @@ export function createEvent(eventData) {
 }
 
 export function getLocationByName(name) {
-  console.log("get location bynae " + name);
   return request({
     url: API_BASE_URL + "/locations/name/" + name,
     method: "GET",
@@ -217,7 +193,6 @@ export function getAllTests(page, size) {
   page = page || 0;
   size = size || STUDENT_LIST_SIZE;
 
-  console.log("getalltests");
   return request({
     url: API_BASE_URL + "/tests?page=" + page + "&size=" + size,
     method: "GET",
@@ -337,8 +312,6 @@ export function getAllTestsByMonthYear(page, size, month, year) {
   page = page || 0;
   size = size || STUDENT_LIST_SIZE;
 
-  console.log("get all tests by " + month + " " + year);
-
   return request({
     url:
       API_BASE_URL +
@@ -381,7 +354,6 @@ export function getAllAttendanceByClassDateAndStudent(classDateId, studentId) {
 }
 
 export function getAllClassDatesBySessionId(sessionId) {
-  console.log("sessionId " + sessionId);
   return request({
     url: API_BASE_URL + "/attendance/classDates/sessions/" + sessionId,
     method: "GET",
@@ -415,8 +387,6 @@ export function getAllClassDatesByMonthYear(page, size, month, year) {
 }
 
 export function getAllClassDatesByMonthYearAndSession(month, year, session) {
-  console.log("year" + year + " month" + month + " session" + session);
-
   return request({
     url:
       API_BASE_URL +
@@ -439,7 +409,6 @@ export function createClassDate(classDateData) {
 }
 
 export function createTest(testData) {
-  console.log("createTest " + testData.month);
   return request({
     url: API_BASE_URL + "/tests/saveTest",
     method: "POST",
@@ -456,7 +425,6 @@ export function removeTest(id) {
 }
 
 export function createOrder(order) {
-  console.log("createOrder " + order.isFulfilled);
   return request({
     url: API_BASE_URL + "/orders/saveOrder",
     method: "POST",
@@ -465,7 +433,6 @@ export function createOrder(order) {
 }
 
 export function createLineItem(lineItem) {
-  console.log("createLineItem " + lineItem);
   return request({
     url: API_BASE_URL + "/lineitems/saveLineItem",
     method: "POST",

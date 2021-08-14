@@ -6,6 +6,7 @@ import "../styles/style.less";
 import "../styles/components/Blog.css";
 import { FormOutlined } from "@ant-design/icons";
 import { STUDENT_LIST_SIZE } from "../constants";
+import moment from "moment";
 import EditorJs from "react-editor-js";
 import { EDITOR_JS_TOOLS } from "./Tools";
 
@@ -69,13 +70,13 @@ class Blog extends Component {
   }
 
   setBlogHeader(blogs) {
-    console.log("setblogheader " + blogs[0]);
     let newBlogs = [];
     let blog;
     for (blog of blogs) {
+      var date = moment(blog.date);
       const data = {
         id: blog.id,
-        date: blog.date,
+        date: date.format("dddd, MMMM Do YYYY"),
         author: blog.author,
         dataState: JSON.parse(blog.jsonData),
         header: JSON.parse(blog.jsonData).blocks[0].data.text,
@@ -89,20 +90,22 @@ class Blog extends Component {
 
   blogCard(blog) {
     return (
-      <div className="blog-item-container">
+      <div
+        className="blog-item-container"
+        onClick={() => this.selectBlog(blog)}
+      >
+        <div className="blog-item-date">{blog.date}</div>
         <div className="blog-item-header">{blog.header}</div>
-        <div className="blog-item-footer">
-          <div className="blog-item-author">{blog.author}</div>
-          <div className="blog-item-date">{blog.date}</div>
+        <div className="blog-item-body">
+          {blog.dataState.blocks[1].data.text}
         </div>
-        <Divider
-          style={{
-            marginTop: 5,
-            marginBottom: 5,
-          }}
-        />
+        <Divider />
       </div>
     );
+  }
+
+  selectBlog(blog) {
+    this.props.history.push(`/blogs/${blog.id}`);
   }
 
   render() {
@@ -117,24 +120,7 @@ class Blog extends Component {
 
     const blogView = [<div className="blog-container">{blogCards}</div>];
 
-    const title = [
-      <Title level={3}>
-        <div>
-          Blog <FormOutlined />
-        </div>
-      </Title>,
-    ];
-
-    return (
-      <Card
-        className="custom-style"
-        bordered={false}
-        bodyStyle={{ padding: 20 }}
-        title={title}
-      >
-        {blogView}
-      </Card>
-    );
+    return blogView;
   }
 }
 

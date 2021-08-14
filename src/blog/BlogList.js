@@ -14,6 +14,7 @@ import { getAllBlogsByActive, saveBlog, removeBlog } from "../util/APIUtils";
 import { STUDENT_LIST_SIZE } from "../constants";
 import { withRouter } from "react-router-dom";
 import "../styles/style.less";
+import "../styles/components/BlogList.less";
 import moment from "moment";
 
 import {
@@ -133,13 +134,10 @@ class BlogList extends Component {
       loading: true,
     });
 
-    console.log("getblog list");
-
     promise
       .then((response) => {
         this.setState(
           {
-            //blogs: response.content,
             page: response.page,
             size: response.size,
             totalElements: response.totalElements,
@@ -158,8 +156,6 @@ class BlogList extends Component {
   }
 
   setBlogHeader(blogs) {
-    //const { blogs } = this.state;
-
     let newBlogs = [];
     let blog;
     for (blog of blogs) {
@@ -241,18 +237,6 @@ class BlogList extends Component {
     const { blogs, visible, loading, active, columns, isSavedBlog, dataState } =
       this.state;
 
-    let b;
-    for (b of blogs) {
-      console.log("blogs " + b.dataState.blocks[0].data.text);
-    }
-
-    var ModalTitle;
-    if (isSavedBlog) {
-      ModalTitle = <Title level={2}>Edit Blog</Title>;
-    } else {
-      ModalTitle = <Title level={2}>New Blog</Title>;
-    }
-
     const renderButton = () => {
       if (isSavedBlog) {
         return (
@@ -283,14 +267,21 @@ class BlogList extends Component {
       </Button>,
 
       <Modal
-        className="custom-style"
+        className="blog-style"
         style={{ top: "0px" }}
         visible={visible}
-        title={ModalTitle}
         closable={false}
         destroyOnClose={true}
         onCancel={this.handleCancel}
         footer={[
+          <Text type="secondary" style={{ marginRight: 10, fontSize: 24 }}>
+            Publish
+          </Text>,
+          <Switch
+            style={{ marginTop: 0, marginRight: 20 }}
+            checked={active}
+            onChange={this.toggleActive}
+          />,
           <Button key="back" type="secondary" onClick={this.handleCancel}>
             Cancel
           </Button>,
@@ -310,19 +301,9 @@ class BlogList extends Component {
           instanceRef={(instance) => (this.editorInstance = instance)}
           tools={EDITOR_JS_TOOLS}
           data={dataState}
-          enableReInitialize={true}
+          enableReInitialize={false}
+          autofocus={true}
         />
-        <Row>
-          <Divider />
-          <Text type="secondary" style={{ marginRight: 10, fontSize: 20 }}>
-            Published
-          </Text>
-          <Switch
-            style={{ marginTop: 5 }}
-            checked={active}
-            onChange={this.toggleActive}
-          />
-        </Row>
       </Modal>,
 
       <Table

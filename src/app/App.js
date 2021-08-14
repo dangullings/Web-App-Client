@@ -18,6 +18,7 @@ import LocationList from "../location/LocationList";
 import SessionList from "../schedule/SessionList";
 import EventList from "../schedule/EventList";
 import Blog from "../blog/Blog";
+import BlogDetail from "../blog/BlogDetail";
 import BlogList from "../blog/BlogList";
 import Attendance from "../schedule/Attendance";
 import TestList from "../test/TestList";
@@ -378,6 +379,16 @@ class App extends Component {
                 path="/users/:username/group"
                 render={(props) => (
                   <MyGroup
+                    isAuthenticated={this.state.isAuthenticated}
+                    currentUser={this.state.currentUser}
+                    {...props}
+                  />
+                )}
+              ></Route>
+              <Route
+                path="/blogs/:id"
+                render={(props) => (
+                  <BlogDetail
                     isAuthenticated={this.state.isAuthenticated}
                     currentUser={this.state.currentUser}
                     {...props}
