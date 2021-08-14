@@ -9,8 +9,16 @@ import {
   Row,
   Divider,
   Switch,
+  Image,
+  Upload,
 } from "antd";
-import { getAllBlogsByActive, saveBlog, removeBlog } from "../util/APIUtils";
+import {
+  getAllBlogsByActive,
+  saveBlog,
+  removeBlog,
+  getItemImage,
+  createItemImage,
+} from "../util/APIUtils";
 import { STUDENT_LIST_SIZE } from "../constants";
 import { withRouter } from "react-router-dom";
 import "../styles/style.less";
@@ -23,6 +31,7 @@ import {
   SaveOutlined,
   FormOutlined,
   ExclamationCircleOutlined,
+  UploadOutlined,
 } from "@ant-design/icons";
 
 import EditorJs from "react-editor-js";
@@ -30,6 +39,8 @@ import { EDITOR_JS_TOOLS } from "./Tools";
 
 const { confirm } = Modal;
 const { Title, Text } = Typography;
+const Compress = require("compress.js");
+const compress = new Compress();
 
 class BlogList extends Component {
   formRef = React.createRef();
@@ -64,6 +75,11 @@ class BlogList extends Component {
       author: "",
       header: "",
 
+      fileList: [],
+      photo: "",
+      imageIds: "",
+      itemImage: "",
+
       columns: [
         {
           title: "Date",
@@ -87,6 +103,8 @@ class BlogList extends Component {
     this.onSave = this.onSave.bind(this);
     this.removeBlog = this.removeBlog.bind(this);
     this.getBlogList = this.getBlogList.bind(this);
+    this.handleUpload = this.handleUpload.bind(this);
+    this.resizeImageFn = this.resizeImageFn.bind(this);
   }
 
   componentDidMount() {
@@ -173,6 +191,35 @@ class BlogList extends Component {
     this.setState({ blogs: newBlogs });
   }
 
+  loadItemImage(item) {
+    let promise;
+    promise = getItemImage(item.imageId);
+
+    if (!promise) {
+      return;
+    }
+
+    this.setState({
+      loading: true,
+    });
+
+    promise
+      .then((response) => {
+        this.setState(
+          {
+            itemImage: response,
+            loading: false,
+          },
+          this.showItem(item)
+        );
+      })
+      .catch((error) => {
+        this.setState({
+          loading: false,
+        });
+      });
+  }
+
   showConfirm = () => {
     confirm({
       className: "confirm-custom-style",
@@ -217,7 +264,32 @@ class BlogList extends Component {
       data: outputData,
       author: this.state.author,
       date: moment().format("YYYY-MM-DD, h:mm a"),
+      imageIds: this.state.imageIds,
     };
+
+    /* createItemImage(data, imageId)
+      .then((response) => {
+        if (imageId == 0) {
+          this.setState(
+            {
+              imageId: response.id,
+            },
+            () => this.saveItem()
+          );
+        } else {
+          this.setState(
+            {
+              imageId: this.state.item.imageId,
+            },
+            () => this.saveItem()
+          );
+        }
+      })
+      .catch((error) => {
+        this.setState({
+          loading: false,
+        });
+      }); */
 
     saveBlog(data)
       .then((response) => {
@@ -232,6 +304,22 @@ class BlogList extends Component {
   clearInput(event) {
     event.target.value = "";
   }
+
+  handleUpload(info) {
+    if (info.file instanceof File) {
+      this.resizeImageFn(info.file);
+    } else {
+      this.setState({
+        photo: "",
+      });
+    }
+  }
+
+  onChange = ({ fileList: newFileList }) => {
+    this.setState({
+      fileList: newFileList,
+    });
+  };
 
   render() {
     const { blogs, visible, loading, active, columns, isSavedBlog, dataState } =
@@ -254,6 +342,20 @@ class BlogList extends Component {
       }
     };
 
+    {
+      /* <Title style={{ marginBottom: 8 }} level={5}>
+            Current Images
+          </Title>,
+          <Image
+            width={"100%"}
+            height={"100%"}
+            src={`data:image/jpeg;base64,${itemImage.photo}`}
+            placeholder={
+              <Image preview={false} src="../img/TestImage.png" width={10} />
+            }
+          />, */
+    }
+
     const contentList = [
       <Button
         type="primary"
@@ -274,6 +376,21 @@ class BlogList extends Component {
         destroyOnClose={true}
         onCancel={this.handleCancel}
         footer={[
+          <Upload
+            listType="picture"
+            maxCount={3}
+            multiple
+            onChange={this.handleUpload}
+            beforeUpload={() => false}
+          >
+            <Button
+              style={{ marginTop: 20, marginBottom: 10 }}
+              icon={<UploadOutlined />}
+            >
+              Upload Image (Max: 3)
+            </Button>
+          </Upload>,
+
           <Text type="secondary" style={{ marginRight: 10, fontSize: 24 }}>
             Publish
           </Text>,
@@ -408,6 +525,27 @@ class BlogList extends Component {
       () => this.getBlogList(this.state.page)
     );
   };
+
+  resizeImageFn(file) {
+    compress
+      .compress([file], {
+        size: 2, // the max size in MB, defaults to 2MB
+        quality: 1, // the quality of the image, max is 1,
+        maxWidth: 1280, // the max width of the output image, defaults to 1920px
+        maxHeight: 720, // the max height of the output image, defaults to 1920px
+        resize: true, // defaults to true, set false if you do not want to resize the image width and height
+      })
+      .then((data) => {
+        const img = data[0];
+        const base64str = img.data;
+        const imgExt = img.ext;
+
+        this.setState({
+          photo: Compress.convertBase64ToFile(base64str, imgExt),
+          loading: false,
+        });
+      });
+  }
 }
 
 export default withRouter(BlogList);
