@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import { Typography, Button } from "antd";
-import { getBlog } from "../util/APIUtils";
+import { Button, Image } from "antd";
+import { getBlog, getImage } from "../util/APIUtils";
 import { withRouter, Link } from "react-router-dom";
 import "../styles/style.less";
 import "../styles/components/BlogDetail.css";
@@ -9,14 +9,13 @@ import moment from "moment";
 import EditorJs from "react-editor-js";
 import { EDITOR_JS_TOOLS } from "./Tools";
 
-const { Title } = Typography;
-
 class BlogDetail extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
       blog: "",
+      blogImage: "",
     };
 
     this.loadBlog(this.props.match.params.id);
@@ -46,9 +45,34 @@ class BlogDetail extends Component {
           time: moment(response.date).format("h:mm a"),
           author: response.author,
           dataState: JSON.parse(response.jsonData),
+          imageId: response.imageId,
         };
+        this.setState(
+          {
+            blog: data,
+          },
+          () => this.loadBlogImage(data)
+        );
+      })
+      .catch((error) => {
         this.setState({
-          blog: data,
+          loading: false,
+        });
+      });
+  }
+
+  loadBlogImage(blog) {
+    let promise;
+    promise = getImage(blog.imageId);
+
+    if (!promise) {
+      return;
+    }
+
+    promise
+      .then((response) => {
+        this.setState({
+          blogImage: response,
           loading: false,
         });
       })
@@ -59,28 +83,8 @@ class BlogDetail extends Component {
       });
   }
 
-  setBlogHeader(blogs) {
-    let newBlogs = [];
-    let blog;
-    for (blog of blogs) {
-      var date = moment(blog.date);
-      const data = {
-        id: blog.id,
-        date: date.format("dddd, MMMM Do YYYY"),
-        time: date.format("h:mm a"),
-        author: blog.author,
-        dataState: JSON.parse(blog.jsonData),
-        header: JSON.parse(blog.jsonData).blocks[0].data.text,
-      };
-
-      newBlogs.push(data);
-    }
-
-    this.setState({ blogs: newBlogs });
-  }
-
   render() {
-    const { blog } = this.state;
+    const { blog, blogImage } = this.state;
 
     const blogView = [
       <div>
@@ -88,6 +92,7 @@ class BlogDetail extends Component {
           {
             <Button
               type="secondary"
+              style={{ marginTop: 8, marginBottom: 0 }}
               block={true}
               icon={<UnorderedListOutlined />}
             >
@@ -99,16 +104,29 @@ class BlogDetail extends Component {
           <div className="blog-date">{blog.date}</div>
           <div className="blog-body-container">
             <EditorJs
-              minHeight={0}
+              minHeight={20}
               tools={EDITOR_JS_TOOLS}
               data={blog.dataState}
               enableReInitialize={true}
               readOnly={true}
             />
           </div>
+          <Image
+            style={{
+              width: "100%",
+              height: "100%",
+              margin: "0px",
+              border: "1px solid #ddd",
+              borderRadius: "4px",
+              padding: "5px",
+            }}
+            width={"100%"}
+            height={"100%"}
+            src={`data:image/jpeg;base64,${blogImage.photo}`}
+          />
           <div className="blog-author">
             {blog.author}
-            {" at "}
+            {" | "}
             {blog.time}
           </div>
         </div>

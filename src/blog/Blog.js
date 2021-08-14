@@ -99,7 +99,6 @@ class Blog extends Component {
         <div className="blog-item-body">
           {blog.dataState.blocks[1].data.text}
         </div>
-        <Divider />
       </div>
     );
   }

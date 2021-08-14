@@ -1,4 +1,13 @@
 .blog-style {
+  img {
+    width: 100%;
+    height: 100%;
+    margin: 0px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 5px;
+  }
+
   .ant-btn {
     color: #4694b4;
     background: rgb(255, 255, 255);
@@ -15,8 +24,96 @@
     }
   }
 
+  .ant-btn-primary {
+    color: white;
+    background: #4694b4;
+    border-color: #91c7dd;
+    border-radius: 6px;
+    text-shadow: 0 -1px 0 rgb(0 0 0 / 12%);
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39);
+    &:hover {
+      background-color: #42aad3 !important;
+      border-color: #91c7dd !important;
+      color: white;
+      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.4),
+        0 2px 4px 0 rgba(0, 0, 0, 0.39);
+    }
+  }
+
+  .ant-btn-secondary {
+    color: #4694b4;
+    background: white;
+    border-color: #91c7dd;
+    text-shadow: 0 -1px 0 rgb(0 0 0 / 12%);
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39);
+    &:hover {
+      background: #91c7dd !important;
+      border-color: white !important;
+      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.4),
+        0 2px 4px 0 rgba(0, 0, 0, 0.39);
+    }
+  }
+
+  .ant-btn.ant-btn-dangerous {
+    color: #fff;
+    background: #c3272b;
+    border-color: #ff4f55;
+    text-shadow: 0 -1px 0 rgb(0 0 0 / 12%);
+    -webkit-box-shadow: 0 2px 0 rgb(0 0 0 / 5%);
+    border-radius: 6px;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39);
+    &:hover {
+      background: #ff4f55 !important;
+      border-color: #c3272b !important;
+      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.4),
+        0 2px 4px 0 rgba(0, 0, 0, 0.39);
+    }
+  }
+
+  .ant-btn-primary:focus {
+    color: #fff;
+    background: #4694b4;
+    border-color: white;
+  }
+
+  .ant-btn:focus {
+    color: #fff;
+    background: #4694b4;
+    border-color: white;
+  }
+
+  .ant-btn.ant-btn-dangerous:focus {
+    color: #fff;
+    background: #ff4d4f;
+    border-color: white;
+  }
+
+  .ant-switch {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 0;
+    color: rgba(0, 0, 0, 0.85);
+    font-size: 20px;
+    height: 30px;
+    width: 100%;
+  }
+
+  .ant-switch-handle {
+    position: absolute;
+    width: 50px;
+    height: 25px;
+  }
+
+  .ant-switch-inner {
+    font-size: 20px;
+  }
+
   .ant-switch-checked {
     background-color: #42aad3;
+  }
+
+  .ant-switch-checked .ant-switch-handle {
+    left: calc(100% - 18px - 35px);
   }
 
   .ant-modal-content {

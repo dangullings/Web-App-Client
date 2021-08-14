@@ -16,8 +16,9 @@ import {
   getAllBlogsByActive,
   saveBlog,
   removeBlog,
-  getItemImage,
-  createItemImage,
+  getImage,
+  createImage,
+  removeImage,
 } from "../util/APIUtils";
 import { STUDENT_LIST_SIZE } from "../constants";
 import { withRouter } from "react-router-dom";
@@ -36,6 +37,7 @@ import {
 
 import EditorJs from "react-editor-js";
 import { EDITOR_JS_TOOLS } from "./Tools";
+import placeholder from "../img/TestImage.png";
 
 const { confirm } = Modal;
 const { Title, Text } = Typography;
@@ -77,8 +79,8 @@ class BlogList extends Component {
 
       fileList: [],
       photo: "",
-      imageIds: "",
-      itemImage: "",
+      imageId: 0,
+      blogImage: "",
 
       columns: [
         {
@@ -137,6 +139,11 @@ class BlogList extends Component {
       isSavedBlog: false,
       active: false,
       dataState: {},
+      blog: "",
+      fileList: [],
+      photo: "",
+      imageId: 0,
+      blogImage: "",
     });
   };
 
@@ -181,8 +188,10 @@ class BlogList extends Component {
         id: blog.id,
         date: blog.date,
         author: blog.author,
+        active: blog.active,
         dataState: JSON.parse(blog.jsonData),
         header: JSON.parse(blog.jsonData).blocks[0].data.text,
+        imageId: blog.imageId,
       };
 
       newBlogs.push(data);
@@ -191,9 +200,9 @@ class BlogList extends Component {
     this.setState({ blogs: newBlogs });
   }
 
-  loadItemImage(item) {
+  loadBlogImage(blog) {
     let promise;
-    promise = getItemImage(item.imageId);
+    promise = getImage(blog.imageId);
 
     if (!promise) {
       return;
@@ -207,10 +216,10 @@ class BlogList extends Component {
       .then((response) => {
         this.setState(
           {
-            itemImage: response,
+            blogImage: response,
             loading: false,
           },
-          this.showItem(item)
+          this.showBlog(blog)
         );
       })
       .catch((error) => {
@@ -223,13 +232,12 @@ class BlogList extends Component {
   showConfirm = () => {
     confirm({
       className: "confirm-custom-style",
-      title: "Do you want to remove this location?",
+      title: "Do you want to remove this blog?",
       icon: <ExclamationCircleOutlined />,
       okText: "Yes",
       okType: "danger",
       cancelText: "No",
-      content:
-        "This will erase all records of this location. [Session Location, Event Location, Test Location, Location List]",
+      content: "This will erase all records of this blog. [Blog, Blog List]",
       onOk: () => {
         return this.removeBlog();
       },
@@ -241,9 +249,13 @@ class BlogList extends Component {
 
   removeBlog() {
     const { blog } = this.state;
+    removeImage(blog.imageId)
+      .then((response) => {})
+      .catch((error) => {});
+
     removeBlog(blog.id)
       .then((response) => {
-        message.success("Location deleted.");
+        message.success("Blog deleted.");
         this.handleCancel;
         this.getBlogList(this.state.page);
         this.setState({ loading: false, visible: false });
@@ -253,35 +265,62 @@ class BlogList extends Component {
       });
   }
 
-  async onSave() {
-    this.setState({ loading: true });
+  async saveBlog() {
+    const { imageId, active, blogId, author, page } = this.state;
+
+    console.log(" save blog ");
 
     const outputData = await this.editorInstance.save();
 
     const data = {
-      id: this.state.blogId,
-      active: this.state.active,
+      id: blogId,
+      active: active,
       data: outputData,
-      author: this.state.author,
+      author: author,
       date: moment().format("YYYY-MM-DD, h:mm a"),
-      imageIds: this.state.imageIds,
+      imageId: imageId,
     };
 
-    /* createItemImage(data, imageId)
+    saveBlog(data)
+      .then((response) => {
+        message.success("Blog saved.");
+        this.handleCancel;
+        this.getBlogList(page);
+        this.setState({ loading: false, visible: false });
+      })
+      .catch((error) => {});
+  }
+
+  onSave() {
+    const { photo, isSavedBlog, blog } = this.state;
+
+    this.setState({ loading: true });
+
+    var data = new FormData();
+    data.append("file", photo);
+
+    let imageId;
+    if (isSavedBlog) {
+      imageId = blog.imageId;
+    } else {
+      imageId = 0;
+    }
+
+    createImage(data, imageId)
       .then((response) => {
         if (imageId == 0) {
           this.setState(
             {
               imageId: response.id,
             },
-            () => this.saveItem()
+            () => this.saveBlog()
           );
         } else {
           this.setState(
             {
-              imageId: this.state.item.imageId,
+              imageId: blog.imageId,
             },
-            () => this.saveItem()
+            () => this.saveBlog()
           );
         }
       })
@@ -289,16 +328,7 @@ class BlogList extends Component {
         this.setState({
           loading: false,
         });
-      }); */
-
-    saveBlog(data)
-      .then((response) => {
-        message.success("Blog saved.");
-        this.handleCancel;
-        this.getBlogList(this.state.page);
-        this.setState({ loading: false, visible: false });
-      })
-      .catch((error) => {});
+      });
   }
 
   clearInput(event) {
@@ -322,8 +352,16 @@ class BlogList extends Component {
   };
 
   render() {
-    const { blogs, visible, loading, active, columns, isSavedBlog, dataState } =
-      this.state;
+    const {
+      blogs,
+      visible,
+      loading,
+      active,
+      columns,
+      isSavedBlog,
+      dataState,
+      blogImage,
+    } = this.state;
 
     const renderButton = () => {
       if (isSavedBlog) {
@@ -341,20 +379,6 @@ class BlogList extends Component {
         return [];
       }
     };
-
-    {
-      /* <Title style={{ marginBottom: 8 }} level={5}>
-            Current Images
-          </Title>,
-          <Image
-            width={"100%"}
-            height={"100%"}
-            src={`data:image/jpeg;base64,${itemImage.photo}`}
-            placeholder={
-              <Image preview={false} src="../img/TestImage.png" width={10} />
-            }
-          />, */
-    }
 
     const contentList = [
       <Button
@@ -376,50 +400,65 @@ class BlogList extends Component {
         destroyOnClose={true}
         onCancel={this.handleCancel}
         footer={[
+          <Title style={{ marginBottom: 8 }} level={5}>
+            Current Image
+          </Title>,
+          <Image
+            width={"100%"}
+            height={"100%"}
+            src={`data:image/jpeg;base64,${blogImage.photo}`}
+            placeholder={<Image preview={false} src={placeholder} width={10} />}
+          />,
+
           <Upload
             listType="picture"
-            maxCount={3}
-            multiple
+            maxCount={1}
             onChange={this.handleUpload}
             beforeUpload={() => false}
+            block={true}
           >
             <Button
-              style={{ marginTop: 20, marginBottom: 10 }}
+              style={{ marginTop: 0, marginBottom: 0 }}
+              block={true}
               icon={<UploadOutlined />}
             >
-              Upload Image (Max: 3)
+              Upload Image (Max: 1)
             </Button>
           </Upload>,
 
-          <Text type="secondary" style={{ marginRight: 10, fontSize: 24 }}>
-            Publish
-          </Text>,
           <Switch
-            style={{ marginTop: 0, marginRight: 20 }}
+            checkedChildren="Publish"
+            unCheckedChildren="Do Not Publish"
             checked={active}
             onChange={this.toggleActive}
           />,
-          <Button key="back" type="secondary" onClick={this.handleCancel}>
-            Cancel
-          </Button>,
-          renderButton(),
-          <Button
-            key="submit"
-            type="primary"
-            icon={<SaveOutlined />}
-            loading={loading}
-            onClick={this.onSave}
-          >
-            Save
-          </Button>,
+
+          <Row style={{ justifyContent: "flex-end" }}>
+            <Button key="back" type="secondary" onClick={this.handleCancel}>
+              Cancel
+            </Button>
+            {renderButton()}
+            <Button
+              key="submit"
+              type="primary"
+              icon={<SaveOutlined />}
+              loading={loading}
+              onClick={this.onSave}
+            >
+              Save
+            </Button>
+          </Row>,
         ]}
       >
         <EditorJs
           instanceRef={(instance) => (this.editorInstance = instance)}
+          minHeight={0}
           tools={EDITOR_JS_TOOLS}
           data={dataState}
           enableReInitialize={false}
-          autofocus={true}
+          autofocus={false}
+          //defaultBlock={EDITOR_JS_TOOLS.header}
+          placeholder="In the beginning..."
         />
       </Modal>,
 
@@ -484,7 +523,7 @@ class BlogList extends Component {
   }
 
   handleRowClick(blog) {
-    this.showBlog(blog);
+    this.loadBlogImage(blog);
   }
 
   getRowColor(record, index) {
@@ -502,9 +541,11 @@ class BlogList extends Component {
         blogId: blog.id,
         date: blog.date,
         loading: false,
+        photo: "image",
         author: blog.author,
         dataState: blog.dataState,
         isSavedBlog: true,
+        active: blog.active,
         visible: true,
       },
       this.onFill

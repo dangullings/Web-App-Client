@@ -88,7 +88,9 @@ export function saveBlog(data) {
       "/date/" +
       data.date +
       "/author/" +
-      data.author,
+      data.author +
+      "/imageId/" +
+      data.imageId,
     method: "POST",
     body: JSON.stringify(data.data),
   });
@@ -1076,6 +1078,7 @@ export function getImageByItem(id) {
 }
 
 export function getImage(id) {
+  console.log("getImage " + id);
   return request({
     url: API_BASE_URL + "/images/image/" + id,
     method: "GET",
