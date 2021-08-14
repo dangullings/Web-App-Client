@@ -119,8 +119,9 @@ class TestList extends Component {
     this.handleStartTimeChange = this.handleStartTimeChange.bind(this);
     this.handleEndTimeChange = this.handleEndTimeChange.bind(this);
     this.changeSelectedTestStudent = this.changeSelectedTestStudent.bind(this);
-    this.handleLocationDropdownChange =
-      this.handleLocationDropdownChange.bind(this);
+    this.handleLocationDropdownChange = this.handleLocationDropdownChange.bind(
+      this
+    );
 
     this.clickFormInput = this.clickFormInput.bind(this);
     this.clickStepsInput = this.clickStepsInput.bind(this);
@@ -135,8 +136,9 @@ class TestList extends Component {
     this.handleStepsScoreChange = this.handleStepsScoreChange.bind(this);
     this.handlePowerScoreChange = this.handlePowerScoreChange.bind(this);
     this.handleKiapScoreChange = this.handleKiapScoreChange.bind(this);
-    this.handleQuestionsScoreChange =
-      this.handleQuestionsScoreChange.bind(this);
+    this.handleQuestionsScoreChange = this.handleQuestionsScoreChange.bind(
+      this
+    );
     this.handleAttitudeScoreChange = this.handleAttitudeScoreChange.bind(this);
     this.handleSparringScoreChange = this.handleSparringScoreChange.bind(this);
     this.handleBreakingScoreChange = this.handleBreakingScoreChange.bind(this);
@@ -351,7 +353,7 @@ class TestList extends Component {
 
     selectedItems.forEach((item) => {
       joined.push(
-        this.state.allStudents.find(function (student) {
+        this.state.allStudents.find(function(student) {
           return student.id === item;
         })
       );
@@ -496,7 +498,6 @@ class TestList extends Component {
           duration: 2,
         });
         this.getTestList(this.state.page);
-        this.onReset;
         this.props.history.push("/tests");
         this.setState(
           {
@@ -746,7 +747,7 @@ class TestList extends Component {
     removeTest(id)
       .then((response) => {
         message.success("Test deleted.");
-        this.handleCancel;
+        this.handleCancel();
         this.getTestList(this.state.page);
         this.setState({ loading: false, visible: false });
       })
@@ -1595,7 +1596,7 @@ class TestList extends Component {
     this.setState({ testStudentScoring: [] });
     this.loadStudentTestScores(this.state.testId, value);
 
-    let student = this.state.allStudents.find(function (item) {
+    let student = this.state.allStudents.find(function(item) {
       return item.id === value;
     });
 

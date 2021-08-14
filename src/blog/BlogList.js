@@ -256,7 +256,7 @@ class BlogList extends Component {
     removeBlog(blog.id)
       .then((response) => {
         message.success("Blog deleted.");
-        this.handleCancel;
+        this.handleCancel();
         this.getBlogList(this.state.page);
         this.setState({ loading: false, visible: false });
       })
@@ -284,7 +284,7 @@ class BlogList extends Component {
     saveBlog(data)
       .then((response) => {
         message.success("Blog saved.");
-        this.handleCancel;
+        this.handleCancel();
         this.getBlogList(page);
         this.setState({ loading: false, visible: false });
       })

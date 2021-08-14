@@ -239,7 +239,7 @@ class OrderList extends Component {
     removeOrder(selectedOrder.id)
       .then((response) => {
         message.success("Order deleted.");
-        this.handleCancel;
+        this.handleCancel();
         this.getOrderList(this.state.page, STUDENT_LIST_SIZE);
         this.setState({ loading: false, visible: false });
       })

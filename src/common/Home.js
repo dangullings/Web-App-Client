@@ -105,7 +105,6 @@ class Home extends Component {
       </div>,
     ];
 
-    this.contentStyle;
     return (
       <Carousel style={contentStyle}>
         <div>

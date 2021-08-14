@@ -119,8 +119,9 @@ class EventList extends Component {
     this.handleEndTimeChange = this.handleEndTimeChange.bind(this);
     this.handleTitleChange = this.handleTitleChange.bind(this);
     this.handleDescriptionChange = this.handleDescriptionChange.bind(this);
-    this.handleLocationDropdownChange =
-      this.handleLocationDropdownChange.bind(this);
+    this.handleLocationDropdownChange = this.handleLocationDropdownChange.bind(
+      this
+    );
     this.handleTypeChange = this.handleTypeChange.bind(this);
     this.handleUpload = this.handleUpload.bind(this);
     this.resizeImageFn = this.resizeImageFn.bind(this);
@@ -621,7 +622,7 @@ class EventList extends Component {
 
     selectedItems.forEach((item) => {
       joined.push(
-        this.state.allStudents.find(function (student) {
+        this.state.allStudents.find(function(student) {
           return student.id === item;
         })
       );
@@ -657,14 +658,14 @@ class EventList extends Component {
     for (signup of signupStudents) {
       if (signup.id == studentId) {
         student = signup;
-        newSignupList = signupStudents.filter(function (value) {
+        newSignupList = signupStudents.filter(function(value) {
           return value.id != studentId;
         });
         break;
       }
     }
 
-    var newStudentEventList = studentEvents.filter(function (value) {
+    var newStudentEventList = studentEvents.filter(function(value) {
       return value.studentId != studentId;
     });
 
@@ -683,11 +684,11 @@ class EventList extends Component {
 
     var { studentEvents, signupStudents } = this.state;
 
-    var newList = studentEvents.filter(function (value, index, arr) {
+    var newList = studentEvents.filter(function(value, index, arr) {
       return value.studentId != studentId;
     });
 
-    var newSignupList = signupStudents.filter(function (value, index, arr) {
+    var newSignupList = signupStudents.filter(function(value, index, arr) {
       return value.id != studentId;
     });
 
@@ -706,7 +707,7 @@ class EventList extends Component {
     var { studentEvents, allStudents } = this.state;
 
     var newStudentList = allStudents;
-    newStudentList = allStudents.filter(function (value) {
+    newStudentList = allStudents.filter(function(value) {
       return checkCondition(value, studentEvents);
     });
 
@@ -794,7 +795,7 @@ class EventList extends Component {
     removeEventById(id)
       .then((response) => {
         message.success("Event deleted.");
-        this.handleCancel;
+        this.handleCancel();
         this.getEventList(this.state.page, this.state.STUDENT_LIST_SIZE);
         this.setState({ loading: false, eventModalVisible: false });
       })
@@ -1569,21 +1570,6 @@ class EventList extends Component {
   handleTypeChange = (value) => {
     this.setState({ type: value });
   };
-
-  Demo() {
-    console.log("test demo");
-    <NewWindow>
-      <h1>Hi 👋</h1>
-    </NewWindow>;
-  }
-
-  handleStudentRowClick(student) {
-    <NewWindow>
-      <h1>Hi 👋</h1>
-    </NewWindow>;
-    //this.Demo();
-    //this.props.history.push(`/students/${student.studentId}`);
-  }
 
   handleRowClick(event) {
     this.showEvent(event);

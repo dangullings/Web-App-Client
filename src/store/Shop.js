@@ -205,9 +205,9 @@ class Shop extends Component {
     });
   }
 
-  componentWillUnMount() {
-    window.addEventListener("resize", this.handleResize);
-  }
+  //componentWillUnMount() {
+  //  window.addEventListener("resize", this.handleResize);
+  //}
 
   showModal = () => {
     this.setState({
@@ -639,7 +639,7 @@ class Shop extends Component {
     const { cartItems } = this.state;
 
     let newCartItems = cartItems;
-    newCartItems = newCartItems.filter(function (obj) {
+    newCartItems = newCartItems.filter(function(obj) {
       return obj.id !== itemId;
     });
 

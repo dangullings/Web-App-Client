@@ -190,16 +190,20 @@ class SessionList extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.changeSelectedDate = this.changeSelectedDate.bind(this);
     this.removeSelectedDate = this.removeSelectedDate.bind(this);
-    this.handleLocationDropdownChange =
-      this.handleLocationDropdownChange.bind(this);
+    this.handleLocationDropdownChange = this.handleLocationDropdownChange.bind(
+      this
+    );
     this.addSpecificDate = this.addSpecificDate.bind(this);
     this.changeSpecificDate = this.changeSpecificDate.bind(this);
-    this.handleSpecificStartTimeChange =
-      this.handleSpecificStartTimeChange.bind(this);
-    this.handleSpecificEndTimeChange =
-      this.handleSpecificEndTimeChange.bind(this);
-    this.onSpecificSecondHourCheckboxChange =
-      this.onSpecificSecondHourCheckboxChange.bind(this);
+    this.handleSpecificStartTimeChange = this.handleSpecificStartTimeChange.bind(
+      this
+    );
+    this.handleSpecificEndTimeChange = this.handleSpecificEndTimeChange.bind(
+      this
+    );
+    this.onSpecificSecondHourCheckboxChange = this.onSpecificSecondHourCheckboxChange.bind(
+      this
+    );
     this.handleTitleChange = this.handleTitleChange.bind(this);
     this.handleDescriptionChange = this.handleDescriptionChange.bind(this);
     this.handleAgeRangeChange = this.handleAgeRangeChange.bind(this);
@@ -214,49 +218,65 @@ class SessionList extends Component {
     this.handleStartDateChange = this.handleStartDateChange.bind(this);
     this.handleEndDateChange = this.handleEndDateChange.bind(this);
     this.onMondayCheckboxChange = this.onMondayCheckboxChange.bind(this);
-    this.onMondaySecondHourCheckboxChange =
-      this.onMondaySecondHourCheckboxChange.bind(this);
-    this.handleMondayStartTimeChange =
-      this.handleMondayStartTimeChange.bind(this);
+    this.onMondaySecondHourCheckboxChange = this.onMondaySecondHourCheckboxChange.bind(
+      this
+    );
+    this.handleMondayStartTimeChange = this.handleMondayStartTimeChange.bind(
+      this
+    );
     this.handleMondayEndTimeChange = this.handleMondayEndTimeChange.bind(this);
     this.onTuesdayCheckboxChange = this.onTuesdayCheckboxChange.bind(this);
-    this.onTuesdaySecondHourCheckboxChange =
-      this.onTuesdaySecondHourCheckboxChange.bind(this);
-    this.handleTuesdayStartTimeChange =
-      this.handleTuesdayStartTimeChange.bind(this);
-    this.handleTuesdayEndTimeChange =
-      this.handleTuesdayEndTimeChange.bind(this);
+    this.onTuesdaySecondHourCheckboxChange = this.onTuesdaySecondHourCheckboxChange.bind(
+      this
+    );
+    this.handleTuesdayStartTimeChange = this.handleTuesdayStartTimeChange.bind(
+      this
+    );
+    this.handleTuesdayEndTimeChange = this.handleTuesdayEndTimeChange.bind(
+      this
+    );
 
     this.onWednesdayCheckboxChange = this.onWednesdayCheckboxChange.bind(this);
-    this.onWednesdaySecondHourCheckboxChange =
-      this.onWednesdaySecondHourCheckboxChange.bind(this);
-    this.handleWednesdayStartTimeChange =
-      this.handleWednesdayStartTimeChange.bind(this);
-    this.handleWednesdayEndTimeChange =
-      this.handleWednesdayEndTimeChange.bind(this);
+    this.onWednesdaySecondHourCheckboxChange = this.onWednesdaySecondHourCheckboxChange.bind(
+      this
+    );
+    this.handleWednesdayStartTimeChange = this.handleWednesdayStartTimeChange.bind(
+      this
+    );
+    this.handleWednesdayEndTimeChange = this.handleWednesdayEndTimeChange.bind(
+      this
+    );
 
     this.onThursdayCheckboxChange = this.onThursdayCheckboxChange.bind(this);
-    this.onThursdaySecondHourCheckboxChange =
-      this.onThursdaySecondHourCheckboxChange.bind(this);
-    this.handleThursdayStartTimeChange =
-      this.handleThursdayStartTimeChange.bind(this);
-    this.handleThursdayEndTimeChange =
-      this.handleThursdayEndTimeChange.bind(this);
+    this.onThursdaySecondHourCheckboxChange = this.onThursdaySecondHourCheckboxChange.bind(
+      this
+    );
+    this.handleThursdayStartTimeChange = this.handleThursdayStartTimeChange.bind(
+      this
+    );
+    this.handleThursdayEndTimeChange = this.handleThursdayEndTimeChange.bind(
+      this
+    );
 
     this.onFridayCheckboxChange = this.onFridayCheckboxChange.bind(this);
-    this.onFridaySecondHourCheckboxChange =
-      this.onFridaySecondHourCheckboxChange.bind(this);
-    this.handleFridayStartTimeChange =
-      this.handleFridayStartTimeChange.bind(this);
+    this.onFridaySecondHourCheckboxChange = this.onFridaySecondHourCheckboxChange.bind(
+      this
+    );
+    this.handleFridayStartTimeChange = this.handleFridayStartTimeChange.bind(
+      this
+    );
     this.handleFridayEndTimeChange = this.handleFridayEndTimeChange.bind(this);
 
     this.onSaturdayCheckboxChange = this.onSaturdayCheckboxChange.bind(this);
-    this.onSaturdaySecondHourCheckboxChange =
-      this.onSaturdaySecondHourCheckboxChange.bind(this);
-    this.handleSaturdayStartTimeChange =
-      this.handleSaturdayStartTimeChange.bind(this);
-    this.handleSaturdayEndTimeChange =
-      this.handleSaturdayEndTimeChange.bind(this);
+    this.onSaturdaySecondHourCheckboxChange = this.onSaturdaySecondHourCheckboxChange.bind(
+      this
+    );
+    this.handleSaturdayStartTimeChange = this.handleSaturdayStartTimeChange.bind(
+      this
+    );
+    this.handleSaturdayEndTimeChange = this.handleSaturdayEndTimeChange.bind(
+      this
+    );
 
     this.resetAllDates = this.resetAllDates.bind(this);
     this.setDates = this.setDates.bind(this);
@@ -453,7 +473,7 @@ class SessionList extends Component {
 
     selectedItems.forEach((item) => {
       joined.push(
-        this.state.allStudents.find(function (student) {
+        this.state.allStudents.find(function(student) {
           return student.id === item;
         })
       );
@@ -489,14 +509,14 @@ class SessionList extends Component {
     for (signup of signupStudents) {
       if (signup.id == studentId) {
         student = signup;
-        newSignupList = signupStudents.filter(function (value) {
+        newSignupList = signupStudents.filter(function(value) {
           return value.id != studentId;
         });
         break;
       }
     }
 
-    var newStudentSessionList = studentSessions.filter(function (value) {
+    var newStudentSessionList = studentSessions.filter(function(value) {
       return value.studentId != studentId;
     });
 
@@ -515,11 +535,11 @@ class SessionList extends Component {
 
     var { studentSessions, signupStudents } = this.state;
 
-    var newList = studentSessions.filter(function (value, index, arr) {
+    var newList = studentSessions.filter(function(value, index, arr) {
       return value.studentId != studentId;
     });
 
-    var newSignupList = signupStudents.filter(function (value, index, arr) {
+    var newSignupList = signupStudents.filter(function(value, index, arr) {
       return value.id != studentId;
     });
 
@@ -534,7 +554,7 @@ class SessionList extends Component {
     var { studentSessions, allStudents } = this.state;
 
     var newStudentList = allStudents;
-    newStudentList = allStudents.filter(function (value) {
+    newStudentList = allStudents.filter(function(value) {
       return checkCondition(value, studentSessions);
     });
 
@@ -675,8 +695,14 @@ class SessionList extends Component {
     let highestRank = this.formRef.current.getFieldValue("highestRank");
     let price = this.formRef.current.getFieldValue("price");
 
-    const { monday, tuesday, wednesday, thursday, friday, saturday } =
-      this.state;
+    const {
+      monday,
+      tuesday,
+      wednesday,
+      thursday,
+      friday,
+      saturday,
+    } = this.state;
 
     this.setState({ loading: true });
 
@@ -998,8 +1024,14 @@ class SessionList extends Component {
   }
 
   updateDates() {
-    const { monday, tuesday, wednesday, thursday, friday, saturday } =
-      this.state;
+    const {
+      monday,
+      tuesday,
+      wednesday,
+      thursday,
+      friday,
+      saturday,
+    } = this.state;
     var days = [];
 
     let startDate = this.formRef.current.getFieldValue("startDate");
@@ -1637,7 +1669,7 @@ class SessionList extends Component {
     removeSessionById(id)
       .then((response) => {
         message.success("Session deleted.");
-        this.handleCancel;
+        this.handleCancel();
         this.getSessionList(this.state.page, this.state.STUDENT_LIST_SIZE);
         this.setState({ loading: false, sessionModalVisible: false });
       })
@@ -2821,14 +2853,6 @@ class SessionList extends Component {
     );
   }
 
-  handleStudentRowClick(student) {
-    <NewWindow>
-      <h1>Hi 👋</h1>
-    </NewWindow>;
-    //this.Demo();
-    //this.props.history.push(`/students/${student.studentId}`);
-  }
-
   getRowColor(record, index) {
     if (index % 2 === 0) {
       return "table-row-light";
@@ -2924,8 +2948,14 @@ class SessionList extends Component {
   }
 
   setupDates(session, classDates) {
-    const { monday, tuesday, wednesday, thursday, friday, saturday } =
-      this.state;
+    const {
+      monday,
+      tuesday,
+      wednesday,
+      thursday,
+      friday,
+      saturday,
+    } = this.state;
     let mon = monday,
       tue = tuesday,
       wed = wednesday,

@@ -132,9 +132,9 @@ class Student extends Component {
     window.addEventListener("resize", this.handleResize);
   }
 
-  componentWillUnMount() {
-    window.addEventListener("resize", this.handleResize);
-  }
+  //componentWillUnMount() {
+  //  window.addEventListener("resize", this.handleResize);
+  //}
 
   onTabChange = (key) => {
     console.log(key);

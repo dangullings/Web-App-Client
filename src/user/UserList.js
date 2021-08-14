@@ -169,7 +169,7 @@ class UserList extends Component {
     for (assign of assignStudents) {
       if (assign.id == studentId) {
         student = assign;
-        newAssignList = assignStudents.filter(function (value) {
+        newAssignList = assignStudents.filter(function(value) {
           return value.id != studentId;
         });
         break;
@@ -190,7 +190,7 @@ class UserList extends Component {
 
     var { assignStudents } = this.state;
 
-    var newAssignList = assignStudents.filter(function (value, index, arr) {
+    var newAssignList = assignStudents.filter(function(value, index, arr) {
       return value.id != studentId;
     });
 
@@ -204,7 +204,7 @@ class UserList extends Component {
     var { allStudents, assignStudents } = this.state;
 
     var newStudentList = allStudents;
-    newStudentList = allStudents.filter(function (value) {
+    newStudentList = allStudents.filter(function(value) {
       return checkCondition(value, assignStudents);
     });
 
@@ -353,7 +353,7 @@ class UserList extends Component {
       .then((response) => {
         message.success("User saved.");
         this.getUserList(this.state.page);
-        this.handleCancel;
+        this.handleCancel();
         this.setState({ loading: false, visible: false });
       })
       .catch((error) => {
@@ -731,7 +731,7 @@ class UserList extends Component {
     removeUser(user.id)
       .then((response) => {
         message.success("User deleted.");
-        this.handleCancel;
+        this.handleCancel();
         this.getUserList(this.state.page);
         this.setState({ loading: false, visible: false });
       })

@@ -70,8 +70,9 @@ class EventCalendar extends Component {
     this.getClassDatesByMonthYear = this.getClassDatesByMonthYear.bind(this);
     this.getTestsByMonthYear = this.getTestsByMonthYear.bind(this);
     this.changeSelectedEvent = this.changeSelectedEvent.bind(this);
-    this.handleLocationDropdownChange =
-      this.handleLocationDropdownChange.bind(this);
+    this.handleLocationDropdownChange = this.handleLocationDropdownChange.bind(
+      this
+    );
     this.handleTypeChange = this.handleTypeChange.bind(this);
   }
 
@@ -375,13 +376,13 @@ class EventCalendar extends Component {
 
     let daysEvents = [];
     if (valueEventsDate.length > 0) {
-      <ul>
-        {valueEventsDate.map((date) =>
+      {
+        valueEventsDate.map((date) =>
           daysEvents.push(
             <li key={date.title + date.id}>{this.getFullDateData(date)}</li>
           )
-        )}
-      </ul>;
+        );
+      }
     }
 
     return daysEvents;

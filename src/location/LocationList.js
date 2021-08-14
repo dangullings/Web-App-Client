@@ -165,7 +165,7 @@ class LocationList extends Component {
     removeLocation(location.id)
       .then((response) => {
         message.success("Location deleted.");
-        this.handleCancel;
+        this.handleCancel();
         this.getLocationList(this.state.page);
         this.setState({ loading: false, visible: false });
       })
@@ -189,7 +189,7 @@ class LocationList extends Component {
       .then((response) => {
         message.success("Location saved.");
         this.formRef.current.resetFields();
-        this.handleCancel;
+        this.handleCancel();
         this.getLocationList(this.state.page);
         this.setState({ loading: false, visible: false });
       })
@@ -217,8 +217,13 @@ class LocationList extends Component {
   }
 
   render() {
-    const { locations, visible, loading, columns, isSavedLocation } =
-      this.state;
+    const {
+      locations,
+      visible,
+      loading,
+      columns,
+      isSavedLocation,
+    } = this.state;
 
     var ModalTitle;
     if (isSavedLocation) {
