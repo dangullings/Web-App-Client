@@ -1,5 +1,5 @@
 // tools.js
-import Embed from "@editorjs/embed";
+//import Embed from "@editorjs/embed";
 //import Table from "@editorjs/table";
 import Paragraph from "@editorjs/paragraph";
 import List from "@editorjs/list";
@@ -17,7 +17,7 @@ import Marker from "@editorjs/marker";
 //import SimpleImage from "@editorjs/simple-image";
 
 export const EDITOR_JS_TOOLS = {
-  embed: Embed,
+  //embed: Embed,
   //table: Table,
   paragraph: Paragraph,
   list: List,
