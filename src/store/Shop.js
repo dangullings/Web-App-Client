@@ -33,7 +33,7 @@ import { withRouter } from "react-router-dom";
 
 import StripeContainer from "../stripe/StripeContainer";
 
-import "../styles/style.less";
+//import "../styles/style.less";
 import "../styles/components/Shop.less";
 import "../styles/components/Shop.css";
 

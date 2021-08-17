@@ -23,7 +23,6 @@ import {
 import { STUDENT_LIST_SIZE } from "../constants";
 import { withRouter } from "react-router-dom";
 import "../styles/style.less";
-import "../styles/components/BlogList.less";
 import moment from "moment";
 
 import {
