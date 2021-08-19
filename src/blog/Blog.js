@@ -74,12 +74,14 @@ class Blog extends Component {
     let blog;
     for (blog of blogs) {
       var date = moment(blog.date);
+      let headerParse = JSON.parse(blog.jsonData).blocks[0].data.text;
+
       const data = {
         id: blog.id,
         date: date.format("dddd, MMMM Do YYYY"),
         author: blog.author,
         dataState: JSON.parse(blog.jsonData),
-        header: JSON.parse(blog.jsonData).blocks[0].data.text,
+        header: headerParse.replace(/&nbsp;/g, " "),
       };
 
       newBlogs.push(data);
@@ -89,6 +91,9 @@ class Blog extends Component {
   }
 
   blogCard(blog) {
+    let bodyParse = blog.dataState.blocks[1].data.text;
+    let body = bodyParse.replace(/&nbsp;/g, " ");
+
     return (
       <div
         className="blog-item-container"
@@ -96,9 +101,7 @@ class Blog extends Component {
       >
         <div className="blog-item-date">{blog.date}</div>
         <div className="blog-item-header">{blog.header}</div>
-        <div className="blog-item-body">
-          {blog.dataState.blocks[1].data.text}
-        </div>
+        <div className="blog-item-body">{body}</div>
       </div>
     );
   }

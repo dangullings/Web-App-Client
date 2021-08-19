@@ -43,6 +43,44 @@
     color: #fff;
     background: @primary-blue;
     border-color: white;
+    &:hover {
+      background: @border-blue !important;
+      border-color: white !important;
+      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.4),
+        0 2px 4px 0 rgba(0, 0, 0, 0.39);
+    }
+  }
+
+  .ant-btn-text {
+    color: rgba(0, 0, 0, 0.85);
+    border-color: transparent;
+    background: transparent;
+    box-shadow: none;
+    border-radius: 0px;
+    width: 100%;
+    &:hover {
+      background-color: transparent !important;
+      border-color: transparent !important;
+      background: transparent !important;
+      color: @highlight-blue;
+      box-shadow: none;
+    }
+  }
+
+  .ant-btn-text:focus {
+    color: rgba(0, 0, 0, 0.85);
+    border-color: transparent;
+    background: transparent;
+    box-shadow: none;
+    border-radius: 0px;
+    width: 100%;
+    &:hover {
+      background-color: transparent !important;
+      border-color: transparent !important;
+      background: transparent !important;
+      color: @highlight-blue;
+      box-shadow: none;
+    }
   }
 
   .ant-card-head {
@@ -224,9 +262,9 @@
   .grid-container {
     display: grid;
     grid-template-rows: auto auto auto auto auto auto;
-    margin-left: 80px;
-    margin-right: 80px;
+    margin-left: 0px;
     grid-row-gap: 5px;
+    max-width: 170px;
   }
   .grid-item {
     background-color: rgb(230, 230, 230);
@@ -239,9 +277,9 @@
     border-radius: 2px 2px 2px 2px;
   }
   .grid-item-highlight {
-    background-color: #31c731;
+    background-color: #2bac2b;
     color: #f0f0f0;
-    border: 1px solid #31c731;
+    border: 1px solid #35da35;
     padding: 0px;
     font-size: 14px;
     text-align: center;

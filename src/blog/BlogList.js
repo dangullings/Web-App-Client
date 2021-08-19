@@ -183,13 +183,15 @@ class BlogList extends Component {
     let newBlogs = [];
     let blog;
     for (blog of blogs) {
+      let headerParse = JSON.parse(blog.jsonData).blocks[0].data.text;
+
       const data = {
         id: blog.id,
         date: blog.date,
         author: blog.author,
         active: blog.active,
         dataState: JSON.parse(blog.jsonData),
-        header: JSON.parse(blog.jsonData).blocks[0].data.text,
+        header: headerParse.replace(/&nbsp;/g, " "),
         imageId: blog.imageId,
       };
 

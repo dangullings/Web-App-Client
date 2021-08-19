@@ -324,8 +324,8 @@ class SessionDetail extends Component {
       <Link to={"/user/sessions"}>
         {
           <Button
-            style={{ marginTop: 10, marginBottom: 10 }}
-            type="secondary"
+            style={{ marginTop: 0, marginBottom: 0 }}
+            type="text"
             icon={<UnorderedListOutlined />}
           >
             Session List
@@ -339,6 +339,7 @@ class SessionDetail extends Component {
     //<div className="session-detail sub-title">${price}</div>
 
     const sessionCard = [
+      back,
       <Card
         className="session-detail"
         bordered={false}
@@ -370,7 +371,6 @@ class SessionDetail extends Component {
         <div className="session-detail details">{description}</div>
         <div style={{ marginBottom: "20px" }} />
         {signupBtn}
-        {back}
       </Card>,
     ];
 

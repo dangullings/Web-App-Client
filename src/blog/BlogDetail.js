@@ -91,8 +91,8 @@ class BlogDetail extends Component {
         <Link to={"/blog"}>
           {
             <Button
-              type="secondary"
-              style={{ marginTop: 8, marginBottom: 0 }}
+              type="text"
+              style={{ marginTop: 0, marginBottom: 0 }}
               block={true}
               icon={<UnorderedListOutlined />}
             >

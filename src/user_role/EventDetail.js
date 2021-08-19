@@ -199,8 +199,8 @@ class EventDetail extends Component {
       <Link to={"/user/events"}>
         {
           <Button
-            style={{ marginTop: 10, marginBottom: 10 }}
-            type="secondary"
+            style={{ marginTop: 0, marginBottom: 0 }}
+            type="text"
             icon={<UnorderedListOutlined />}
           >
             Event List
@@ -210,6 +210,7 @@ class EventDetail extends Component {
     ];
 
     const eventCard = [
+      back,
       <Card
         className="event-detail"
         bordered={false}
@@ -240,7 +241,6 @@ class EventDetail extends Component {
         <div className="event-detail details">{description}</div>
         <div style={{ marginBottom: "20px" }} />
         {signupBtn}
-        {back}
       </Card>,
     ];
 
@@ -519,8 +519,14 @@ class EventDetail extends Component {
   }
 
   render() {
-    const { loading, currentUser, event, eventSignupVisible, myPeeps, image } =
-      this.state;
+    const {
+      loading,
+      currentUser,
+      event,
+      eventSignupVisible,
+      myPeeps,
+      image,
+    } = this.state;
 
     var eventCard = [
       <Row style={{ color: "#c9c9c9", fontSize: 28, justifyContent: "center" }}>

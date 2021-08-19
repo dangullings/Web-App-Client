@@ -175,10 +175,39 @@
   .ant-btn-icon-only.ant-btn-sm {
     color: #fff;
     margin-right: 0px;
-    height: 30px;
+    margin: 0px;
+    height: 33px;
     background: white;
     border-color: rgb(182, 182, 182);
     box-shadow: none;
+  }
+
+  .ant-btn-text {
+    color: rgba(0, 0, 0, 0.85);
+    border-color: transparent;
+    background: transparent;
+    box-shadow: none;
+    &:hover {
+      background-color: transparent !important;
+      border-color: transparent !important;
+      background: transparent !important;
+      color: @highlight-blue;
+      box-shadow: none;
+    }
+  }
+
+  .ant-btn-text:focus {
+    color: rgba(0, 0, 0, 0.85);
+    border-color: transparent;
+    background: transparent;
+    box-shadow: none;
+    &:hover {
+      background-color: transparent !important;
+      border-color: transparent !important;
+      background: transparent !important;
+      color: @highlight-blue;
+      box-shadow: none;
+    }
   }
 
   .ant-tabs-tab {
@@ -239,6 +268,7 @@
   }
 
   .ant-card-head {
+    display: flex;
     min-height: 40px;
     height: 40px;
     margin-bottom: -1px;
@@ -401,6 +431,7 @@
 
   .ant-select {
     background-color: @highlight-blue;
+    margin-left: 8px;
   }
 
   .ant-select:not(.ant-select-disabled):hover .ant-select-selector {
@@ -647,6 +678,6 @@
     width: 100%;
     margin-bottom: 0;
     text-align: inherit;
-    height: 30px;
+    height: 33px;
   }
 }

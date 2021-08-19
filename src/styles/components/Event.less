@@ -16,15 +16,16 @@
   }
 
   .ant-btn-secondary {
-    color: @primary-blue;
+    color: rgb(46, 46, 46);
     background: white;
-    border-color: @border-blue;
-    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39);
+    border-color: lightgray;
+    border: 1px solid lightgray;
+    border-radius: 0px;
+    box-shadow: none;
     &:hover {
-      background: @border-blue !important;
-      border-color: white !important;
-      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.4),
-        0 2px 4px 0 rgba(0, 0, 0, 0.39);
+      color: white;
+      background: rgb(61, 61, 61) !important;
+      border-color: rgb(199, 199, 199) !important;
     }
   }
 
@@ -33,6 +34,35 @@
     background: @primary-blue;
     border-color: white;
   }
+
+  .ant-btn-text {
+    color: rgba(0, 0, 0, 0.85);
+    border-color: transparent;
+    background: transparent;
+    box-shadow: none;
+    &:hover {
+      background-color: transparent !important;
+      border-color: transparent !important;
+      background: transparent !important;
+      color: @highlight-blue;
+      box-shadow: none;
+    }
+  }
+
+  .ant-btn-text:focus {
+    color: rgba(0, 0, 0, 0.85);
+    border-color: transparent;
+    background: transparent;
+    box-shadow: none;
+    &:hover {
+      background-color: transparent !important;
+      border-color: transparent !important;
+      background: transparent !important;
+      color: @highlight-blue;
+      box-shadow: none;
+    }
+  }
+
   .ant-card-head {
     padding: 20px 2px;
     color: rgba(26, 26, 26, 0.85);
