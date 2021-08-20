@@ -112,6 +112,7 @@ class BlogDetail extends Component {
             />
           </div>
           <Image
+            preview={false}
             style={{
               width: "100%",
               height: "100%",

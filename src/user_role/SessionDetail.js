@@ -346,6 +346,7 @@ class SessionDetail extends Component {
         key={session.id}
         cover={
           <Image
+            preview={false}
             width={"100%"}
             height={"100%"}
             src={`data:image/jpeg;base64,${image.photo}`}

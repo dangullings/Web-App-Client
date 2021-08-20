@@ -722,9 +722,18 @@ export function getAllStudents(page, size, active) {
   });
 }
 
-export function getAllStudentsByActive(active) {
+export function getAllStudentsByActive(page, size, active) {
+  let newPage = page - 1;
+  size = size || STUDENT_LIST_SIZE;
   return request({
-    url: API_BASE_URL + "/students/active/" + active,
+    url:
+      API_BASE_URL +
+      "/students/active/" +
+      active +
+      "?page=" +
+      newPage +
+      "&size=" +
+      size,
     method: "GET",
   });
 }

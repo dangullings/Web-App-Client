@@ -58,7 +58,11 @@ class AppHeader extends Component {
 
       dropdownMenu = [
         <Link
-          style={{ marginLeft: 60, fontSize: "28px", color: "#4a4a4a" }}
+          style={{
+            marginLeft: 0,
+            fontSize: "20px",
+            color: "#4a4a4a",
+          }}
           to={`/users/${this.props.currentUser.username}`}
         >
           {usersName}

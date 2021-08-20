@@ -568,7 +568,7 @@ class TestList extends Component {
 
   getAllStudentsList() {
     let promise;
-    promise = getAllStudentsByActive(true);
+    promise = getAllStudentsByActive(0, 200, true);
 
     if (!promise) {
       return;
@@ -580,6 +580,7 @@ class TestList extends Component {
 
     promise
       .then((response) => {
+        console.log("get all students response " + response.content.length);
         this.setState({
           allStudents: response.content,
           students: response.content,
@@ -785,6 +786,18 @@ class TestList extends Component {
       sessions,
     } = this.state;
     const filteredOptions = students.filter((o) => !selectedItems.includes(o));
+
+    let a, b, c;
+
+    for (a of filteredOptions) {
+      console.log("filteredOptions: " + filteredOptions.length + " | " + a);
+    }
+    for (b of students) {
+      console.log("students: " + students.length + " | " + b);
+    }
+    for (c of selectedItems) {
+      console.log("selectedItems: " + selectedItems.length + " | " + c);
+    }
 
     var columns = [
       {
@@ -1011,7 +1024,10 @@ class TestList extends Component {
       } else {
         return (
           <Button
-            style={{ backgroundColor: "#50C878", borderColor: "limegreen" }}
+            style={{
+              backgroundColor: "#50C878",
+              borderColor: "limegreen",
+            }}
             type="primary"
             icon={<CheckOutlined />}
             block={true}
