@@ -245,7 +245,7 @@ class StudentList extends Component {
       birthDate: d,
       ranks: ranks,
       active: active,
-      created: moment().format("YYYY-MM-DD"),
+      joined: moment().format("YYYY-MM-DD"),
     };
 
     this.setState({ loading: true });
@@ -497,8 +497,15 @@ class StudentList extends Component {
   };
 
   render() {
-    const { students, columns, visible, loading, current, total, totalPages } =
-      this.state;
+    const {
+      students,
+      columns,
+      visible,
+      loading,
+      current,
+      total,
+      totalPages,
+    } = this.state;
 
     const paginations = {
       current: current,

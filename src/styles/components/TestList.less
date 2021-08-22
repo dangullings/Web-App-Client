@@ -1,24 +1,4 @@
-//@import "antd/dist/antd.css";
-
-@import "colors";
-@import "default";
-
-// Components
-@import "components/App";
-@import "components/AppHeader";
-@import "components/CalendarEvent";
-@import "components/OrderAntD";
-@import "components/Attendance";
-@import "components/Event";
-@import "components/Sessions";
-@import "components/SessionDetail";
-@import "components/index";
-@import "components/MyGroup";
-@import "components/Profile";
-@import "components/Slider";
-@import "components/Shop";
-@import "components/Home";
-@import "components/BlogList";
+@import "../colors";
 
 .confirm-custom-style {
   .ant-modal-body {
@@ -96,7 +76,7 @@
   }
 }
 
-.custom-style {
+.test-list-style {
   .ant-btn {
     color: #fff;
     background: @primary-blue;
@@ -152,6 +132,15 @@
       box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.4),
         0 2px 4px 0 rgba(0, 0, 0, 0.39);
     }
+  }
+
+  .ant-btn-primary[disabled] {
+    color: rgba(0, 0, 0, 0.25);
+    background: #f5f5f5;
+    background-color: darkgray;
+    border-color: #d9d9d9;
+    text-shadow: none;
+    -webkit-box-shadow: none;
   }
 
   .ant-btn-primary:focus {
@@ -346,16 +335,16 @@
     > .ant-collapse-item
     > .ant-collapse-header
     .ant-collapse-arrow {
-    color: @primary-blue;
+    color: white;
     left: 0px;
     font-size: 18px;
   }
 
   .ant-collapse > .ant-collapse-item > .ant-collapse-header {
     display: flex;
-    padding: 12px 16px;
+    padding: 6px 0px;
     padding-left: 20px;
-    color: rgba(0, 0, 0, 0.85);
+    color: rgba(255, 255, 255, 0.85);
     line-height: 1.5715;
     cursor: pointer;
     -webkit-transition: all 0.3s;
@@ -682,12 +671,13 @@
   }
 
   .ant-list-items {
-    margin: 0px !important;
+    margin: 0px;
     padding: 0px;
     list-style: none;
   }
 
   .ant-list-sm .ant-list-item {
     padding: 0px 0px;
+    margin-bottom: 10px;
   }
 }

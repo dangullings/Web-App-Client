@@ -95,7 +95,7 @@ class UserList extends Component {
 
   getAllStudentsList() {
     let promise;
-    promise = getAllStudentsByActive(true);
+    promise = getAllStudentsByActive(0, 200, true);
 
     if (!promise) {
       return;

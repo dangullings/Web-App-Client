@@ -79,8 +79,9 @@ class Attendance extends Component {
     };
 
     this.onChange = this.onChange.bind(this);
-    this.handleCheckboxChangeFactory =
-      this.handleCheckboxChangeFactory.bind(this);
+    this.handleCheckboxChangeFactory = this.handleCheckboxChangeFactory.bind(
+      this
+    );
     this.resetSession = this.resetSession.bind(this);
     this.saveAttendance = this.saveAttendance.bind(this);
     this.updateAttendance = this.updateAttendance.bind(this);
@@ -338,7 +339,7 @@ class Attendance extends Component {
 
   getAllStudentsList(page) {
     let promise;
-    promise = getAllStudentsByActive(true);
+    promise = getAllStudentsByActive(0, 200, true);
 
     if (!promise) {
       return;
