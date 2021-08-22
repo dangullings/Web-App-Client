@@ -108,6 +108,7 @@ class TestList extends Component {
       startTime: "",
       endTime: "",
       isSavedTest: false,
+      needTestSaved: false,
     };
     this.getTestList = this.getTestList.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -445,12 +446,15 @@ class TestList extends Component {
       {
         selectedItems,
         testStudents: joined,
+        needTestSaved: true,
       },
       () => this.createGroups(joined)
     );
   };
 
   createGroups(students) {
+    const { studentScoresList } = this.state;
+
     let newGroupOptions = [];
     let student;
     let rank;
@@ -458,7 +462,6 @@ class TestList extends Component {
     for (rank of ranks) {
       let newGroup = [];
       for (student of students) {
-        console.log("by session " + rank + " " + student.ranks);
         if (student.ranks == rank) {
           newGroup.push(student);
         }
@@ -473,8 +476,72 @@ class TestList extends Component {
       }
     }
 
+    let test, newStudent;
+    let newStudentScoresList = [];
+    for (student of students) {
+      newStudent = true;
+      for (test of studentScoresList) {
+        if (student.id == test.studentId) {
+          newStudent = false;
+        }
+      }
+
+      if (newStudent) {
+        const newStudentScore = {
+          studentId: student.id,
+          testId: this.state.testId,
+          attitude: 0,
+          breaking: 0,
+          form: 0,
+          kiap: 0,
+          power: 0,
+          questions: 0,
+          sparring: 0,
+          steps: 0,
+          ranks: student.ranks,
+          passed: false,
+          paid: false,
+        };
+        newStudentScoresList.push(newStudentScore);
+      }
+    }
+
+    if (newStudentScoresList.length > 0) {
+      this.setState({
+        studentScoresList: this.state.studentScoresList.concat(
+          newStudentScoresList
+        ),
+      });
+      this.saveNewStudentTestScores(newStudentScoresList);
+    }
+
     this.setState({
       groupOptions: newGroupOptions,
+    });
+  }
+
+  saveNewStudentTestScores(studentScores) {
+    this.setState({
+      loading: true,
+    });
+
+    let student;
+    let promises = [];
+
+    for (student of studentScores) {
+      let promise = saveStudentTestScores(student);
+      promises.push(promise);
+    }
+
+    Promise.all(promises).then(() => {
+      notification.success({
+        message: "Save Successful!",
+        description: "New student scores saved.",
+        duration: 2,
+      });
+      this.setState({
+        loading: false,
+      });
     });
   }
 
@@ -484,14 +551,12 @@ class TestList extends Component {
     students.lastName.indexOf(inputValue) > -1;
 
   onTypeChange = (e) => {
-    console.log("radio checked", e.target.value);
     this.setState({
       selectedType: e.target.value,
     });
   };
 
   handleStudentChange = (targetKeys, direction, moveKeys) => {
-    console.log(targetKeys, direction, moveKeys);
     this.setState({
       targetKeys,
       testStudents: [],
@@ -533,26 +598,11 @@ class TestList extends Component {
         description: "Student scores saved.",
         duration: 2,
       });
+      this.handleCancel();
       this.setState({
         loading: false,
       });
     });
-
-    /* let student, initial;
-    let isNewStudent = true;
-    for (student of students) {
-      isNewStudent = true;
-      for (initial of this.state.initialTestStudents) {
-        if (initial.id == student.id) {
-          isNewStudent = false;
-          break;
-        }
-      }
-
-      if (isNewStudent) {
-        this.saveAllStudentTestScores(student);
-      }
-    } */
   }
 
   deleteRemovedStudentTests() {
@@ -850,6 +900,8 @@ class TestList extends Component {
       visible: false,
       loading: false,
       isSavedTest: false,
+      studentScoresList: [],
+      groupOptions: [],
     });
   };
 
@@ -1091,7 +1143,11 @@ class TestList extends Component {
       }
     }
 
-    return [];
+    const bogus = {
+      paid: false,
+    };
+
+    return bogus;
   }
 
   getGroupColor(rank) {
@@ -1181,53 +1237,58 @@ class TestList extends Component {
       testStudents,
       sessions,
       groupOptions,
+      needTestSaved,
+      studentScoresList,
     } = this.state;
     const filteredOptions = students.filter((o) => !selectedItems.includes(o));
 
     let go;
     let test = [];
     let defaultPanel;
-    for (go of groupOptions) {
-      defaultPanel = go.rank;
-      test.push(
-        <Panel
-          header={go.rank}
-          key={defaultPanel}
-          style={{ backgroundColor: this.getGroupColor(go.rank) }}
-        >
-          <List
-            size="small"
-            dataSource={go.students}
-            renderItem={(item) => (
-              <List.Item>
-                {item.firstName} {item.lastName.substring(0, 1)}.
-                <Checkbox
-                  onChange={() => {
-                    this.onChangePaid(item);
-                  }}
-                  checked={this.getStudentScore(item.id)[0].paid}
-                  style={{ marginLeft: 10 }}
-                >
-                  Paid
-                </Checkbox>
-                {this.getPassButton(item)}
-                <Table
-                  rowKey={item.id}
-                  pagination={false}
-                  bordered
-                  columns={this.getColumns(item.id)}
-                  dataSource={this.getStudentScore(item.id)}
-                  size="small"
-                  style={{
-                    width: "100%",
-                  }}
-                  scroll={{ x: 400 }}
-                />
-              </List.Item>
-            )}
-          />
-        </Panel>
-      );
+
+    if (studentScoresList.length > 0) {
+      for (go of groupOptions) {
+        defaultPanel = go.rank;
+        test.push(
+          <Panel
+            header={go.rank}
+            key={defaultPanel}
+            style={{ backgroundColor: this.getGroupColor(go.rank) }}
+          >
+            <List
+              size="small"
+              dataSource={go.students}
+              renderItem={(item) => (
+                <List.Item>
+                  {item.firstName} {item.lastName.substring(0, 1)}.
+                  <Checkbox
+                    onChange={() => {
+                      this.onChangePaid(item);
+                    }}
+                    checked={this.getStudentScore(item.id)[0].paid}
+                    style={{ marginLeft: 10 }}
+                  >
+                    Paid
+                  </Checkbox>
+                  {this.getPassButton(item)}
+                  <Table
+                    rowKey={item.id}
+                    pagination={false}
+                    bordered
+                    columns={this.getColumns(item.id)}
+                    dataSource={this.getStudentScore(item.id)}
+                    size="small"
+                    style={{
+                      width: "100%",
+                    }}
+                    scroll={{ x: 400 }}
+                  />
+                </List.Item>
+              )}
+            />
+          </Panel>
+        );
+      }
     }
 
     let finalList = [
@@ -1275,7 +1336,7 @@ class TestList extends Component {
     ];
 
     var studentTestTitle = ["NO STUDENT SELECTED"];
-    if (selectedTestStudent) {
+    if (selectedTestStudent || !needTestSaved) {
       if (passed) {
         studentTestTitle = [
           <Title level={4}>
@@ -1302,7 +1363,7 @@ class TestList extends Component {
     }
 
     var scoreStudentsView = [];
-    if (isSavedTest) {
+    if (isSavedTest && !needTestSaved) {
       scoreStudentsView = [
         <Divider orientation="left">
           {<Title level={4}>{"Score Students"}</Title>}
@@ -1675,7 +1736,6 @@ class TestList extends Component {
   onChangePaid = (item) => {
     let studentScore = this.getStudentScore(item.id);
     const newPaid = !studentScore[0].paid;
-    console.log("onchangepaid " + studentScore[0].paid);
 
     this.setState((prevState) => ({
       studentScoresList: prevState.studentScoresList.map((el) =>
@@ -1865,10 +1925,13 @@ class TestList extends Component {
           newStudentScoresList.push(value);
         }
       }
-      this.setState({
-        studentScoresList: newStudentScoresList,
-        loading: false,
-      });
+      this.setState(
+        {
+          studentScoresList: newStudentScoresList,
+          loading: false,
+        },
+        () => this.createGroups(testStudents)
+      );
     });
   }
 
@@ -1926,10 +1989,10 @@ class TestList extends Component {
             loading: false,
             visible: true,
             isSavedTest: true,
+            needTestSaved: false,
           },
           this.onFill
         );
-        this.createGroups(response);
       })
       .catch((error) => {
         this.setState({
