@@ -1137,22 +1137,36 @@ class TestList extends Component {
       if (index % 2 === 0) {
         return "#f0f0f0"; // #f0f0f0
       } else {
-        return "#c2c2c2"; // #c2c2c2
+        return "#6b6b6b"; // #c2c2c2
       }
     }
   }
 
-  onChangePaid = (item) => {
-    let studentScore = this.getStudentScore(item.id);
-
-    this.setState((prevState) => ({
-      studentScoresList: prevState.studentScoresList.map((el) =>
-        el.studentId === studentScore[0].studentId
-          ? { ...el, paid: !studentScore[0].paid }
-          : el
-      ),
-    }));
-  };
+  getPassButton(item) {
+    if (this.getStudentScore(item.id)[0].passed) {
+      return (
+        <Button
+          type="primary"
+          size={"small"}
+          icon={<CheckOutlined />}
+          onClick={this.failStudent.bind(this, item)}
+        >
+          Passed!
+        </Button>
+      );
+    } else {
+      return (
+        <Button
+          type="primary"
+          size={"small"}
+          danger
+          onClick={this.passStudent.bind(this, item)}
+        >
+          Pass to {this.getNextRank(item.ranks)}
+        </Button>
+      );
+    }
+  }
 
   render() {
     const { pagination, visible, loading } = this.state;
@@ -1169,39 +1183,6 @@ class TestList extends Component {
       groupOptions,
     } = this.state;
     const filteredOptions = students.filter((o) => !selectedItems.includes(o));
-
-    const renderPassButton = () => {
-      if (passed) {
-        return (
-          <Button
-            type="primary"
-            danger
-            icon={<CloseOutlined />}
-            block={true}
-            onClick={this.failStudent.bind(this, selectedTestStudent)}
-            loading={loading}
-          >
-            Fail {selectedTestStudent.firstName}
-          </Button>
-        );
-      } else {
-        return (
-          <Button
-            style={{
-              backgroundColor: "#50C878",
-              borderColor: "limegreen",
-            }}
-            type="primary"
-            icon={<CheckOutlined />}
-            block={true}
-            onClick={this.passStudent.bind(this, selectedTestStudent)}
-            loading={loading}
-          >
-            Pass {selectedTestStudent.firstName}
-          </Button>
-        );
-      }
-    };
 
     let go;
     let test = [];
@@ -1225,23 +1206,11 @@ class TestList extends Component {
                     this.onChangePaid(item);
                   }}
                   checked={this.getStudentScore(item.id)[0].paid}
-                  style={{ marginLeft: 20 }}
+                  style={{ marginLeft: 10 }}
                 >
                   Paid
                 </Checkbox>
-                <Button
-                  style={{
-                    backgroundColor: "#50C878",
-                    borderColor: "limegreen",
-                  }}
-                  type="primary"
-                  size={"small"}
-                  icon={<CheckOutlined />}
-                  onClick={this.passStudent.bind(this, item)}
-                  disabled={this.getStudentScore(item.id)[0].passed}
-                >
-                  Pass {item.firstName}
-                </Button>
+                {this.getPassButton(item)}
                 <Table
                   rowKey={item.id}
                   pagination={false}
@@ -1249,7 +1218,9 @@ class TestList extends Component {
                   columns={this.getColumns(item.id)}
                   dataSource={this.getStudentScore(item.id)}
                   size="small"
-                  style={{ width: "100%" }}
+                  style={{
+                    width: "100%",
+                  }}
                   scroll={{ x: 400 }}
                 />
               </List.Item>
@@ -1701,24 +1672,55 @@ class TestList extends Component {
     }
   }
 
-  failStudent(student) {
-    this.setState({
-      loading: true,
-    });
+  onChangePaid = (item) => {
+    let studentScore = this.getStudentScore(item.id);
+    const newPaid = !studentScore[0].paid;
+    console.log("onchangepaid " + studentScore[0].paid);
 
+    this.setState((prevState) => ({
+      studentScoresList: prevState.studentScoresList.map((el) =>
+        el.studentId === studentScore[0].studentId
+          ? { ...el, paid: newPaid }
+          : el
+      ),
+    }));
+
+    studentScore[0].paid = newPaid;
+    this.saveStudentScores(studentScore[0]);
+  };
+
+  failStudent(student) {
     let rankIndex = ranks.indexOf(student.ranks);
     let newRank;
 
-    if (rankIndex > 0) {
+    if (rankIndex < ranks.length) {
       newRank = ranks[--rankIndex];
     }
 
-    this.setState(
-      {
-        passed: false,
-      },
-      () => this.saveStudentScores(student, newRank)
-    );
+    let studentScore = this.getStudentScore(student.id);
+
+    this.setState((prevState) => ({
+      studentScoresList: prevState.studentScoresList.map((el) =>
+        el.studentId === studentScore[0].studentId
+          ? { ...el, passed: false }
+          : el
+      ),
+    }));
+
+    studentScore[0].passed = false;
+    studentScore[0].ranks = newRank;
+    student.ranks = newRank;
+
+    this.saveStudentScoresAndRank(studentScore[0], student, newRank);
+  }
+
+  getNextRank(rank) {
+    let rankIndex = ranks.indexOf(rank);
+    if (rankIndex < ranks.length) {
+      return ranks[++rankIndex];
+    } else {
+      return "";
+    }
   }
 
   passStudent(student) {
@@ -1734,34 +1736,27 @@ class TestList extends Component {
     this.setState((prevState) => ({
       studentScoresList: prevState.studentScoresList.map((el) =>
         el.studentId === studentScore[0].studentId
-          ? { ...el, paid: !studentScore[0].passed }
+          ? { ...el, passed: true }
           : el
       ),
     }));
 
-    this.updateStudentRank(student, newRank);
+    studentScore[0].passed = true;
+    studentScore[0].ranks = newRank;
+    student.ranks = newRank;
+
+    this.saveStudentScoresAndRank(studentScore[0], student, newRank);
   }
 
-  saveStudentScores(student, newRank) {
-    let studentId = student.id;
-    let testId = this.state.testId;
+  saveStudentScores(studentScore) {
+    saveStudentTestScores(studentScore)
+      .then((response) => {})
 
-    var studentScores = {
-      studentId: studentId,
-      testId: testId,
-      ranks: student.ranks,
-      form: this.state.form,
-      steps: this.state.steps,
-      power: this.state.power,
-      kiap: this.state.kiap,
-      questions: this.state.questions,
-      attitude: this.state.attitude,
-      sparring: this.state.sparring,
-      breaking: this.state.breaking,
-      passed: this.state.passed,
-    };
+      .catch((error) => {});
+  }
 
-    saveStudentTestScores(studentScores)
+  saveStudentScoresAndRank(studentScore, student, newRank) {
+    saveStudentTestScores(studentScore)
       .then((response) => {
         this.updateStudentRank(student, newRank);
       })
@@ -1769,22 +1764,11 @@ class TestList extends Component {
   }
 
   updateStudentRank(student, newRank) {
-    const studentData = {
-      id: student.id,
-      firstName: student.firstName,
-      lastName: student.lastName,
-      email: student.email,
-      birthDate: student.birthDate,
-      ranks: newRank,
-      active: student.active,
-      joined: student.joined,
-    };
-
-    createStudent(studentData)
+    createStudent(student)
       .then((response) => {
         notification.success({
-          message: "Congrats " + studentData.firstName + "!",
-          description: studentData.firstName + " is now " + newRank + ".",
+          message: student.firstName + " Updated.",
+          description: student.firstName + " is now " + newRank + ".",
           duration: 2,
         });
       })

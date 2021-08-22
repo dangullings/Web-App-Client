@@ -85,8 +85,8 @@
     //text-shadow: 0 -1px 0 rgb(0 0 0 / 12%);
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39);
     &:hover {
-      background-color: @highlight-blue !important;
-      border-color: @border-blue !important;
+      background-color: @highlight-blue;
+      border-color: @border-blue;
       color: white;
       box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.4),
         0 2px 4px 0 rgba(0, 0, 0, 0.39);
@@ -127,8 +127,8 @@
     border-radius: 6px;
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.4), 0 4px 10px 0 rgba(0, 0, 0, 0.39);
     &:hover {
-      background: @border-red !important;
-      border-color: @primary-red !important;
+      background: @border-red;
+      border-color: @primary-red;
       box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.4),
         0 2px 4px 0 rgba(0, 0, 0, 0.39);
     }
@@ -169,6 +169,37 @@
     background: white;
     border-color: rgb(182, 182, 182);
     box-shadow: none;
+  }
+
+  .ant-btn.ant-btn-primary.ant-btn-sm {
+    background-color: #50c878;
+    border-color: limegreen;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.4), 0 2px 4px 0 rgba(0, 0, 0, 0.39);
+    top: -4px;
+    &:hover {
+      background-color: #54e083;
+      border-color: limegreen;
+      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.39);
+    }
+  }
+
+  .ant-btn-dangerous.ant-btn.ant-btn-primary.ant-btn-sm {
+    background-color: #8b8b8b;
+    border-color: #8b8b8b;
+    top: -4px;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.4), 0 2px 4px 0 rgba(0, 0, 0, 0.39);
+    &:hover {
+      background-color: #bbbbbb;
+      border-color: #8b8b8b;
+      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.39);
+    }
+  }
+
+  .ant-btn:hover {
+    background-color: #42aad3;
+    border-color: #91c7dd;
+    color: white;
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 40%), 0 2px 4px 0 rgb(0 0 0 / 39%);
   }
 
   .ant-btn-text {
@@ -390,6 +421,10 @@
     border-color: @primary-blue;
   }
 
+  .ant-switch {
+    margin-left: 4px;
+  }
+
   .ant-switch-checked {
     background-color: @highlight-blue;
   }
@@ -420,7 +455,7 @@
 
   .ant-select {
     background-color: @highlight-blue;
-    margin-left: 8px;
+    margin-left: 0px;
   }
 
   .ant-select:not(.ant-select-disabled):hover .ant-select-selector {

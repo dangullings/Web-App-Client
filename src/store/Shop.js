@@ -1088,7 +1088,7 @@ class Shop extends Component {
 
     let productLoading = loading;
     if (productCards.length == 0) {
-      //productLoading = true;
+      productLoading = true;
     }
 
     return (
