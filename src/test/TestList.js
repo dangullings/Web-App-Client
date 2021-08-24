@@ -56,6 +56,13 @@ const { confirm } = Modal;
 const ranks = getRanks();
 const { Title, Text } = Typography;
 
+// when onChange testStudents is changed, force user to save before scoring students is allowed.
+// Once the save test is selected, compare the before and after testStudents and remove testStudents from db
+// where the initial had testStudents but current list does not. Then create testStudents in db
+// where current has testStudents that initial does not.
+
+// So, then take testStudents list upon loading test, and create list of studentScoresList.
+
 class TestList extends Component {
   formRef = React.createRef();
 
@@ -121,14 +128,7 @@ class TestList extends Component {
       this
     );
 
-    this.clickFormInput = this.clickFormInput.bind(this);
-    this.clickStepsInput = this.clickStepsInput.bind(this);
-    this.clickPowerInput = this.clickPowerInput.bind(this);
-    this.clickKiapInput = this.clickKiapInput.bind(this);
-    this.clickQuestionsInput = this.clickQuestionsInput.bind(this);
-    this.clickAttitudeInput = this.clickAttitudeInput.bind(this);
-    this.clickSparringInput = this.clickSparringInput.bind(this);
-    this.clickBreakingInput = this.clickBreakingInput.bind(this);
+    this.clickInput = this.clickInput.bind(this);
 
     this.handleFormScoreChange = this.handleFormScoreChange.bind(this);
     this.handleStepsScoreChange = this.handleStepsScoreChange.bind(this);
@@ -238,37 +238,9 @@ class TestList extends Component {
       .catch((error) => {});
   }
 
-  clickFormInput = (studentScore) => {
+  clickInput = (studentScore) => {
     this.setState({ selectedTestStudent: studentScore.studentId });
   };
-
-  clickStepsInput() {
-    this.setState({ steps: "" });
-  }
-
-  clickPowerInput() {
-    this.setState({ power: "" });
-  }
-
-  clickKiapInput() {
-    this.setState({ kiap: "" });
-  }
-
-  clickQuestionsInput() {
-    this.setState({ questions: "" });
-  }
-
-  clickAttitudeInput() {
-    this.setState({ attitude: "" });
-  }
-
-  clickSparringInput() {
-    this.setState({ sparring: "" });
-  }
-
-  clickBreakingInput() {
-    this.setState({ breaking: "" });
-  }
 
   handleFormScoreChange(event) {
     const { selectedTestStudent } = this.state;
@@ -442,14 +414,11 @@ class TestList extends Component {
       );
     });
 
-    this.setState(
-      {
-        selectedItems,
-        testStudents: joined,
-        needTestSaved: true,
-      },
-      () => this.createGroups(joined)
-    );
+    this.setState({
+      selectedItems,
+      testStudents: joined,
+      needTestSaved: true,
+    });
   };
 
   createGroups(students) {
@@ -490,14 +459,14 @@ class TestList extends Component {
         const newStudentScore = {
           studentId: student.id,
           testId: this.state.testId,
-          attitude: 0,
-          breaking: 0,
-          form: 0,
-          kiap: 0,
-          power: 0,
-          questions: 0,
-          sparring: 0,
-          steps: 0,
+          attitude: "",
+          breaking: "",
+          form: "",
+          kiap: "",
+          power: "",
+          questions: "",
+          sparring: "",
+          steps: "",
           ranks: student.ranks,
           passed: false,
           paid: false,
@@ -512,7 +481,6 @@ class TestList extends Component {
           newStudentScoresList
         ),
       });
-      this.saveNewStudentTestScores(newStudentScoresList);
     }
 
     this.setState({
@@ -534,11 +502,6 @@ class TestList extends Component {
     }
 
     Promise.all(promises).then(() => {
-      notification.success({
-        message: "Save Successful!",
-        description: "New student scores saved.",
-        duration: 2,
-      });
       this.setState({
         loading: false,
       });
@@ -583,13 +546,18 @@ class TestList extends Component {
       loading: true,
     });
 
-    const { studentScoresList } = this.state;
-    let student;
+    const { studentScoresList, testStudents } = this.state;
+    let student, ts;
     let promises = [];
 
     for (student of studentScoresList) {
-      let promise = saveStudentTestScores(student);
-      promises.push(promise);
+      for (ts of testStudents) {
+        if (student.studentId == ts.id) {
+          let promise = saveStudentTestScores(student);
+          promises.push(promise);
+          break;
+        }
+      }
     }
 
     Promise.all(promises).then(() => {
@@ -598,18 +566,61 @@ class TestList extends Component {
         description: "Student scores saved.",
         duration: 2,
       });
-      this.handleCancel();
       this.setState({
         loading: false,
       });
     });
   }
 
+  createAddedStudentTests() {
+    const { initialTestStudents, testId, testStudents } = this.state;
+
+    let promises = [];
+    let addedStudent, student, initial;
+    for (student of testStudents) {
+      addedStudent = true;
+      for (initial of initialTestStudents) {
+        if (initial.id == student.id) {
+          addedStudent = false;
+          break;
+        }
+      }
+
+      let studentScore = {
+        studentId: student.id,
+        testId: testId,
+        ranks: student.ranks,
+        form: "",
+        steps: "",
+        power: "",
+        kiap: "",
+        questions: "",
+        attitude: "",
+        sparring: "",
+        breaking: "",
+        passed: false,
+        paid: false,
+      };
+
+      if (addedStudent) {
+        let promise = saveStudentTestScores(studentScore);
+        promises.push(promise);
+      }
+    }
+
+    if (promises.length > 0) {
+      Promise.all(promises).then(() => {});
+    }
+  }
+
   deleteRemovedStudentTests() {
+    const { initialTestStudents, testId, testStudents } = this.state;
+
     let removedStudent, student, initial;
-    for (initial of this.state.initialTestStudents) {
+    let promises = [];
+    for (initial of initialTestStudents) {
       removedStudent = true;
-      for (student of this.state.testStudents) {
+      for (student of testStudents) {
         if (initial.id == student.id) {
           removedStudent = false;
           break;
@@ -617,15 +628,14 @@ class TestList extends Component {
       }
 
       if (removedStudent) {
-        this.removeStudentTest(this.state.testId, initial.id);
+        let promise = removeStudentTestScore(testId, initial.id);
+        promises.push(promise);
       }
     }
-  }
 
-  removeStudentTest(testId, studentId) {
-    removeStudentTestScore(testId, studentId)
-      .then((response) => {})
-      .catch((error) => {});
+    if (promises.length > 0) {
+      Promise.all(promises).then(() => {});
+    }
   }
 
   handleSubmit = () => {
@@ -638,24 +648,10 @@ class TestList extends Component {
     let date = this.formRef.current.getFieldValue("date").format("YYYY-MM-DD");
     let type = this.formRef.current.getFieldValue("type");
 
-    console.log(
-      "title " +
-        title +
-        " location " +
-        location +
-        " startTime " +
-        formattedStartTime +
-        " endTime " +
-        formattedEndTime +
-        " type " +
-        type +
-        " date " +
-        date
-    );
-
     this.setState({ loading: true });
 
     this.deleteRemovedStudentTests();
+    this.createAddedStudentTests();
 
     var month, year;
     let parts = date.split("-");
@@ -692,7 +688,7 @@ class TestList extends Component {
             loading: false,
             visible: false,
           },
-          () => this.startSavingStudentTestScores
+          () => this.startSavingStudentTestScores()
         );
       })
       .catch((error) => {
@@ -902,6 +898,8 @@ class TestList extends Component {
       isSavedTest: false,
       studentScoresList: [],
       groupOptions: [],
+      sessionStudents: [],
+      sessions: [],
     });
   };
 
@@ -977,7 +975,7 @@ class TestList extends Component {
           <Input
             size="small"
             onClick={() => {
-              this.clickFormInput(studentScore);
+              this.clickInput(studentScore);
             }}
             maxLength={1}
             value={studentScore.form}
@@ -997,7 +995,7 @@ class TestList extends Component {
           <Input
             size="small"
             onClick={() => {
-              this.clickFormInput(studentScore);
+              this.clickInput(studentScore);
             }}
             maxLength={1}
             value={studentScore.steps}
@@ -1017,7 +1015,7 @@ class TestList extends Component {
           <Input
             size="small"
             onClick={() => {
-              this.clickFormInput(studentScore);
+              this.clickInput(studentScore);
             }}
             maxLength={1}
             value={studentScore.power}
@@ -1037,7 +1035,7 @@ class TestList extends Component {
           <Input
             size="small"
             onClick={() => {
-              this.clickFormInput(studentScore);
+              this.clickInput(studentScore);
             }}
             maxLength={1}
             value={studentScore.kiap}
@@ -1057,7 +1055,7 @@ class TestList extends Component {
           <Input
             size="small"
             onClick={() => {
-              this.clickFormInput(studentScore);
+              this.clickInput(studentScore);
             }}
             maxLength={1}
             value={studentScore.questions}
@@ -1077,7 +1075,7 @@ class TestList extends Component {
           <Input
             size="small"
             onClick={() => {
-              this.clickFormInput(studentScore);
+              this.clickInput(studentScore);
             }}
             maxLength={1}
             value={studentScore.attitude}
@@ -1097,7 +1095,7 @@ class TestList extends Component {
           <Input
             size="small"
             onClick={() => {
-              this.clickFormInput(studentScore);
+              this.clickInput(studentScore);
             }}
             maxLength={1}
             value={studentScore.sparring}
@@ -1117,7 +1115,7 @@ class TestList extends Component {
           <Input
             size="small"
             onClick={() => {
-              this.clickFormInput(studentScore);
+              this.clickInput(studentScore);
             }}
             maxLength={1}
             value={studentScore.breaking}
@@ -1147,7 +1145,7 @@ class TestList extends Component {
       paid: false,
     };
 
-    return bogus;
+    return [bogus];
   }
 
   getGroupColor(rank) {
