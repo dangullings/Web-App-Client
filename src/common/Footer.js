@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { VERSION } from "../constants";
 
 export default class Footer extends Component {
   render() {
@@ -15,7 +16,7 @@ export default class Footer extends Component {
           color: "darkgray",
         }}
       >
-        {fullYear}-{fullYear + 1}, All Rights Reserved by Dan Gullings
+        v{VERSION} | {fullYear} | Dan Gullings
       </div>
     );
   }
