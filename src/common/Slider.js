@@ -17,6 +17,7 @@ import {
   LogoutOutlined,
   CarryOutOutlined,
   FormOutlined,
+  DollarOutlined,
 } from "@ant-design/icons";
 
 const { SubMenu } = Menu;
@@ -272,6 +273,15 @@ class Slider extends Component {
           onClick={this.onClose}
         >
           <Link to={"/blogs"}>Blog</Link>
+        </Menu.Item>,
+
+        <Menu.Item
+          className="menu-item"
+          key="/budget"
+          icon={<DollarOutlined />}
+          onClick={this.onClose}
+        >
+          <Link to={"/budget"}>Budget</Link>
         </Menu.Item>,
       ];
 

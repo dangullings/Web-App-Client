@@ -17,6 +17,7 @@ import EventCalendar from "../schedule/EventCalendar";
 import LocationList from "../location/LocationList";
 import SessionList from "../schedule/SessionList";
 import EventList from "../schedule/EventList";
+import Budget from "../budget/Budget";
 import Blog from "../blog/Blog";
 import BlogDetail from "../blog/BlogDetail";
 import BlogList from "../blog/BlogList";
@@ -341,6 +342,17 @@ class App extends Component {
                 path="/blog"
                 render={(props) => (
                   <Blog
+                    isAuthenticated={this.state.isAuthenticated}
+                    currentUser={this.state.currentUser}
+                    {...props}
+                  />
+                )}
+              ></Route>
+              <Route
+                exact
+                path="/budget"
+                render={(props) => (
+                  <Budget
                     isAuthenticated={this.state.isAuthenticated}
                     currentUser={this.state.currentUser}
                     {...props}

@@ -837,7 +837,6 @@ class Shop extends Component {
             cover={
               <Image
                 preview={false}
-                style={{ left: -1 }}
                 width={"100%"}
                 height={"100%"}
                 src={`data:image/jpeg;base64,${image}`}

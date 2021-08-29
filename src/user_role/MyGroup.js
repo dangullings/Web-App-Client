@@ -336,7 +336,9 @@ class MyGroup extends Component {
       for (value of values) {
         for (innerValue of value) {
           if (
-            moment(innerValue.endDate).add(1, "days").isSameOrAfter(moment())
+            moment(innerValue.endDate)
+              .add(1, "days")
+              .isSameOrAfter(moment())
           ) {
             sessions.push(innerValue);
 
@@ -386,7 +388,9 @@ class MyGroup extends Component {
         if (value != "null") {
           for (innerValue of value) {
             if (
-              moment(innerValue.date).add(1, "days").isSameOrAfter(moment())
+              moment(innerValue.date)
+                .add(1, "days")
+                .isSameOrAfter(moment())
             ) {
               classDates.push(innerValue);
             }
@@ -395,8 +399,9 @@ class MyGroup extends Component {
       }
       this.setState(
         {
-          myPeepSessionClassDates:
-            this.state.myPeepSessionClassDates.concat(classDates),
+          myPeepSessionClassDates: this.state.myPeepSessionClassDates.concat(
+            classDates
+          ),
         },
         () => this.createPeepDayHeaders()
       );
@@ -437,7 +442,6 @@ class MyGroup extends Component {
 
   getStudentTestScores() {
     const { myPeepTestIds } = this.state;
-    console.log("mypeeptestids " + myPeepTestIds.length);
     let ids;
     for (ids of myPeepTestIds) {
       this.getStudentTestScoresCont(ids.peepId, ids.testId);
@@ -457,8 +461,6 @@ class MyGroup extends Component {
   createPeepTestScoreTable(peep) {
     const { myPeepTestScores, myPeepTests } = this.state;
     var datas = [];
-
-    console.log("mypeeptestscores " + myPeepTestScores.length);
 
     var testScore, i, key, test, t;
     for (testScore of myPeepTestScores) {
@@ -486,8 +488,6 @@ class MyGroup extends Component {
         });
       }
     }
-
-    console.log("test list " + datas.length);
 
     return (
       <Table
@@ -598,10 +598,12 @@ class MyGroup extends Component {
     Promise.all(promises).then((values) => {
       for (value of values) {
         for (innerValue of value) {
-          console.log("event " + innerValue.date);
-          if (moment(innerValue.date).add(1, "days").isSameOrAfter(moment())) {
+          if (
+            moment(innerValue.date)
+              .add(1, "days")
+              .isSameOrAfter(moment())
+          ) {
             events.push(innerValue);
-            console.log("added event " + innerValue.date);
             const peepEventId = {
               peepId: peeps[peepInc].id,
               eventId: innerValue.id,
@@ -723,8 +725,11 @@ class MyGroup extends Component {
   }
 
   getUpcomingClasses(peep) {
-    const { myPeepSessions, myPeepSessionClassDates, myPeepSessionIds } =
-      this.state;
+    const {
+      myPeepSessions,
+      myPeepSessionClassDates,
+      myPeepSessionIds,
+    } = this.state;
 
     let sessions = myPeepSessions;
 
@@ -1122,6 +1127,7 @@ class MyGroup extends Component {
                       expandable: true,
                       suffix: event.location,
                       expandable: true,
+                      rows: 10,
                     }}
                   >
                     <Row>
@@ -1606,63 +1612,149 @@ class MyGroup extends Component {
 
     let monDate, tueDate, wedDate, thuDate, friDate, satDate;
 
-    let currentDay = moment().format("ddd").toLowerCase();
+    let currentDay = moment()
+      .format("ddd")
+      .toLowerCase();
 
     if (currentDay == "sun") {
-      monDate = moment().add(1, "d").format("MM/DD");
-      tueDate = moment().add(2, "d").format("MM/DD");
-      wedDate = moment().add(3, "d").format("MM/DD");
-      thuDate = moment().add(4, "d").format("MM/DD");
-      friDate = moment().add(5, "d").format("MM/DD");
-      satDate = moment().add(6, "d").format("MM/DD");
+      monDate = moment()
+        .add(1, "d")
+        .format("MM/DD");
+      tueDate = moment()
+        .add(2, "d")
+        .format("MM/DD");
+      wedDate = moment()
+        .add(3, "d")
+        .format("MM/DD");
+      thuDate = moment()
+        .add(4, "d")
+        .format("MM/DD");
+      friDate = moment()
+        .add(5, "d")
+        .format("MM/DD");
+      satDate = moment()
+        .add(6, "d")
+        .format("MM/DD");
     }
     if (currentDay == "mon") {
-      monDate = moment().add(0, "d").format("MM/DD");
-      tueDate = moment().add(1, "d").format("MM/DD");
-      wedDate = moment().add(2, "d").format("MM/DD");
-      thuDate = moment().add(3, "d").format("MM/DD");
-      friDate = moment().add(4, "d").format("MM/DD");
-      satDate = moment().add(5, "d").format("MM/DD");
+      monDate = moment()
+        .add(0, "d")
+        .format("MM/DD");
+      tueDate = moment()
+        .add(1, "d")
+        .format("MM/DD");
+      wedDate = moment()
+        .add(2, "d")
+        .format("MM/DD");
+      thuDate = moment()
+        .add(3, "d")
+        .format("MM/DD");
+      friDate = moment()
+        .add(4, "d")
+        .format("MM/DD");
+      satDate = moment()
+        .add(5, "d")
+        .format("MM/DD");
     }
     if (currentDay == "tue") {
-      monDate = moment().add(6, "d").format("MM/DD");
-      tueDate = moment().add(0, "d").format("MM/DD");
-      wedDate = moment().add(1, "d").format("MM/DD");
-      thuDate = moment().add(2, "d").format("MM/DD");
-      friDate = moment().add(3, "d").format("MM/DD");
-      satDate = moment().add(4, "d").format("MM/DD");
+      monDate = moment()
+        .add(6, "d")
+        .format("MM/DD");
+      tueDate = moment()
+        .add(0, "d")
+        .format("MM/DD");
+      wedDate = moment()
+        .add(1, "d")
+        .format("MM/DD");
+      thuDate = moment()
+        .add(2, "d")
+        .format("MM/DD");
+      friDate = moment()
+        .add(3, "d")
+        .format("MM/DD");
+      satDate = moment()
+        .add(4, "d")
+        .format("MM/DD");
     }
     if (currentDay == "wed") {
-      monDate = moment().add(5, "d").format("MM/DD");
-      tueDate = moment().add(6, "d").format("MM/DD");
-      wedDate = moment().add(0, "d").format("MM/DD");
-      thuDate = moment().add(1, "d").format("MM/DD");
-      friDate = moment().add(2, "d").format("MM/DD");
-      satDate = moment().add(3, "d").format("MM/DD");
+      monDate = moment()
+        .add(5, "d")
+        .format("MM/DD");
+      tueDate = moment()
+        .add(6, "d")
+        .format("MM/DD");
+      wedDate = moment()
+        .add(0, "d")
+        .format("MM/DD");
+      thuDate = moment()
+        .add(1, "d")
+        .format("MM/DD");
+      friDate = moment()
+        .add(2, "d")
+        .format("MM/DD");
+      satDate = moment()
+        .add(3, "d")
+        .format("MM/DD");
     }
     if (currentDay == "thu") {
-      monDate = moment().add(4, "d").format("MM/DD");
-      tueDate = moment().add(5, "d").format("MM/DD");
-      wedDate = moment().add(6, "d").format("MM/DD");
-      thuDate = moment().add(0, "d").format("MM/DD");
-      friDate = moment().add(1, "d").format("MM/DD");
-      satDate = moment().add(2, "d").format("MM/DD");
+      monDate = moment()
+        .add(4, "d")
+        .format("MM/DD");
+      tueDate = moment()
+        .add(5, "d")
+        .format("MM/DD");
+      wedDate = moment()
+        .add(6, "d")
+        .format("MM/DD");
+      thuDate = moment()
+        .add(0, "d")
+        .format("MM/DD");
+      friDate = moment()
+        .add(1, "d")
+        .format("MM/DD");
+      satDate = moment()
+        .add(2, "d")
+        .format("MM/DD");
     }
     if (currentDay == "fri") {
-      monDate = moment().add(3, "d").format("MM/DD");
-      tueDate = moment().add(4, "d").format("MM/DD");
-      wedDate = moment().add(5, "d").format("MM/DD");
-      thuDate = moment().add(6, "d").format("MM/DD");
-      friDate = moment().add(0, "d").format("MM/DD");
-      satDate = moment().add(1, "d").format("MM/DD");
+      monDate = moment()
+        .add(3, "d")
+        .format("MM/DD");
+      tueDate = moment()
+        .add(4, "d")
+        .format("MM/DD");
+      wedDate = moment()
+        .add(5, "d")
+        .format("MM/DD");
+      thuDate = moment()
+        .add(6, "d")
+        .format("MM/DD");
+      friDate = moment()
+        .add(0, "d")
+        .format("MM/DD");
+      satDate = moment()
+        .add(1, "d")
+        .format("MM/DD");
     }
     if (currentDay == "sat") {
-      monDate = moment().add(2, "d").format("MM/DD");
-      tueDate = moment().add(3, "d").format("MM/DD");
-      wedDate = moment().add(4, "d").format("MM/DD");
-      thuDate = moment().add(5, "d").format("MM/DD");
-      friDate = moment().add(6, "d").format("MM/DD");
-      satDate = moment().add(0, "d").format("MM/DD");
+      monDate = moment()
+        .add(2, "d")
+        .format("MM/DD");
+      tueDate = moment()
+        .add(3, "d")
+        .format("MM/DD");
+      wedDate = moment()
+        .add(4, "d")
+        .format("MM/DD");
+      thuDate = moment()
+        .add(5, "d")
+        .format("MM/DD");
+      friDate = moment()
+        .add(6, "d")
+        .format("MM/DD");
+      satDate = moment()
+        .add(0, "d")
+        .format("MM/DD");
     }
 
     let monList = [],

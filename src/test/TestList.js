@@ -56,13 +56,6 @@ const { confirm } = Modal;
 const ranks = getRanks();
 const { Title, Text } = Typography;
 
-// when onChange testStudents is changed, force user to save before scoring students is allowed.
-// Once the save test is selected, compare the before and after testStudents and remove testStudents from db
-// where the initial had testStudents but current list does not. Then create testStudents in db
-// where current has testStudents that initial does not.
-
-// So, then take testStudents list upon loading test, and create list of studentScoresList.
-
 class TestList extends Component {
   formRef = React.createRef();
 

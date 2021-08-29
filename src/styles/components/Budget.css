@@ -1,0 +1,10 @@
+.budget-container {
+  background-color: rgb(255, 255, 255);
+}
+
+.budget-container-header {
+  font-size: 28px;
+  font-weight: 600;
+  padding-left: 20px;
+  margin-bottom: 20px;
+}
