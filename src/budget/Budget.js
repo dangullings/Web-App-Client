@@ -22,7 +22,7 @@ class Budget extends Component {
     return (
       <div className="budget-container">
         <div className="budget-container-header">Budget</div>
-        <div className="body">
+        <div className="budget-style">
           <Collapse defaultActiveKey={["1"]} onChange={this.callback}>
             <Panel header="Income" key="1" className="income">
               <Text>Add income: </Text>
