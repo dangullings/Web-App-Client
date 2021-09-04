@@ -537,7 +537,7 @@ class StudentList extends Component {
           onChange={this.onChangeSearch}
           dropdownClassName="custom-style"
           style={{
-            width: 120,
+            width: 100,
             height: 32,
           }}
         />

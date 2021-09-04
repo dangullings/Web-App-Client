@@ -107,6 +107,7 @@ class TestList extends Component {
       newEndTime: "",
       startTime: "",
       endTime: "",
+      price: 0,
       isSavedTest: false,
       needTestSaved: false,
     };
@@ -152,6 +153,7 @@ class TestList extends Component {
       date: moment(this.state.date),
       location: this.state.selectedLocation,
       type: this.state.selectedType,
+      price: this.state.test.price,
       testStudentIds: [],
     });
 
@@ -640,6 +642,7 @@ class TestList extends Component {
     let formattedEndTime = moment(endTime, "h:mm a").format("LT");
     let date = this.formRef.current.getFieldValue("date").format("YYYY-MM-DD");
     let type = this.formRef.current.getFieldValue("type");
+    let price = this.formRef.current.getFieldValue("price");
 
     this.setState({ loading: true });
 
@@ -664,6 +667,7 @@ class TestList extends Component {
       endTime: formattedEndTime,
       month: month,
       year: year,
+      price: price,
     };
 
     createTest(TestData)
@@ -881,6 +885,7 @@ class TestList extends Component {
       title: "",
       location: "",
       type: "",
+      price: 0,
       date: moment(),
       startTime: startTime,
       endTime: endTime,
@@ -1440,6 +1445,7 @@ class TestList extends Component {
             date: moment(this.state.date),
             location: this.state.selectedLocation,
             type: this.state.selectedType,
+            price: this.state.price,
             testStudentIds: [],
           }}
           layout="vertical"
@@ -1614,6 +1620,29 @@ class TestList extends Component {
               style={{ marginLeft: 0, width: "100%" }}
               showNow={false}
               popupClassName="test-list-style"
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="price"
+            style={{ marginLeft: 0 }}
+            label={
+              <Title style={{ marginTop: 14, marginBottom: 0 }} level={5}>
+                {"Price"}
+              </Title>
+            }
+            hasFeedback
+            rules={[
+              {
+                required: true,
+                message: "Please enter the test price.",
+              },
+            ]}
+          >
+            <Input
+              placeholder="US$"
+              style={{ fontSize: "16px" }}
+              autosize={{ minRows: 1, maxRows: 1 }}
             />
           </Form.Item>
 
@@ -1976,6 +2005,7 @@ class TestList extends Component {
             testId: test.id,
             startTime: test.startTime,
             endTime: test.endTime,
+            price: test.price,
             selectedType: test.type,
             loading: false,
             visible: true,

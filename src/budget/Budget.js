@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Typography, Collapse, Input, Button } from "antd";
-import {} from "../util/APIUtils";
+import { getOrderUsers, getAllOrdersByFulfilled } from "../util/APIUtils";
 import moment from "moment";
 import { withRouter } from "react-router-dom";
 import "../styles/components/Budget.less";
@@ -15,10 +15,61 @@ class Budget extends Component {
     super(props);
     this.state = {
       currentUser: this.props.currentUser,
+      incomes: [],
+      expenses: [],
+      orders: [],
     };
+
+    this.getIncomes = this.getIncomes.bind(this);
+    this.getExpenses = this.getExpenses.bind(this);
+    this.getBudget = this.getBudget.bind(this);
+    this.getSessionIncome = this.getSessionIncome.bind(this);
+    this.getEventIncome = this.getEventIncome.bind(this);
+    this.getTestIncome = this.getTestIncome.bind(this);
+
+    //this.getBudget();
   }
 
+  getBudget() {
+    this.setState({
+      loading: true,
+    });
+
+    this.getIncomes();
+    this.getExpenses();
+  }
+
+  getIncomes() {
+    let promise;
+
+    promise = getAllOrdersByFulfilled(0, 1000, true);
+
+    if (!promise) {
+      return;
+    }
+
+    promise
+      .then((response) => {})
+      .catch((error) => {
+        this.setState({
+          loading: false,
+        });
+      });
+  }
+
+  getSessionIncome() {}
+
+  getEventIncome() {}
+
+  getTestIncome() {}
+
+  getOrders() {}
+
+  getExpenses() {}
+
   render() {
+    const {} = this.state;
+
     return (
       <div className="budget-container">
         <div className="budget-container-header">Budget</div>
