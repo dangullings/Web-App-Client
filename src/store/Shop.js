@@ -26,6 +26,7 @@ import {
   getAllItemsBySearch,
   createOrder,
   createLineItem,
+  createBudget,
 } from "../util/APIUtils";
 import moment from "moment";
 import { STORE_LIST_SIZE } from "../constants";
@@ -298,6 +299,7 @@ class Shop extends Component {
   saveOrder() {
     const { total } = this.state;
 
+    var orderIdForBudget;
     let totalPrice = this.getTotalCartCost();
     let note = "order note";
 
@@ -313,6 +315,7 @@ class Shop extends Component {
 
     createOrder(order)
       .then((response) => {
+        orderIdForBudget = response.id;
         this.setState(
           {
             orderId: response.id,
@@ -320,6 +323,19 @@ class Shop extends Component {
           () => this.saveLineItems()
         );
       })
+      .catch((error) => {});
+
+    const budget = {
+      id: "",
+      date: moment().format("YYYY-MM-DD"),
+      isExpense: false,
+      amount: totalPrice,
+      assignRef: orderIdForBudget,
+      type: "order",
+    };
+
+    createBudget(budget)
+      .then((response) => {})
       .catch((error) => {});
   }
 

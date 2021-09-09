@@ -86,7 +86,7 @@
   .ant-input {
     border-color: #e9e9e9;
     border-right-width: 1px !important;
-    width: 40%;
+    width: 30%;
     border-radius: 10px 0px 0px 10px;
     max-width: 200px;
   }
@@ -115,11 +115,51 @@
     border-color: #999999;
   }
 
+  .ant-row {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+  }
+
   .ant-typography {
     color: rgba(0, 0, 0, 0.85);
     overflow-wrap: break-word;
-    font-size: 16px;
+  }
+
+  h1.ant-typography {
+    color: rgba(0, 0, 0, 0.85);
+    overflow-wrap: break-word;
+    font-size: 14px;
     margin-right: 6px;
     text-shadow: 0 1px 0 rgba(255, 255, 255, 0.9);
+    text-transform: uppercase;
+  }
+
+  .ant-list-bordered {
+    overflow: auto;
+    height: 200px;
+    margin-top: 20px;
+    background-color: rgb(255, 255, 255);
+    border-radius: 10px 10px 10px 10px;
+  }
+
+  .ant-list-bordered .ant-list-item {
+    padding-right: 24px;
+    padding-left: 24px;
+    line-height: 10px;
+  }
+
+  .ant-picker:hover,
+  .ant-picker-focused {
+    border-color: #42aad3;
+    border-right-width: 1px !important;
+  }
+
+  .ant-picker-cell-in-view.ant-picker-cell-selected .ant-picker-cell-inner {
+    background-color: #4694b4;
+  }
+
+  .ant-picker-today-btn {
+    color: #4694b4;
   }
 }

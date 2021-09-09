@@ -33,6 +33,8 @@ import {
   getSessionStudents,
   removeStudentTestScore,
   createStudent,
+  createBudget,
+  removeBudget,
 } from "../util/APIUtils";
 import moment from "moment";
 import { getRanks } from "../util/Helpers.js";
@@ -1766,7 +1768,33 @@ class TestList extends Component {
     }));
 
     studentScore[0].paid = newPaid;
+
+    if (newPaid) {
+      studentScore[0].paidAmount = this.state.test.price;
+    } else {
+      studentScore[0].paidAmount = 0;
+    }
+
     this.saveStudentScores(studentScore[0]);
+
+    if (newPaid) {
+      const budget = {
+        id: "",
+        date: moment().format("YYYY-MM-DD"),
+        isExpense: false,
+        amount: this.state.test.price,
+        assignRef: this.state.test.id,
+        type: "test",
+      };
+
+      createBudget(budget)
+        .then((response) => {})
+        .catch((error) => {});
+    } else {
+      removeBudget("test", this.state.test.id)
+        .then((response) => {})
+        .catch((error) => {});
+    }
   };
 
   failStudent(student) {

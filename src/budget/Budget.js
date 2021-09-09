@@ -1,6 +1,24 @@
 import React, { Component } from "react";
-import { Typography, Collapse, Input, Button } from "antd";
-import { getOrderUsers, getAllOrdersByFulfilled } from "../util/APIUtils";
+import {
+  Typography,
+  Collapse,
+  Input,
+  Button,
+  List,
+  Row,
+  DatePicker,
+} from "antd";
+import {
+  getAllOrdersByFulfilled,
+  getAllEvents,
+  getAllTests,
+  getAllSessions,
+  getStudentSessionsBySessionId,
+  getStudentEventsByEventId,
+  getTestScoresByTestId,
+  getBudget,
+  createBudget,
+} from "../util/APIUtils";
 import moment from "moment";
 import { withRouter } from "react-router-dom";
 import "../styles/components/Budget.less";
@@ -8,16 +26,23 @@ import "../styles/components/Budget.css";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 
 const { Panel } = Collapse;
-const { Text, Link } = Typography;
+const { Text, Link, Title } = Typography;
 
 class Budget extends Component {
   constructor(props) {
     super(props);
     this.state = {
       currentUser: this.props.currentUser,
-      incomes: [],
+      income: "",
       expenses: [],
-      orders: [],
+      budgetIncome: "",
+      budgetExpense: "",
+      totalIncome: 0,
+      totalExpense: 0,
+      inputIncome: 0,
+      inputExpense: 0,
+      beginDate: moment().subtract(1, "months"),
+      endDate: moment(),
     };
 
     this.getIncomes = this.getIncomes.bind(this);
@@ -26,20 +51,26 @@ class Budget extends Component {
     this.getSessionIncome = this.getSessionIncome.bind(this);
     this.getEventIncome = this.getEventIncome.bind(this);
     this.getTestIncome = this.getTestIncome.bind(this);
+    this.submitIncome = this.submitIncome.bind(this);
+    this.onChangeIncomeAmount = this.onChangeIncomeAmount.bind(this);
+    this.submitExpense = this.submitExpense.bind(this);
+    this.onChangeExpenseAmount = this.onChangeExpenseAmount.bind(this);
+    this.onBeginDateChange = this.onBeginDateChange.bind(this);
+    this.onEndDateChange = this.onEndDateChange.bind(this);
 
-    //this.getBudget();
+    this.getBudget();
   }
 
   getBudget() {
-    this.setState({
-      loading: true,
-    });
-
     this.getIncomes();
     this.getExpenses();
   }
 
   getIncomes() {
+    this.getOrders();
+  }
+
+  getOrders() {
     let promise;
 
     promise = getAllOrdersByFulfilled(0, 1000, true);
@@ -49,7 +80,9 @@ class Budget extends Component {
     }
 
     promise
-      .then((response) => {})
+      .then((response) => {
+        this.getSessionIncome(response.content);
+      })
       .catch((error) => {
         this.setState({
           loading: false,
@@ -57,33 +90,378 @@ class Budget extends Component {
       });
   }
 
-  getSessionIncome() {}
+  getSessionIncome(orders) {
+    let promise;
 
-  getEventIncome() {}
+    promise = getAllSessions(0, 1000);
 
-  getTestIncome() {}
+    if (!promise) {
+      return;
+    }
 
-  getOrders() {}
+    promise
+      .then((response) => {
+        this.getEventIncome(orders, response.content);
+      })
+      .catch((error) => {
+        this.setState({
+          loading: false,
+        });
+      });
+  }
+
+  getEventIncome(orders, sessions) {
+    let promise;
+
+    promise = getAllEvents(0, 1000);
+
+    if (!promise) {
+      return;
+    }
+
+    promise
+      .then((response) => {
+        this.getTestIncome(orders, sessions, response.content);
+      })
+      .catch((error) => {
+        this.setState({
+          loading: false,
+        });
+      });
+  }
+
+  getTestIncome(orders, sessions, events) {
+    let promise;
+
+    promise = getAllTests(0, 1000);
+
+    if (!promise) {
+      return;
+    }
+
+    promise
+      .then((response) => {
+        let income = {
+          orders: orders,
+          sessions: sessions,
+          events: events,
+          tests: response.content,
+        };
+        this.getIncomeContinued(income);
+      })
+      .catch((error) => {
+        this.setState({
+          loading: false,
+        });
+      });
+  }
+
+  getIncomeContinued(income) {
+    let session, event, test;
+    let sessionStudentPromises = [];
+    let eventStudentPromises = [];
+    let testStudentPromises = [];
+
+    for (session of income.sessions) {
+      let promise = getStudentSessionsBySessionId(session.id);
+      sessionStudentPromises.push(promise);
+    }
+
+    for (event of income.events) {
+      let promise = getStudentEventsByEventId(event.id);
+      eventStudentPromises.push(promise);
+    }
+
+    for (test of income.tests) {
+      let promise = getTestScoresByTestId(test.id);
+      testStudentPromises.push(promise);
+    }
+
+    Promise.all(sessionStudentPromises).then((sessionStudents) => {
+      Promise.all(eventStudentPromises).then((eventStudents) => {
+        Promise.all(testStudentPromises).then((testStudents) => {
+          let newIncome = {
+            orders: income.orders,
+            sessions:
+              sessionStudents.length === undefined
+                ? sessionStudents
+                : sessionStudents[0],
+            events:
+              eventStudents.length === undefined
+                ? eventStudents
+                : eventStudents[0],
+            tests:
+              testStudents.length === undefined
+                ? testStudents
+                : testStudents[0],
+          };
+
+          this.setState(
+            {
+              income: newIncome,
+            },
+            () => this.tallyIncomes(newIncome)
+          );
+        });
+      });
+    });
+  }
+
+  tallyIncomes(income) {
+    let tally;
+    var totalIncome = 0;
+
+    for (tally of income.orders) {
+      totalIncome = totalIncome + tally.price;
+    }
+
+    for (tally of income.sessions) {
+      totalIncome = totalIncome + tally.paid;
+    }
+
+    for (tally of income.events) {
+      totalIncome = totalIncome + tally.paid;
+    }
+
+    for (tally of income.tests) {
+      totalIncome = totalIncome + tally.paidAmount;
+    }
+
+    this.setState(
+      {
+        totalIncome: totalIncome,
+      },
+      () => this.getIncomeBudgetTransactions(),
+      this.getExpenseBudgetTransactions()
+    );
+  }
+
+  getIncomeBudgetTransactions() {
+    const { beginDate, endDate } = this.state;
+
+    let newBeginDate = beginDate.format("YYYY-MM-DD");
+    let newEndDate = endDate.format("YYYY-MM-DD");
+
+    console.log("getbudgettransactions " + newBeginDate + " " + newEndDate);
+
+    let promise;
+
+    promise = getBudget(0, 1000, false, newBeginDate, newEndDate);
+
+    if (!promise) {
+      return;
+    }
+
+    promise
+      .then((response) => {
+        this.setState({
+          loading: false,
+          budgetIncome: response.content,
+        });
+      })
+      .catch((error) => {
+        this.setState({
+          loading: false,
+        });
+      });
+  }
+
+  getExpenseBudgetTransactions() {
+    const { beginDate, endDate } = this.state;
+
+    let newBeginDate = beginDate.format("YYYY-MM-DD");
+    let newEndDate = endDate.format("YYYY-MM-DD");
+
+    console.log("getbudgettransactions " + newBeginDate + " " + newEndDate);
+
+    let promise;
+
+    promise = getBudget(0, 1000, true, newBeginDate, newEndDate);
+
+    if (!promise) {
+      return;
+    }
+
+    promise
+      .then((response) => {
+        this.setState({
+          loading: false,
+          budgetExpense: response.content,
+        });
+      })
+      .catch((error) => {
+        this.setState({
+          loading: false,
+        });
+      });
+  }
 
   getExpenses() {}
 
+  submitIncome() {
+    const budget = {
+      id: "",
+      date: moment().format("YYYY-MM-DD"),
+      expense: false,
+      amount: this.state.inputIncome,
+      assignRef: "",
+      type: "custom",
+    };
+
+    createBudget(budget)
+      .then((response) => {
+        this.setState({
+          budgetIncome: this.state.budgetIncome.concat(budget),
+        });
+      })
+      .catch((error) => {});
+  }
+
+  submitExpense() {
+    const budget = {
+      id: "",
+      date: moment().format("YYYY-MM-DD"),
+      expense: true,
+      amount: this.state.inputExpense,
+      assignRef: "",
+      type: "custom",
+    };
+
+    console.log("submit expense " + budget.expense);
+
+    createBudget(budget)
+      .then((response) => {
+        this.setState({
+          budgetExpense: this.state.budgetExpense.concat(budget),
+        });
+      })
+      .catch((error) => {});
+  }
+
+  onChangeIncomeAmount(event) {
+    const value = event.target.value;
+    this.setState({
+      inputIncome: value,
+    });
+  }
+
+  onChangeExpenseAmount(event) {
+    const value = event.target.value;
+    this.setState({
+      inputExpense: value,
+    });
+  }
+
+  onBeginDateChange(date, dateString) {
+    this.setState(
+      {
+        beginDate: date,
+      },
+      () => this.getIncomeBudgetTransactions(),
+      this.getExpenseBudgetTransactions()
+    );
+  }
+
+  onEndDateChange(date, dateString) {
+    this.setState(
+      {
+        endDate: date,
+      },
+      () => this.getIncomeBudgetTransactions(),
+      this.getExpenseBudgetTransactions()
+    );
+  }
+
   render() {
-    const {} = this.state;
+    const {
+      budgetIncome,
+      budgetExpense,
+      incomes,
+      totalIncome,
+      beginDate,
+      endDate,
+    } = this.state;
 
     return (
       <div className="budget-container">
-        <div className="budget-container-header">Budget</div>
+        <div className="budget-container-header">
+          Budget
+          <Row style={{ marginRight: 20, marginTop: 5, marginBottom: 0 }}>
+            <DatePicker
+              inputReadOnly="true"
+              align="center"
+              placeholder={"begin"}
+              onChange={this.onBeginDateChange}
+              style={{
+                display: "inline",
+                width: "calc(50%)",
+              }}
+              value={beginDate}
+              dropdownClassName="budget-style"
+            />
+            <DatePicker
+              inputReadOnly="true"
+              align="center"
+              placeholder={"end"}
+              onChange={this.onEndDateChange}
+              style={{
+                display: "inline",
+                width: "calc(50%)",
+              }}
+              value={endDate}
+              dropdownClassName="budget-style"
+            />
+          </Row>
+        </div>
         <div className="budget-style">
           <Collapse defaultActiveKey={["1"]} onChange={this.callback}>
-            <Panel header="Income" key="1" className="income">
+            <Panel header={"Income $" + totalIncome} key="1" className="income">
               <Text>Add income: </Text>
-              <Input placeholder="enter amount" />
-              <Button>Enter</Button>
+              <Input
+                onChange={this.onChangeIncomeAmount}
+                placeholder="enter amount"
+                value={this.state.inputIncome}
+              />
+              <Button onClick={this.submitIncome}>Enter</Button>
+
+              <List
+                header={<div>Transactions</div>}
+                bordered
+                dataSource={budgetIncome}
+                size={"small"}
+                renderItem={(item) => (
+                  <List.Item>
+                    <Title>{item.type}</Title>{" "}
+                    <Row>
+                      <Text>{item.date}</Text> <Text>${item.amount}</Text>
+                    </Row>
+                  </List.Item>
+                )}
+              />
             </Panel>
             <Panel header="Expense" key="2" className="expense">
               <Text>Add expense: </Text>
-              <Input placeholder="enter amount" />
-              <Button>Enter</Button>
+              <Input
+                onChange={this.onChangeExpenseAmount}
+                placeholder="enter amount"
+                value={this.state.inputExpense}
+              />
+              <Button onClick={this.submitExpense}>Enter</Button>
+
+              <List
+                header={<div>Transactions</div>}
+                bordered
+                dataSource={budgetExpense}
+                size={"small"}
+                renderItem={(item) => (
+                  <List.Item>
+                    <Title>{item.type}</Title>{" "}
+                    <Row>
+                      <Text>{item.date}</Text> <Text>${item.amount}</Text>
+                    </Row>
+                  </List.Item>
+                )}
+              />
             </Panel>
             <Panel header="Overall" key="3" className="overall">
               <p>{"yep"}</p>

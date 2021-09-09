@@ -270,6 +270,43 @@ export function getAllTestsBySearch(search, page, size) {
   });
 }
 
+export function createBudget(data) {
+  return request({
+    url: API_BASE_URL + "/budget/save",
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}
+
+export function removeBudget(type, id) {
+  return request({
+    url: API_BASE_URL + "/budget/type/" + type + "/id/" + id,
+    method: "DELETE",
+    body: JSON.stringify(type, id),
+  });
+}
+
+export function getBudget(page, size, expense, beginDate, endDate) {
+  page = page || 0;
+  size = size || STUDENT_LIST_SIZE;
+
+  return request({
+    url:
+      API_BASE_URL +
+      "/budget/expense/" +
+      expense +
+      "/begin/" +
+      beginDate +
+      "/end/" +
+      endDate +
+      "?page=" +
+      page +
+      "&size=" +
+      size,
+    method: "GET",
+  });
+}
+
 export function createStudentUser(data) {
   return request({
     url: API_BASE_URL + "/user_students/saveUserStudent",
@@ -337,6 +374,25 @@ export function getAllEventsByMonthYear(page, size, month, year) {
     url:
       API_BASE_URL +
       "/schedule/events/search/month/" +
+      month +
+      "/year/" +
+      year +
+      "?page=" +
+      page +
+      "&size=" +
+      size,
+    method: "GET",
+  });
+}
+
+export function getAllSessionsByMonthYear(page, size, month, year) {
+  page = page || 0;
+  size = size || STUDENT_LIST_SIZE;
+
+  return request({
+    url:
+      API_BASE_URL +
+      "/attendance/sessions/search/month/" +
       month +
       "/year/" +
       year +
@@ -636,6 +692,13 @@ export function getStudentSessionsBySessionId(sessionId) {
 export function getTestScoresByStudentIdAndTestId(studentId, testId) {
   return request({
     url: API_BASE_URL + "/tests/student_scores/" + testId + "/" + studentId,
+    method: "GET",
+  });
+}
+
+export function getTestScoresByTestId(testId) {
+  return request({
+    url: API_BASE_URL + "/tests/student_scores/tests/" + testId,
     method: "GET",
   });
 }

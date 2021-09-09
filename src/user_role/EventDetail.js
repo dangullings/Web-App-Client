@@ -21,6 +21,7 @@ import {
   getImage,
   getLocationByName,
   getStudentEvents,
+  createBudget,
 } from "../util/APIUtils";
 import { Link, withRouter } from "react-router-dom";
 import StripeContainer from "../stripe/StripeContainer";
@@ -508,6 +509,19 @@ class EventDetail extends Component {
           } else {
           }
         });
+
+      const budget = {
+        id: "",
+        date: moment().format("YYYY-MM-DD"),
+        isExpense: false,
+        amount: event.price,
+        assignRef: event.id,
+        type: "event",
+      };
+
+      createBudget(budget)
+        .then((response) => {})
+        .catch((error) => {});
     }
   }
 
