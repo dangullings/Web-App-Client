@@ -517,6 +517,7 @@ class EventDetail extends Component {
         amount: event.price,
         assignRef: event.id,
         type: "event",
+        note: event.title,
       };
 
       createBudget(budget)

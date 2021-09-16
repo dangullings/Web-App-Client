@@ -634,6 +634,7 @@ class SessionDetail extends Component {
         amount: session.price,
         assignRef: session.id,
         type: "session",
+        note: session.title,
       };
 
       createBudget(budget)

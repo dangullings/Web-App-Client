@@ -332,6 +332,7 @@ class Shop extends Component {
       amount: totalPrice,
       assignRef: orderIdForBudget,
       type: "order",
+      note: this.state.currentUser.name,
     };
 
     createBudget(budget)

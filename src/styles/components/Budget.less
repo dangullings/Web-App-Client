@@ -86,8 +86,8 @@
   .ant-input {
     border-color: #e9e9e9;
     border-right-width: 1px !important;
-    width: 30%;
-    border-radius: 10px 0px 0px 10px;
+    width: 25%;
+    border-radius: 0px 0px 0px 0px;
     max-width: 200px;
   }
 
@@ -101,12 +101,18 @@
     border-right-width: 1px !important;
   }
 
+  .note {
+    width: 50%;
+    border-radius: 10px 0px 0px 10px;
+  }
+
   .ant-btn {
     border-radius: 0px 10px 10px 0px;
     color: rgba(50, 50, 50, 1);
     border-color: #d9d9d9;
     background: #fff;
     font-weight: 600;
+    width: 25%;
   }
 
   .ant-btn:hover {
@@ -118,7 +124,6 @@
   .ant-row {
     display: flex;
     flex-flow: row wrap;
-    justify-content: space-between;
   }
 
   .ant-typography {
@@ -137,16 +142,34 @@
 
   .ant-list-bordered {
     overflow: auto;
-    height: 200px;
+    max-height: 300px;
     margin-top: 20px;
     background-color: rgb(255, 255, 255);
     border-radius: 10px 10px 10px 10px;
   }
 
   .ant-list-bordered .ant-list-item {
-    padding-right: 24px;
-    padding-left: 24px;
+    display: block;
+    padding-right: 18px;
+    padding-left: 18px;
     line-height: 10px;
+    padding-top: 8px;
+    padding-bottom: 10px;
+  }
+
+  .testme {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .date {
+    color: rgb(66, 66, 66);
+  }
+
+  .amount {
+    font-weight: 600;
+    font-size: 16px;
+    color: rgb(66, 66, 66);
   }
 
   .ant-picker:hover,

@@ -1785,6 +1785,7 @@ class TestList extends Component {
         amount: this.state.test.price,
         assignRef: this.state.test.id,
         type: "test",
+        note: this.state.test.title,
       };
 
       createBudget(budget)

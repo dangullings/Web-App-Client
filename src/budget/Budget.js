@@ -39,9 +39,11 @@ class Budget extends Component {
       budgetExpense: "",
       totalIncome: 0,
       totalExpense: 0,
-      inputIncome: 0,
-      inputExpense: 0,
-      beginDate: moment().subtract(1, "months"),
+      inputIncome: "",
+      inputExpense: "",
+      inputIncomeNote: "",
+      inputExpenseNote: "",
+      beginDate: moment().subtract(1, "years"),
       endDate: moment(),
     };
 
@@ -52,13 +54,17 @@ class Budget extends Component {
     this.getEventIncome = this.getEventIncome.bind(this);
     this.getTestIncome = this.getTestIncome.bind(this);
     this.submitIncome = this.submitIncome.bind(this);
+    this.onChangeIncomeNote = this.onChangeIncomeNote.bind(this);
     this.onChangeIncomeAmount = this.onChangeIncomeAmount.bind(this);
     this.submitExpense = this.submitExpense.bind(this);
+    this.onChangeExpenseNote = this.onChangeExpenseNote.bind(this);
     this.onChangeExpenseAmount = this.onChangeExpenseAmount.bind(this);
     this.onBeginDateChange = this.onBeginDateChange.bind(this);
     this.onEndDateChange = this.onEndDateChange.bind(this);
 
-    this.getBudget();
+    this.getIncomeBudgetTransactions();
+
+    //this.getBudget();
   }
 
   getBudget() {
@@ -306,12 +312,15 @@ class Budget extends Component {
       amount: this.state.inputIncome,
       assignRef: "",
       type: "custom",
+      note: this.state.inputIncomeNote,
     };
 
     createBudget(budget)
       .then((response) => {
         this.setState({
           budgetIncome: this.state.budgetIncome.concat(budget),
+          inputIncome: "",
+          inputIncomeNote: "",
         });
       })
       .catch((error) => {});
@@ -325,6 +334,7 @@ class Budget extends Component {
       amount: this.state.inputExpense,
       assignRef: "",
       type: "custom",
+      note: this.state.inputExpenseNote,
     };
 
     console.log("submit expense " + budget.expense);
@@ -333,9 +343,25 @@ class Budget extends Component {
       .then((response) => {
         this.setState({
           budgetExpense: this.state.budgetExpense.concat(budget),
+          inputExpense: "",
+          inputExpenseNote: "",
         });
       })
       .catch((error) => {});
+  }
+
+  onChangeIncomeNote(event) {
+    const value = event.target.value;
+    this.setState({
+      inputIncomeNote: value,
+    });
+  }
+
+  onChangeExpenseNote(event) {
+    const value = event.target.value;
+    this.setState({
+      inputExpenseNote: value,
+    });
   }
 
   onChangeIncomeAmount(event) {
@@ -353,6 +379,7 @@ class Budget extends Component {
   }
 
   onBeginDateChange(date, dateString) {
+    if (dateString == "") return;
     this.setState(
       {
         beginDate: date,
@@ -363,6 +390,7 @@ class Budget extends Component {
   }
 
   onEndDateChange(date, dateString) {
+    if (dateString == "") return;
     this.setState(
       {
         endDate: date,
@@ -416,14 +444,30 @@ class Budget extends Component {
         <div className="budget-style">
           <Collapse defaultActiveKey={["1"]} onChange={this.callback}>
             <Panel header={"Income $" + totalIncome} key="1" className="income">
-              <Text>Add income: </Text>
-              <Input
-                onChange={this.onChangeIncomeAmount}
-                placeholder="enter amount"
-                value={this.state.inputIncome}
-              />
-              <Button onClick={this.submitIncome}>Enter</Button>
+              <Text
+                style={{
+                  paddingLeft: "6px",
+                  marginBottom: "20px",
+                  fontSize: "18px",
+                }}
+              >
+                Add income
+              </Text>
 
+              <Row>
+                <Input
+                  className="note"
+                  onChange={this.onChangeIncomeNote}
+                  placeholder="note"
+                  value={this.state.inputIncomeNote}
+                />
+                <Input
+                  onChange={this.onChangeIncomeAmount}
+                  placeholder="$"
+                  value={this.state.inputIncome}
+                />
+                <Button onClick={this.submitIncome}>Enter</Button>
+              </Row>
               <List
                 header={<div>Transactions</div>}
                 bordered
@@ -431,22 +475,42 @@ class Budget extends Component {
                 size={"small"}
                 renderItem={(item) => (
                   <List.Item>
-                    <Title>{item.type}</Title>{" "}
-                    <Row>
-                      <Text>{item.date}</Text> <Text>${item.amount}</Text>
-                    </Row>
+                    <Title>
+                      {item.type} {" | "} {item.note}
+                    </Title>
+                    <div className="testme">
+                      <div className="date">{item.date}</div>{" "}
+                      <div className="amount">${item.amount}</div>
+                    </div>
                   </List.Item>
                 )}
               />
             </Panel>
             <Panel header="Expense" key="2" className="expense">
-              <Text>Add expense: </Text>
-              <Input
-                onChange={this.onChangeExpenseAmount}
-                placeholder="enter amount"
-                value={this.state.inputExpense}
-              />
-              <Button onClick={this.submitExpense}>Enter</Button>
+              <Text
+                style={{
+                  paddingLeft: "6px",
+                  marginBottom: "20px",
+                  fontSize: "18px",
+                }}
+              >
+                Add expense
+              </Text>
+
+              <Row>
+                <Input
+                  className="note"
+                  onChange={this.onChangeExpenseNote}
+                  placeholder="note"
+                  value={this.state.inputExpenseNote}
+                />
+                <Input
+                  onChange={this.onChangeExpenseAmount}
+                  placeholder="$"
+                  value={this.state.inputExpense}
+                />
+                <Button onClick={this.submitExpense}>Enter</Button>
+              </Row>
 
               <List
                 header={<div>Transactions</div>}
