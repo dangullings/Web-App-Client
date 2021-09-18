@@ -63,7 +63,7 @@ class Budget extends Component {
     this.onEndDateChange = this.onEndDateChange.bind(this);
 
     this.getIncomeBudgetTransactions();
-
+    this.getExpenseBudgetTransactions();
     //this.getBudget();
   }
 
@@ -217,7 +217,17 @@ class Budget extends Component {
     let tally;
     var totalIncome = 0;
 
-    for (tally of income.orders) {
+    for (tally of income) {
+      totalIncome = totalIncome + tally.amount;
+    }
+
+    let roundedIncome = Math.round(totalIncome * 100) / 100;
+
+    this.setState({
+      totalIncome: roundedIncome,
+    });
+
+    /* for (tally of income.orders) {
       totalIncome = totalIncome + tally.price;
     }
 
@@ -239,7 +249,22 @@ class Budget extends Component {
       },
       () => this.getIncomeBudgetTransactions(),
       this.getExpenseBudgetTransactions()
-    );
+    ); */
+  }
+
+  tallyExpenses(expense) {
+    let tally;
+    var totalExpense = 0;
+
+    for (tally of expense) {
+      totalExpense = totalExpense + tally.amount;
+    }
+
+    let roundedExpense = Math.round(totalExpense * 100) / 100;
+
+    this.setState({
+      totalExpense: roundedExpense,
+    });
   }
 
   getIncomeBudgetTransactions() {
@@ -247,9 +272,6 @@ class Budget extends Component {
 
     let newBeginDate = beginDate.format("YYYY-MM-DD");
     let newEndDate = endDate.format("YYYY-MM-DD");
-
-    console.log("getbudgettransactions " + newBeginDate + " " + newEndDate);
-
     let promise;
 
     promise = getBudget(0, 1000, false, newBeginDate, newEndDate);
@@ -260,10 +282,13 @@ class Budget extends Component {
 
     promise
       .then((response) => {
-        this.setState({
-          loading: false,
-          budgetIncome: response.content,
-        });
+        this.setState(
+          {
+            loading: false,
+            budgetIncome: response.content,
+          },
+          () => this.tallyIncomes(response.content)
+        );
       })
       .catch((error) => {
         this.setState({
@@ -277,9 +302,6 @@ class Budget extends Component {
 
     let newBeginDate = beginDate.format("YYYY-MM-DD");
     let newEndDate = endDate.format("YYYY-MM-DD");
-
-    console.log("getbudgettransactions " + newBeginDate + " " + newEndDate);
-
     let promise;
 
     promise = getBudget(0, 1000, true, newBeginDate, newEndDate);
@@ -290,10 +312,13 @@ class Budget extends Component {
 
     promise
       .then((response) => {
-        this.setState({
-          loading: false,
-          budgetExpense: response.content,
-        });
+        this.setState(
+          {
+            loading: false,
+            budgetExpense: response.content,
+          },
+          () => this.tallyExpenses(response.content)
+        );
       })
       .catch((error) => {
         this.setState({
@@ -305,7 +330,7 @@ class Budget extends Component {
   getExpenses() {}
 
   submitIncome() {
-    const budget = {
+    let budget = {
       id: "",
       date: moment().format("YYYY-MM-DD"),
       expense: false,
@@ -315,10 +340,12 @@ class Budget extends Component {
       note: this.state.inputIncomeNote,
     };
 
+    let newBudgetIncome = [budget].concat(this.state.budgetIncome);
+
     createBudget(budget)
       .then((response) => {
         this.setState({
-          budgetIncome: this.state.budgetIncome.concat(budget),
+          budgetIncome: newBudgetIncome,
           inputIncome: "",
           inputIncomeNote: "",
         });
@@ -327,7 +354,7 @@ class Budget extends Component {
   }
 
   submitExpense() {
-    const budget = {
+    let budget = {
       id: "",
       date: moment().format("YYYY-MM-DD"),
       expense: true,
@@ -337,12 +364,12 @@ class Budget extends Component {
       note: this.state.inputExpenseNote,
     };
 
-    console.log("submit expense " + budget.expense);
+    let newBudgetExpense = [budget].concat(this.state.budgetExpense);
 
     createBudget(budget)
       .then((response) => {
         this.setState({
-          budgetExpense: this.state.budgetExpense.concat(budget),
+          budgetExpense: newBudgetExpense,
           inputExpense: "",
           inputExpenseNote: "",
         });
@@ -406,6 +433,7 @@ class Budget extends Component {
       budgetExpense,
       incomes,
       totalIncome,
+      totalExpense,
       beginDate,
       endDate,
     } = this.state;
@@ -486,7 +514,11 @@ class Budget extends Component {
                 )}
               />
             </Panel>
-            <Panel header="Expense" key="2" className="expense">
+            <Panel
+              header={"Expense $" + totalExpense}
+              key="2"
+              className="expense"
+            >
               <Text
                 style={{
                   paddingLeft: "6px",
@@ -519,16 +551,16 @@ class Budget extends Component {
                 size={"small"}
                 renderItem={(item) => (
                   <List.Item>
-                    <Title>{item.type}</Title>{" "}
-                    <Row>
-                      <Text>{item.date}</Text> <Text>${item.amount}</Text>
-                    </Row>
+                    <Title>
+                      {item.type} {" | "} {item.note}
+                    </Title>
+                    <div className="testme">
+                      <div className="date">{item.date}</div>{" "}
+                      <div className="amount">${item.amount}</div>
+                    </div>
                   </List.Item>
                 )}
               />
-            </Panel>
-            <Panel header="Overall" key="3" className="overall">
-              <p>{"yep"}</p>
             </Panel>
           </Collapse>
         </div>
