@@ -39,8 +39,8 @@ class Budget extends Component {
       budgetExpense: "",
       totalIncome: 0,
       totalExpense: 0,
-      inputIncome: "",
-      inputExpense: "",
+      inputIncome: 0,
+      inputExpense: 0,
       inputIncomeNote: "",
       inputExpenseNote: "",
       beginDate: moment().subtract(1, "years"),
@@ -342,11 +342,16 @@ class Budget extends Component {
 
     let newBudgetIncome = [budget].concat(this.state.budgetIncome);
 
+    let incomeAmt = parseFloat(this.state.inputIncome);
+    let totalIncomeAmt = parseFloat(this.state.totalIncome);
+    let totalIncome = totalIncomeAmt + incomeAmt;
+
     createBudget(budget)
       .then((response) => {
         this.setState({
           budgetIncome: newBudgetIncome,
-          inputIncome: "",
+          totalIncome: totalIncome,
+          inputIncome: 0,
           inputIncomeNote: "",
         });
       })
@@ -366,11 +371,16 @@ class Budget extends Component {
 
     let newBudgetExpense = [budget].concat(this.state.budgetExpense);
 
+    let expenseAmt = parseFloat(this.state.inputExpense);
+    let totalExpenseAmt = parseFloat(this.state.totalExpense);
+    let totalExpense = totalExpenseAmt + expenseAmt;
+
     createBudget(budget)
       .then((response) => {
         this.setState({
           budgetExpense: newBudgetExpense,
-          inputExpense: "",
+          totalExpense: totalExpense,
+          inputExpense: 0,
           inputExpenseNote: "",
         });
       })
@@ -471,7 +481,11 @@ class Budget extends Component {
         </div>
         <div className="budget-style">
           <Collapse defaultActiveKey={["1"]} onChange={this.callback}>
-            <Panel header={"Income $" + totalIncome} key="1" className="income">
+            <Panel
+              header={"Income $" + totalIncome.toFixed(2)}
+              key="1"
+              className="income"
+            >
               <Text
                 style={{
                   paddingLeft: "6px",
@@ -491,6 +505,7 @@ class Budget extends Component {
                 />
                 <Input
                   onChange={this.onChangeIncomeAmount}
+                  onClick={this.clearInput}
                   placeholder="$"
                   value={this.state.inputIncome}
                 />
@@ -508,14 +523,14 @@ class Budget extends Component {
                     </Title>
                     <div className="testme">
                       <div className="date">{item.date}</div>{" "}
-                      <div className="amount">${item.amount}</div>
+                      <div className="amount">${item.amount.toFixed(2)}</div>
                     </div>
                   </List.Item>
                 )}
               />
             </Panel>
             <Panel
-              header={"Expense $" + totalExpense}
+              header={"Expense $" + totalExpense.toFixed(2)}
               key="2"
               className="expense"
             >
@@ -556,7 +571,7 @@ class Budget extends Component {
                     </Title>
                     <div className="testme">
                       <div className="date">{item.date}</div>{" "}
-                      <div className="amount">${item.amount}</div>
+                      <div className="amount">${item.amount.toFixed(2)}</div>
                     </div>
                   </List.Item>
                 )}
