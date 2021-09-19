@@ -297,8 +297,6 @@ class Shop extends Component {
   }
 
   saveOrder() {
-    const { total } = this.state;
-
     var orderIdForBudget;
     let totalPrice = this.getTotalCartCost();
     let note = "order note";
@@ -322,21 +320,21 @@ class Shop extends Component {
           },
           () => this.saveLineItems()
         );
+
+        const budget = {
+          id: "",
+          date: moment().format("YYYY-MM-DD"),
+          isExpense: false,
+          amount: totalPrice,
+          assignRef: orderIdForBudget,
+          type: "order",
+          note: this.state.currentUser.name,
+        };
+
+        createBudget(budget)
+          .then((response) => {})
+          .catch((error) => {});
       })
-      .catch((error) => {});
-
-    const budget = {
-      id: "",
-      date: moment().format("YYYY-MM-DD"),
-      isExpense: false,
-      amount: totalPrice,
-      assignRef: orderIdForBudget,
-      type: "order",
-      note: this.state.currentUser.name,
-    };
-
-    createBudget(budget)
-      .then((response) => {})
       .catch((error) => {});
   }
 

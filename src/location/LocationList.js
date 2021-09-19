@@ -61,10 +61,12 @@ class LocationList extends Component {
         {
           title: "Name",
           dataIndex: "name",
+          ellipsis: true,
         },
         {
           title: "Address",
           dataIndex: "address",
+          ellipsis: true,
         },
       ],
     };

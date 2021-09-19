@@ -107,6 +107,7 @@ class NewItem extends Component {
           title: "Name",
           dataIndex: "name",
           width: "40%",
+          ellipsis: true,
         },
         {
           title: "Description",

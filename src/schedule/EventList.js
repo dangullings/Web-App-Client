@@ -33,6 +33,8 @@ import {
   removeStudentEventsByEventId,
   getImage,
   removeImage,
+  createBudget,
+  removeBudget,
 } from "../util/APIUtils";
 import moment from "moment";
 import { STUDENT_LIST_SIZE } from "../constants";
@@ -640,6 +642,9 @@ class EventList extends Component {
       .then((response) => {
         message.success("Student removed from signup.");
         this.handleAfterDeletion(studentId);
+        removeBudget("event", eventId)
+          .then((response) => {})
+          .catch((error) => {});
       })
       .catch((error) => {
         message.error("Error [" + error.message + "]");
@@ -736,7 +741,7 @@ class EventList extends Component {
       calendarEventId: eventId,
       studentId: selectedStudentId,
       charged: this.state.event.price,
-      paid: 0,
+      paid: this.state.event.price,
       signupDate: moment().format("YYYY-MM-DD"),
     };
 
@@ -756,6 +761,20 @@ class EventList extends Component {
           description: "",
           duration: 4,
         });
+
+        const budget = {
+          id: "",
+          date: moment().format("YYYY-MM-DD"),
+          isExpense: false,
+          amount: this.state.event.price,
+          assignRef: eventId,
+          type: "event",
+          note: student.firstName + " " + student.lastName + " fee",
+        };
+
+        createBudget(budget)
+          .then((response) => {})
+          .catch((error) => {});
       })
       .catch((error) => {
         this.setState({
@@ -798,6 +817,9 @@ class EventList extends Component {
         this.handleCancel();
         this.getEventList(this.state.page, this.state.STUDENT_LIST_SIZE);
         this.setState({ loading: false, eventModalVisible: false });
+        removeBudget("event", id)
+          .then((response) => {})
+          .catch((error) => {});
       })
       .catch((error) => {
         message.error("Error [" + error.message + "]");
@@ -857,29 +879,20 @@ class EventList extends Component {
         dataIndex: "studentName",
         key: "studentName",
         ellipsis: true,
-        sorter: true,
-        render: (text, record) => (
-          <a
-            href={"/students/" + record.studentId}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {text}
-          </a>
-        ),
+        //sorter: true,
+        render: (text, record) =>
+          //<a
+          //  href={"/students/" + record.studentId}
+          //  target="_blank"
+          //  rel="noopener noreferrer"
+          //>
+          text,
+        //</a>
       },
       {
         title: "Rank",
         dataIndex: "studentRank",
         key: "studentRank",
-        ellipsis: true,
-      },
-      {
-        title: "Balance",
-        dataIndex: "balance",
-        key: "balance",
-        align: "right",
-        width: 70,
         ellipsis: true,
       },
       {
@@ -912,18 +925,21 @@ class EventList extends Component {
         dataIndex: "title",
         key: "title",
         width: 50,
+        ellipsis: true,
       },
       {
         title: "Location",
         dataIndex: "location",
         key: "location",
         width: 60,
+        ellipsis: true,
       },
       {
         title: "Date",
         dataIndex: "date",
         key: "date",
         width: 40,
+        ellipsis: true,
       },
     ];
 
@@ -1486,15 +1502,15 @@ class EventList extends Component {
                   scroll={{ x: 300 }}
                   onChange={this.handleTableChange}
                   onRow={(record, rowIndex) => {
-                    return {
-                      onClick: (event) => {
-                        this.handleStudentRowClick(record);
-                      }, // click row
-                      //onDoubleClick: event => { this.handleRowClick(record) }, // double click row
-                      //onContextMenu: event => { }, // right button click row
-                      //onMouseEnter: event => { }, // mouse enter row
-                      //onMouseLeave: event => { }, // mouse leave row
-                    };
+                    //return {
+                    //onClick: (event) => {
+                    //  this.handleStudentRowClick(record);
+                    //}, // click row
+                    //onDoubleClick: event => { this.handleRowClick(record) }, // double click row
+                    //onContextMenu: event => { }, // right button click row
+                    //onMouseEnter: event => { }, // mouse enter row
+                    //onMouseLeave: event => { }, // mouse leave row
+                    //};
                   }}
                 />
               </Form.Item>

@@ -39,6 +39,8 @@ import {
   getImage,
   createImage,
   removeImage,
+  createBudget,
+  removeBudget,
 } from "../util/APIUtils";
 import moment from "moment";
 import { STUDENT_LIST_SIZE } from "../constants";
@@ -486,11 +488,14 @@ class SessionList extends Component {
   };
 
   handleDelete = (studentId) => {
-    const { SessionId } = this.state;
-    removeStudentSessionBySessionIdAndStudentId(SessionId, studentId)
+    const { sessionId } = this.state;
+    removeStudentSessionBySessionIdAndStudentId(sessionId, studentId)
       .then((response) => {
         message.success("Student removed from signup.");
         this.handleAfterDeletion(studentId);
+        removeBudget("session", sessionId)
+          .then((response) => {})
+          .catch((error) => {});
       })
       .catch((error) => {
         message.error("Error [" + error.message + "]");
@@ -583,7 +588,7 @@ class SessionList extends Component {
       classSessionId: sessionId,
       studentId: selectedStudentId,
       charged: session.price,
-      paid: 0,
+      paid: session.price,
       signupDate: moment().format("YYYY-MM-DD"),
     };
 
@@ -603,6 +608,20 @@ class SessionList extends Component {
           description: "",
           duration: 4,
         });
+
+        const budget = {
+          id: "",
+          date: moment().format("YYYY-MM-DD"),
+          isExpense: false,
+          amount: session.price,
+          assignRef: sessionId,
+          type: "session",
+          note: student.firstName + " " + student.lastName + " fee",
+        };
+
+        createBudget(budget)
+          .then((response) => {})
+          .catch((error) => {});
       })
       .catch((error) => {
         this.setState({
@@ -1672,6 +1691,10 @@ class SessionList extends Component {
         this.handleCancel();
         this.getSessionList(this.state.page, this.state.STUDENT_LIST_SIZE);
         this.setState({ loading: false, sessionModalVisible: false });
+
+        removeBudget("session", id)
+          .then((response) => {})
+          .catch((error) => {});
       })
       .catch((error) => {
         message.error("Error [" + error.message + "]");
@@ -1740,29 +1763,20 @@ class SessionList extends Component {
         dataIndex: "studentName",
         key: "studentName",
         ellipsis: true,
-        sorter: true,
-        render: (text, record) => (
-          <a
-            href={"/students/" + record.studentId}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {text}
-          </a>
-        ),
+        //sorter: true,
+        render: (text, record) =>
+          //<a
+          //  href={"/students/" + record.studentId}
+          //  target="_blank"
+          //  rel="noopener noreferrer"
+          //>
+          text,
+        //</a>
       },
       {
         title: "Rank",
         dataIndex: "studentRank",
         key: "studentRank",
-        ellipsis: true,
-      },
-      {
-        title: "Balance",
-        dataIndex: "balance",
-        key: "balance",
-        align: "right",
-        width: 70,
         ellipsis: true,
       },
       {
@@ -2198,24 +2212,28 @@ class SessionList extends Component {
         dataIndex: "title",
         key: "title",
         width: 50,
+        ellipsis: true,
       },
       {
         title: "Location",
         dataIndex: "location",
         key: "location",
         width: 50,
+        ellipsis: true,
       },
       {
         title: "Start Date",
         dataIndex: "startDate",
         key: "startDate",
         width: 50,
+        ellipsis: true,
       },
       {
         title: "End Date",
         dataIndex: "endDate",
         key: "endDate",
         width: 50,
+        ellipsis: true,
       },
     ];
 
@@ -2800,15 +2818,15 @@ class SessionList extends Component {
                   scroll={{ x: 300 }}
                   onChange={this.handleTableChange}
                   onRow={(record, rowIndex) => {
-                    return {
-                      onClick: (event) => {
-                        this.handleStudentRowClick(record);
-                      }, // click row
-                      //onDoubleClick: event => { this.handleRowClick(record) }, // double click row
-                      //onContextMenu: event => { }, // right button click row
-                      //onMouseEnter: event => { }, // mouse enter row
-                      //onMouseLeave: event => { }, // mouse leave row
-                    };
+                    //return {
+                    //onClick: (event) => {
+                    //this.handleStudentRowClick(record);
+                    //}, // click row
+                    //onDoubleClick: event => { this.handleRowClick(record) }, // double click row
+                    //onContextMenu: event => { }, // right button click row
+                    //onMouseEnter: event => { }, // mouse enter row
+                    //onMouseLeave: event => { }, // mouse leave row
+                    //};
                   }}
                 />
               </Form.Item>

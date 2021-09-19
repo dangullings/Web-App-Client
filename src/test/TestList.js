@@ -937,6 +937,9 @@ class TestList extends Component {
         this.handleCancel();
         this.getTestList(this.state.page);
         this.setState({ loading: false, visible: false });
+        removeBudget("test", id)
+          .then((response) => {})
+          .catch((error) => {});
       })
       .catch((error) => {
         message.error("Error [" + error.message + "]");

@@ -12,6 +12,7 @@ import {
   removeLineItemByOrderId,
   createOrder,
   removeOrder,
+  removeBudget,
 } from "../util/APIUtils";
 
 import {
@@ -167,7 +168,7 @@ class Order extends Component {
       noteAlertVisible: true,
     });
     setTimeout(
-      function () {
+      function() {
         this.setState({ noteAlertVisible: false });
       }.bind(this),
       3000
@@ -196,7 +197,7 @@ class Order extends Component {
       fulfillAlertVisible: true,
     });
     setTimeout(
-      function () {
+      function() {
         this.setState({ fulfillAlertVisible: false });
       }.bind(this),
       3000
@@ -211,7 +212,8 @@ class Order extends Component {
       okText: "Yes",
       okType: "danger",
       cancelText: "No",
-      content: "This will erase all records of this order. [Order List]",
+      content:
+        "This will erase all records of this order. [Order List], [Budget]",
       onOk: () => {
         return this.deleteOrder();
       },
@@ -238,6 +240,10 @@ class Order extends Component {
       .catch((error) => {
         message.error("Error [" + error.message + "]");
       });
+
+    removeBudget("order", order.id)
+      .then((response) => {})
+      .catch((error) => {});
   }
 
   saveOrder() {

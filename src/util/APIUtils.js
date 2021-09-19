@@ -765,12 +765,8 @@ export function getAllUsers(page, size) {
 }
 
 export function getAllStudents(page, size, active) {
-  //page = page || 0;
-  //--page;
   let newPage = page - 1;
   size = size || STUDENT_LIST_SIZE;
-
-  console.log("get " + active);
 
   return request({
     url:
@@ -809,9 +805,6 @@ export function getMyPeeps(userId) {
 }
 
 export function createUserStudent(userStudent) {
-  console.log(
-    "user student save" + userStudent.userId + " " + userStudent.studentId
-  );
   return request({
     url: API_BASE_URL + "/user_students/saveUserStudent",
     method: "POST",
@@ -820,7 +813,6 @@ export function createUserStudent(userStudent) {
 }
 
 export function getStudentSessions(studentId) {
-  console.log("student id " + studentId);
   return request({
     url: API_BASE_URL + "/studentsessions/" + studentId + "/sessions",
     method: "GET",
@@ -828,7 +820,6 @@ export function getStudentSessions(studentId) {
 }
 
 export function getStudentEvents(studentId) {
-  console.log("student id " + studentId);
   return request({
     url: API_BASE_URL + "/studentevents/" + studentId + "/events",
     method: "GET",
@@ -836,7 +827,6 @@ export function getStudentEvents(studentId) {
 }
 
 export function getEventStudents(eventId) {
-  console.log("session id " + eventId);
   return request({
     url: API_BASE_URL + "/attendance/events/" + eventId + "/events",
     method: "GET",
@@ -858,7 +848,6 @@ export function getAllStudentsBySessionId(sessionId) {
 }
 
 export function getSessionStudents(sessionId) {
-  console.log("session id " + sessionId);
   return request({
     url: API_BASE_URL + "/attendance/sessions/" + sessionId + "/students",
     method: "GET",
@@ -866,11 +855,8 @@ export function getSessionStudents(sessionId) {
 }
 
 export function getAllStudentsBySearch(page, size, searchText, active) {
-  //page = page || 0;
   let newPage = page - 1;
   size = size || STUDENT_LIST_SIZE;
-
-  console.log("active " + active);
 
   return request({
     url:
@@ -928,7 +914,6 @@ export function removeLineItemByOrderId(orderId) {
 }
 
 export function getOrders(page, size) {
-  //page = page || 0;
   --page;
   size = size || STUDENT_LIST_SIZE;
 
@@ -946,7 +931,6 @@ export function getOrder(id) {
 }
 
 export function getOrderUsers(orderId) {
-  console.log("order id " + orderId);
   return request({
     url: API_BASE_URL + "/orders/" + orderId + "/users",
     method: "GET",
@@ -954,7 +938,6 @@ export function getOrderUsers(orderId) {
 }
 
 export function getOrderLineItems(orderId) {
-  console.log("order id " + orderId);
   return request({
     url: API_BASE_URL + "/orders/" + orderId + "/lineItems",
     method: "GET",
@@ -1005,11 +988,8 @@ export function getAllItemsBySearchAndType(
   type,
   active
 ) {
-  //page = page || 0;
   let newPage = page - 1;
   size = size || STUDENT_LIST_SIZE;
-
-  console.log("search and type" + searchText + " " + type);
 
   return request({
     url:
@@ -1049,11 +1029,8 @@ export function getAllItemsByType(page, size, type, active) {
 }
 
 export function getAllItemsBySearch(page, size, searchText, active) {
-  //page = page || 0;
   let newPage = page - 1;
   size = size || STUDENT_LIST_SIZE;
-
-  console.log("search" + searchText);
 
   return request({
     url:
@@ -1073,7 +1050,7 @@ export function getAllItemsBySearch(page, size, searchText, active) {
 export function getAllItemsByActive(page, size, active) {
   page = page || 0;
   size = size || STUDENT_LIST_SIZE;
-  console.log("active " + active);
+
   return request({
     url:
       API_BASE_URL +
@@ -1150,7 +1127,6 @@ export function getImageByItem(id) {
 }
 
 export function getImage(id) {
-  console.log("getImage " + id);
   return request({
     url: API_BASE_URL + "/images/image/" + id,
     method: "GET",
@@ -1158,7 +1134,6 @@ export function getImage(id) {
 }
 
 export function getAllItems(page, size) {
-  //page = page || 0;
   --page;
   size = size || STUDENT_LIST_SIZE;
 
@@ -1240,11 +1215,9 @@ export function resetPassword(email) {
 }
 
 export function getCurrentUser() {
-  console.log("getCurrentUser before");
   if (!localStorage.getItem(ACCESS_TOKEN)) {
     return Promise.reject("No access token set.");
   }
-  console.log("getCurrentUser");
   return request({
     url: API_BASE_URL + "/user/me",
     method: "GET",
