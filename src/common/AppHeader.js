@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Link, withRouter } from "react-router-dom";
-
+import moment from "moment";
 import { Menu, Typography, message, Row } from "antd";
 import {
   LoginOutlined,
@@ -57,15 +57,13 @@ class AppHeader extends Component {
       usersName = this.props.currentUser.name;
 
       dropdownMenu = [
-        <Link
-          style={{
-            marginLeft: 0,
-            fontSize: "20px",
-            color: "#4a4a4a",
-          }}
-          to={`/users/${this.props.currentUser.username}`}
-        >
-          {usersName}
+        <Link to={`/users/${this.props.currentUser.username}`}>
+          <div className="header-row">
+            <div className="header-item-name">{usersName}</div>
+            <div className="header-item-date">
+              {moment().format("dddd, MMMM Do YYYY")}
+            </div>
+          </div>
         </Link>,
       ];
     }
