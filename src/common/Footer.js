@@ -8,10 +8,10 @@ export default class Footer extends Component {
     return (
       <div
         style={{
-          marginTop: 40,
+          marginTop: 0,
           marginLeft: 0,
           width: "100%",
-          backgroundColor: "white",
+          backgroundColor: "rgb(250, 250, 250)",
           textAlign: "center",
           color: "darkgray",
         }}

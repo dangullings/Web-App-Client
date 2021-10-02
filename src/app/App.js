@@ -145,7 +145,7 @@ class App extends Component {
       console.log("render current name " + this.state.currentUser.role);
     }
     return (
-      <Layout>
+      <Layout style={{ backgroundColor: "green" }}>
         {isLoggedIn ? (
           <div></div>
         ) : (

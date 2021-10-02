@@ -865,7 +865,7 @@ class Attendance extends Component {
   handleAddColumn = (cols) => {
     const { dateCols, classDates } = this.state;
     var newCols = [];
-    var day1App, day2App, day3App, day4App, day5App, day6App;
+    var day1App, day2App, day3App, day4App, day5App, day6App, day7App;
 
     for (var i = 0; i < cols.length; i++) {
       if (i == 0) {
@@ -1004,6 +1004,30 @@ class Attendance extends Component {
           day6App += String(cols[i].day).concat("st");
         } else {
           day6App += String(cols[i].day).concat("th");
+        }
+      }
+
+      if (i == 6) {
+        let classDate;
+        for (classDate of classDates) {
+          let subDate = String(classDate.date);
+          let day = parseInt(subDate.slice(8, 10));
+          if (cols[i].day == day) {
+            var dt = moment(classDate.date, "YYYY-MM-DD");
+            day7App =
+              cols[i].location.split(" ")[0] + " " + dt.format("ddd") + " ";
+            break;
+          }
+        }
+
+        if (String(cols[i].day).slice(-1) == "2" && cols[i].day != 12) {
+          day7App += String(cols[i].day).concat("nd");
+        } else if (String(cols[i].day).slice(-1) == "3" && cols[i].day != 13) {
+          day7App += String(cols[i].day).concat("rd");
+        } else if (String(cols[i].day).slice(-1) == "1" && cols[i].day != 11) {
+          day7App += String(cols[i].day).concat("st");
+        } else {
+          day7App += String(cols[i].day).concat("th");
         }
       }
     }
@@ -1397,6 +1421,134 @@ class Attendance extends Component {
         ),
       };
       newCols.push(newCol6);
+    }
+
+    if (cols.length == 7) {
+      const newCol1 = {
+        key: cols[0],
+        title: day1App,
+        dataIndex: cols[0],
+        width: widthSet,
+        render: (value, record, rowIndex) => (
+          <Checkbox
+            checked={this.handleCheckboxValue(cols[0], record)}
+            onChange={this.handleCheckboxChangeFactory(
+              rowIndex,
+              cols[0],
+              record
+            )}
+          />
+        ),
+      };
+      newCols.push(newCol1);
+
+      const newCol2 = {
+        key: cols[1],
+        title: day2App,
+        dataIndex: cols[1],
+        width: widthSet,
+        render: (value, record, rowIndex) => (
+          <Checkbox
+            checked={this.handleCheckboxValue(cols[1], record)}
+            onChange={this.handleCheckboxChangeFactory(
+              rowIndex,
+              cols[1],
+              record
+            )}
+          />
+        ),
+      };
+      newCols.push(newCol2);
+
+      const newCol3 = {
+        key: cols[2],
+        title: day3App,
+        dataIndex: cols[2],
+        width: widthSet,
+        render: (value, record, rowIndex) => (
+          <Checkbox
+            checked={this.handleCheckboxValue(cols[2], record)}
+            onChange={this.handleCheckboxChangeFactory(
+              rowIndex,
+              cols[2],
+              record
+            )}
+          />
+        ),
+      };
+      newCols.push(newCol3);
+
+      const newCol4 = {
+        key: cols[3],
+        title: day4App,
+        dataIndex: cols[3],
+        width: widthSet,
+        render: (value, record, rowIndex) => (
+          <Checkbox
+            checked={this.handleCheckboxValue(cols[3], record)}
+            onChange={this.handleCheckboxChangeFactory(
+              rowIndex,
+              cols[3],
+              record
+            )}
+          />
+        ),
+      };
+      newCols.push(newCol4);
+
+      const newCol5 = {
+        key: cols[4],
+        title: day5App,
+        dataIndex: cols[4],
+        width: widthSet,
+        render: (value, record, rowIndex) => (
+          <Checkbox
+            checked={this.handleCheckboxValue(cols[4], record)}
+            onChange={this.handleCheckboxChangeFactory(
+              rowIndex,
+              cols[4],
+              record
+            )}
+          />
+        ),
+      };
+      newCols.push(newCol5);
+
+      const newCol6 = {
+        key: cols[5],
+        title: day6App,
+        dataIndex: cols[5],
+        width: widthSet,
+        render: (value, record, rowIndex) => (
+          <Checkbox
+            checked={this.handleCheckboxValue(cols[5], record)}
+            onChange={this.handleCheckboxChangeFactory(
+              rowIndex,
+              cols[5],
+              record
+            )}
+          />
+        ),
+      };
+      newCols.push(newCol6);
+
+      const newCol7 = {
+        key: cols[6],
+        title: day7App,
+        dataIndex: cols[6],
+        width: widthSet,
+        render: (value, record, rowIndex) => (
+          <Checkbox
+            checked={this.handleCheckboxValue(cols[6], record)}
+            onChange={this.handleCheckboxChangeFactory(
+              rowIndex,
+              cols[6],
+              record
+            )}
+          />
+        ),
+      };
+      newCols.push(newCol7);
     }
 
     this.setState({

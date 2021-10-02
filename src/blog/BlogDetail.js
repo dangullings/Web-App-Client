@@ -92,7 +92,11 @@ class BlogDetail extends Component {
           {
             <Button
               type="text"
-              style={{ marginTop: 0, marginBottom: 0 }}
+              style={{
+                marginTop: 0,
+                marginBottom: 0,
+                backgroundColor: "rgb(250, 250, 250)",
+              }}
               block={true}
               icon={<UnorderedListOutlined />}
             >
@@ -112,17 +116,8 @@ class BlogDetail extends Component {
             />
           </div>
           <Image
+            className="img"
             preview={false}
-            style={{
-              width: "100%",
-              height: "100%",
-              margin: "0px",
-              border: "1px solid #ddd",
-              borderRadius: "4px",
-              padding: "5px",
-            }}
-            width={"100%"}
-            height={"100%"}
             src={`data:image/jpeg;base64,${blogImage.photo}`}
           />
           <div className="blog-author">
