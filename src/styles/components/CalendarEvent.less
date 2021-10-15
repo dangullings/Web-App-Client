@@ -29,7 +29,7 @@
     .ant-picker-panel
     .ant-picker-cell-selected:hover
     .ant-picker-calendar-date-today {
-    background: @border-blue;
+    background: white;
     padding: 0;
     margin: 0;
   }
@@ -54,7 +54,23 @@
     .ant-picker-cell-selected:hover
     .ant-picker-calendar-date-today
     .ant-picker-calendar-date-value {
+    color: lightgray;
+    background: white;
+  }
+
+  .calendar-event
+    .ant-picker-calendar-full
+    .ant-picker-panel
+    .ant-picker-calendar-date-today {
+    border-color: #42aad3;
+  }
+
+  .ant-picker-calendar-full
+    .ant-picker-panel
+    .ant-picker-calendar-date-today
+    .ant-picker-calendar-date-value {
     color: white;
+    background-color: @highlight-blue;
   }
 
   .ant-picker-calendar-full .ant-picker-panel .ant-picker-calendar-date-today {
@@ -71,6 +87,11 @@
     color: rgba(0, 0, 0, 0.85);
     line-height: 1.5715;
     text-align: left;
+  }
+
+  .ant-checkbox-checked .ant-checkbox-inner {
+    background-color: @primary-blue;
+    border-color: @primary-blue;
   }
 
   .ant-picker:hover,

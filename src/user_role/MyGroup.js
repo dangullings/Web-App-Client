@@ -897,7 +897,7 @@ class MyGroup extends Component {
       }
     }
 
-    peepsClassDates.sort((a, b) => (a.date > b.date ? 1 : -1));
+    peepsClassDates.sort((a, b) => (a.date >= b.date ? 1 : -1));
 
     let upcomingClassDates = peepsClassDates.slice(
       0,
@@ -1404,7 +1404,7 @@ class MyGroup extends Component {
       for (i of classList) {
         let classDate = moment(i.date, "YYYY-MM-DD HH:mm a");
         if (
-          classDate.isSameOrAfter(moment()) &&
+          classDate.isSameOrAfter(moment().format("YYYY-MM-DD")) &&
           classDate.isSameOrBefore(moment().add(7, "d"))
         ) {
           upcomingClasses.push(i);
@@ -1414,7 +1414,7 @@ class MyGroup extends Component {
       for (i of testList) {
         let testDate = moment(i.date, "YYYY-MM-DD HH:mm a");
         if (
-          testDate.isSameOrAfter(moment()) &&
+          testDate.isSameOrAfter(moment().format("YYYY-MM-DD")) &&
           testDate.isSameOrBefore(moment().add(7, "d"))
         ) {
           upcomingTests.push(i);
@@ -1424,7 +1424,7 @@ class MyGroup extends Component {
       for (i of eventList) {
         let eventDate = moment(i.date, "YYYY-MM-DD HH:mm a");
         if (
-          eventDate.isSameOrAfter(moment()) &&
+          eventDate.isSameOrAfter(moment().format("YYYY-MM-DD")) &&
           eventDate.isSameOrBefore(moment().add(7, "d"))
         ) {
           upcomingEvents.push(i);

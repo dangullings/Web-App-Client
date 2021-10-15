@@ -8,7 +8,7 @@ import {
   Typography,
   DatePicker,
   Card,
-  Input,
+  Checkbox,
   List,
   Tag,
   Row,
@@ -21,6 +21,10 @@ import {
   getAllTestsByMonthYear,
   getAllClassDatesByMonthYear,
   getAllLocations,
+  getMyPeeps,
+  getStudentTests,
+  getStudentEvents,
+  getStudentSessions,
 } from "../util/APIUtils";
 import "../styles/style.less";
 import { getRanks } from "../util/Helpers.js";
@@ -47,12 +51,16 @@ class EventCalendar extends Component {
     this.state = {
       currentUser: this.props.currentUser,
 
+      myPeeps: [],
       year: moment().year(),
       month: moment().month(),
       events: [],
       tests: [],
       classDates: [],
       eventDates: [],
+      myPeepTestIds: [],
+      myPeepSessionIds: [],
+      myPeepEventIds: [],
       dayModalVisible: "",
       eventModalVisible: "",
       loading: false,
@@ -60,8 +68,13 @@ class EventCalendar extends Component {
       selectedMoment: moment(),
       locations: [],
       selectedLocation: "",
+      myCalendar: true,
     };
 
+    this.getMyPeepCalendarItems = this.getMyPeepCalendarItems.bind(this);
+    this.getMyPeepCalendarEvents = this.getMyPeepCalendarEvents.bind(this);
+    this.getMyPeepCalendarSessions = this.getMyPeepCalendarSessions.bind(this);
+    this.getMyPeepsList = this.getMyPeepsList.bind(this);
     this.dateCellRender = this.dateCellRender.bind(this);
     this.handleDateClick = this.handleDateClick.bind(this);
     this.handleDateChange = this.handleDateChange.bind(this);
@@ -74,12 +87,123 @@ class EventCalendar extends Component {
       this
     );
     this.handleTypeChange = this.handleTypeChange.bind(this);
+    this.onMyCalendarChange = this.onMyCalendarChange.bind(this);
   }
 
   formRef = React.createRef();
 
   componentDidMount() {
     this.onMonthYearChange(moment(), String(moment().format("YYYY-MM")));
+    this.getMyPeepsList();
+  }
+
+  getMyPeepsList() {
+    let promise;
+
+    let userId;
+    if (
+      this.state.currentUser &&
+      this.state.currentUser !== "null" &&
+      this.state.currentUser !== "undefined"
+    ) {
+      userId = this.state.currentUser.id;
+    } else {
+      userId = this.props.currentUser;
+    }
+
+    promise = getMyPeeps(userId);
+    if (!promise) {
+      return;
+    }
+
+    promise
+      .then((response) => {
+        this.setState(
+          {
+            myPeeps: response,
+          },
+          () => this.getMyPeepCalendarItems(response)
+        );
+      })
+      .catch((error) => {});
+  }
+
+  getMyPeepCalendarItems(peeps) {
+    var promises = [];
+    var peepItemIds = [];
+    var value, innerValue;
+
+    this.state.myPeepTestIds.length = 0;
+    let peep;
+    for (peep of peeps) {
+      let promise = getStudentTests(peep.id);
+      promises.push(promise);
+    }
+
+    Promise.all(promises).then((values) => {
+      for (value of values) {
+        for (innerValue of value) {
+          peepItemIds.push(innerValue.id);
+        }
+      }
+      this.setState(
+        {
+          myPeepTestIds: peepItemIds,
+        },
+        () => this.getMyPeepCalendarEvents(peeps)
+      );
+    });
+  }
+
+  getMyPeepCalendarEvents(peeps) {
+    var promises = [];
+    var peepItemIds = [];
+    var value, innerValue;
+
+    this.state.myPeepEventIds.length = 0;
+    let peep;
+    for (peep of peeps) {
+      let promise = getStudentEvents(peep.id);
+      promises.push(promise);
+    }
+
+    Promise.all(promises).then((values) => {
+      for (value of values) {
+        for (innerValue of value) {
+          peepItemIds.push(innerValue.id);
+        }
+      }
+      this.setState(
+        {
+          myPeepEventIds: peepItemIds,
+        },
+        () => this.getMyPeepCalendarSessions(peeps)
+      );
+    });
+  }
+
+  getMyPeepCalendarSessions(peeps) {
+    var promises = [];
+    var peepItemIds = [];
+    var value, innerValue;
+
+    this.state.myPeepSessionIds.length = 0;
+    let peep;
+    for (peep of peeps) {
+      let promise = getStudentSessions(peep.id);
+      promises.push(promise);
+    }
+
+    Promise.all(promises).then((values) => {
+      for (value of values) {
+        for (innerValue of value) {
+          peepItemIds.push(innerValue.id);
+        }
+      }
+      this.setState({
+        myPeepSessionIds: peepItemIds,
+      });
+    });
   }
 
   getTestsByMonthYear(page, month, year) {
@@ -462,6 +586,12 @@ class EventCalendar extends Component {
     return view;
   }
 
+  onMyCalendarChange() {
+    this.setState({
+      myCalendar: !this.state.myCalendar,
+    });
+  }
+
   render() {
     const {
       selectedDate,
@@ -471,6 +601,10 @@ class EventCalendar extends Component {
       dayModalVisible,
       eventDates,
       tests,
+      myCalendar,
+      myPeepEventIds,
+      myPeepSessionIds,
+      myPeepTestIds,
     } = this.state;
 
     const headerRender = () => null;
@@ -486,13 +620,40 @@ class EventCalendar extends Component {
 
     var valueEventsDate = [];
 
-    let date;
+    let date, id;
     for (date of eventDates) {
-      valueEventsDate.push(date);
+      if (myCalendar) {
+        if (date.type == "Event") {
+          for (id of myPeepEventIds) {
+            if (id == date.id) {
+              valueEventsDate.push(date);
+              break;
+            }
+          }
+        } else {
+          for (id of myPeepSessionIds) {
+            if (id == date.sessionId) {
+              valueEventsDate.push(date);
+              break;
+            }
+          }
+        }
+      } else {
+        valueEventsDate.push(date);
+      }
     }
 
     for (date of tests) {
-      valueEventsDate.push(date);
+      if (myCalendar) {
+        for (id of myPeepTestIds) {
+          if (id == date.id) {
+            valueEventsDate.push(date);
+            break;
+          }
+        }
+      } else {
+        valueEventsDate.push(date);
+      }
     }
 
     valueEventsDate.sort((a, b) => (a.date > b.date ? 1 : -1));
@@ -581,9 +742,19 @@ class EventCalendar extends Component {
           title={cardHeader}
           loading={loading}
         >
-          <Row justify="space-around" style={{ marginBottom: 5, marginTop: 5 }}>
+          <Row
+            justify="space-between"
+            style={{ marginBottom: 5, marginTop: 5, marginLeft: 10 }}
+          >
+            <Checkbox
+              style={{ width: "65px" }}
+              checked={myCalendar}
+              onChange={this.onMyCalendarChange}
+            >
+              Mine
+            </Checkbox>
             <Col span={4}>
-              <Tag color="default">Session</Tag>
+              <Tag color="cyan">Session</Tag>
             </Col>
             <Col span={4}>
               <Tag color="red">Test</Tag>
@@ -600,12 +771,19 @@ class EventCalendar extends Component {
   }
 
   dateCellRender(value) {
-    const { eventDates, tests } = this.state;
+    const {
+      eventDates,
+      tests,
+      myCalendar,
+      myPeepTestIds,
+      myPeepSessionIds,
+      myPeepEventIds,
+    } = this.state;
 
     var cellDate = value.format("YYYY-MM-DD");
     var valueEventsDate = [];
 
-    let date;
+    let date, id;
     for (date of eventDates) {
       if (date.date.substring(0, 10) == cellDate) {
         const event = {
@@ -619,7 +797,25 @@ class EventCalendar extends Component {
           endTime: date.endTime,
         };
 
-        valueEventsDate.push(event);
+        if (myCalendar) {
+          if (date.type == "Event") {
+            for (id of myPeepEventIds) {
+              if (id == date.id) {
+                valueEventsDate.push(event);
+                break;
+              }
+            }
+          } else {
+            for (id of myPeepSessionIds) {
+              if (id == date.sessionId) {
+                valueEventsDate.push(event);
+                break;
+              }
+            }
+          }
+        } else {
+          valueEventsDate.push(event);
+        }
       }
     }
 
@@ -636,7 +832,16 @@ class EventCalendar extends Component {
           endTime: date.endTime,
         };
 
-        valueEventsDate.push(event);
+        if (myCalendar) {
+          for (id of myPeepTestIds) {
+            if (id == date.id) {
+              valueEventsDate.push(event);
+              break;
+            }
+          }
+        } else {
+          valueEventsDate.push(event);
+        }
       }
     }
 
@@ -677,7 +882,7 @@ class EventCalendar extends Component {
     } else if (type == "Misc") {
       return "cyan";
     }
-    return "default";
+    return "cyan";
   }
 
   onMonthYearChange(date, dateString) {

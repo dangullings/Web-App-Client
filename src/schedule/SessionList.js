@@ -2336,7 +2336,6 @@ class SessionList extends Component {
         title={ModalTitle}
         closable={false}
         style={{ top: 0 }}
-        bodyStyle={{ padding: 20, marginBottom: 20 }}
         onOk={this.handleOk}
         onCancel={this.handleCancel}
         footer={[
