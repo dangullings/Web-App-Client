@@ -36,6 +36,7 @@ import {
   removeStudentSessionsBySessionId,
   removeStudentSessionBySessionIdAndStudentId,
   removeSessionById,
+  removeClassDateById,
   getImage,
   createImage,
   removeImage,
@@ -87,6 +88,7 @@ class SessionList extends Component {
       selectedStudentId: "",
       selectedSession: "",
       classDates: [],
+      initialClassDates: [],
       signupStudents: [],
       size: STUDENT_LIST_SIZE,
       search: "",
@@ -405,6 +407,7 @@ class SessionList extends Component {
       allStudents: [],
       dates: [],
       classDates: [],
+      initialClassDates: [],
       datesSet: false,
       sessionId: "",
 
@@ -812,66 +815,172 @@ class SessionList extends Component {
   }
 
   saveClassDates(sessionId) {
-    const { classDates } = this.state;
+    const { initialClassDates, classDates } = this.state;
     let promises = [];
+    let stillValidClassDates = [],
+      newValidClassDates = [],
+      classDateIdsToDelete = [],
+      finalClassDatesToSave = [];
     var date;
     var month, year;
     let title = this.formRef.current.getFieldValue("title");
 
-    removeClassDatesBySessionId(this.state.sessionId)
-      .then((response) => {
-        for (date of classDates) {
-          let parts = date.date.split("-");
-          let y = parts[0];
-          let m = parts[1];
+    let i, ii, validFound, cd;
 
-          month = m;
-          year = y;
+    // create list of class date ids to be deleted from db
+    for (i of initialClassDates) {
+      validFound = false;
+      for (ii of classDates) {
+        if (i.date == ii.date) {
+          validFound = true;
+          break;
+        }
+      }
+      if (!validFound) {
+        classDateIdsToDelete.push(i.id);
+      }
+    }
 
-          let startTime = date.startTime,
-            endTime = date.endTime;
-          if (date.startTime instanceof moment) {
-            startTime = startTime.format("h:mm a");
-          }
-          if (date.endTime instanceof moment) {
-            endTime = endTime.format("h:mm a");
-          }
-
-          let ClassDateData = {
-            id: date.id,
+    for (i of classDates) {
+      validFound = false;
+      let formatStartTime, formatEndTime;
+      // then the old class date is still valid
+      if (i.startTime.toString().slice(-1) == "m") {
+        formatStartTime = i.startTime;
+      } else {
+        formatStartTime = i.startTime.format("h:mm a");
+      }
+      if (i.endTime.toString().slice(-1) == "m") {
+        formatEndTime = i.endTime;
+      } else {
+        formatEndTime = i.endTime.format("h:mm a");
+      }
+      for (ii of initialClassDates) {
+        if (i.date == ii.date) {
+          cd = {
+            id: ii.id,
             location: this.state.selectedLocation,
             title: title,
-            date: date.date,
-            startTime: startTime,
-            endTime: endTime,
+            date: ii.date,
+            startTime: formatStartTime,
+            endTime: formatEndTime,
             sessionId: sessionId,
-            secondHour: date.hasSecondHour,
-            month: month,
-            year: year,
+            secondHour: i.hasSecondHour,
+            month: ii.month,
+            year: ii.year,
           };
+          stillValidClassDates.push(cd);
+          validFound = true;
+          break;
+        }
+      }
+      if (!validFound) {
+        let parts = i.date.split("-");
+        let y = parts[0];
+        let m = parts[1];
 
-          let promise = createClassDate(ClassDateData);
-          promises.push(promise);
+        month = m;
+        year = y;
+
+        let startTime = i.startTime,
+          endTime = i.endTime;
+        if (i.startTime instanceof moment) {
+          startTime = startTime.format("h:mm a");
+        }
+        if (i.endTime instanceof moment) {
+          endTime = endTime.format("h:mm a");
         }
 
-        Promise.all(promises).then((values) => {
-          this.handleCancel();
-          this.getSessionList(this.state.page);
-          this.props.history.push("/schedule/sessions");
-        });
-      })
-      .catch((error) => {});
+        let ClassDateData = {
+          id: i.id,
+          location: this.state.selectedLocation,
+          title: title,
+          date: i.date,
+          startTime: startTime,
+          endTime: endTime,
+          sessionId: sessionId,
+          secondHour: i.hasSecondHour,
+          month: month,
+          year: year,
+        };
+        newValidClassDates.push(ClassDateData);
+      }
+    }
+
+    finalClassDatesToSave = newValidClassDates.concat(stillValidClassDates);
+
+    if (initialClassDates.length == 0) {
+      for (date of classDates) {
+        let parts = date.date.split("-");
+        let y = parts[0];
+        let m = parts[1];
+
+        month = m;
+        year = y;
+
+        let startTime = date.startTime,
+          endTime = date.endTime;
+        if (date.startTime instanceof moment) {
+          startTime = startTime.format("h:mm a");
+        }
+        if (date.endTime instanceof moment) {
+          endTime = endTime.format("h:mm a");
+        }
+
+        let ClassDateData = {
+          id: date.id,
+          location: this.state.selectedLocation,
+          title: title,
+          date: date.date,
+          startTime: startTime,
+          endTime: endTime,
+          sessionId: sessionId,
+          secondHour: date.hasSecondHour,
+          month: month,
+          year: year,
+        };
+
+        let promise = createClassDate(ClassDateData);
+        promises.push(promise);
+      }
+
+      Promise.all(promises).then((values) => {
+        this.handleCancel();
+        this.getSessionList(this.state.page);
+        this.props.history.push("/schedule/sessions");
+      });
+    } else {
+      for (date of finalClassDatesToSave) {
+        let promise = createClassDate(date);
+        promises.push(promise);
+      }
+
+      Promise.all(promises).then((values) => {
+        this.handleCancel();
+        this.getSessionList(this.state.page);
+        this.props.history.push("/schedule/sessions");
+      });
+    }
+
+    let id;
+    for (id of classDateIdsToDelete) {
+      let promise = removeClassDateById(id);
+      promises.push(promise);
+    }
+
+    Promise.all(promises).then((values) => {
+      this.handleCancel();
+      this.getSessionList(this.state.page);
+      this.props.history.push("/schedule/sessions");
+    });
   }
 
   resetAllDates() {
-    removeClassDatesBySessionId(this.state.sessionId)
-      .then((response) => {})
-      .catch((error) => {});
-
     this.setState({
       selectedDays: [],
       selected2ndHours: [],
       dates: [],
+      classDates: [],
       selectedDate: "",
       datesSet: false,
       startDate: moment(),
@@ -928,10 +1037,6 @@ class SessionList extends Component {
     this.setState({
       datesSet: true,
     });
-
-    removeClassDatesBySessionId(this.state.sessionId)
-      .then((response) => {})
-      .catch((error) => {});
   }
 
   changeSelectedDate(value) {
@@ -950,13 +1055,35 @@ class SessionList extends Component {
   }
 
   addSpecificDate() {
-    const { specific } = this.state;
+    const { specific, sessionId } = this.state;
 
-    const newSpecific = {
+    let parts = specific.date.format("YYYY-MM-DD").split("-");
+    let y = parts[0];
+    let m = parts[1];
+
+    let month = m;
+    let year = y;
+
+    let startTime = specific.startTime,
+      endTime = specific.endTime;
+    if (specific.startTime instanceof moment) {
+      startTime = startTime.format("h:mm a");
+    }
+    if (specific.endTime instanceof moment) {
+      endTime = endTime.format("h:mm a");
+    }
+
+    let newSpecific = {
+      id: "",
+      location: this.state.selectedLocation,
+      title: this.formRef.current.getFieldValue("title"),
+      sessionId: sessionId,
+      month: month,
+      year: year,
       date: specific.date.format("YYYY-MM-DD"),
       hasSecondHour: specific.hasSecondHour,
-      startTime: specific.startTime,
-      endTime: specific.endTime,
+      startTime: startTime,
+      endTime: endTime,
     };
 
     this.setState({
@@ -978,7 +1105,7 @@ class SessionList extends Component {
   }
 
   removeSelectedDate(value) {
-    const { classDates } = this.state;
+    const { classDates, initialClassDates } = this.state;
     var i = 0;
     var d;
     var subValue = value.slice(0, 10);
@@ -1050,9 +1177,11 @@ class SessionList extends Component {
       thursday,
       friday,
       saturday,
+      classDates,
     } = this.state;
     var days = [];
 
+    classDates.length = 0;
     let startDate = this.formRef.current.getFieldValue("startDate");
     let endDate = this.formRef.current.getFieldValue("endDate");
 
@@ -2954,6 +3083,7 @@ class SessionList extends Component {
         this.setState(
           {
             classDates: response,
+            initialClassDates: response,
           },
           () => this.setupDates(session, response)
         );
@@ -2966,6 +3096,16 @@ class SessionList extends Component {
   }
 
   setupDates(session, classDates) {
+    let temp = [];
+    let i;
+
+    for (i of classDates) {
+      temp.push(i);
+    }
+    this.setState({
+      initialClassDates: temp,
+    });
+
     const {
       monday,
       tuesday,

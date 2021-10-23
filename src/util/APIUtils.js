@@ -576,6 +576,14 @@ export function removeClassDatesBySessionId(sessionId) {
   });
 }
 
+export function removeClassDateById(id) {
+  return request({
+    url: API_BASE_URL + "/attendance/classDates/" + id,
+    method: "DELETE",
+    body: JSON.stringify(id),
+  });
+}
+
 export function removeStudentTestScores(testId) {
   return request({
     url: API_BASE_URL + "/tests/student_scores/test/" + testId,
