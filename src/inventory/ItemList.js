@@ -357,7 +357,11 @@ class NewItem extends Component {
         });
         this.getItemList(this.state.page, this.state.pageSize);
         this.resetForm();
-        message.success("Item saved.");
+        if (active) {
+          message.success("Item saved and posted on the store!");
+        } else {
+          message.success("Item saved.");
+        }
       })
       .catch((error) => {
         this.setState({
@@ -367,7 +371,8 @@ class NewItem extends Component {
   }
 
   resetForm() {
-    //this.formRef.current.resetFields();
+    this.formRef.current.resetFields();
+
     this.setState({
       name: "",
       type: "",
@@ -385,8 +390,6 @@ class NewItem extends Component {
       loading: false,
       isSavedItem: false,
     });
-
-    console.log("handle Cancel called");
   }
 
   handleUpload(info) {

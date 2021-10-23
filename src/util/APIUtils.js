@@ -560,6 +560,14 @@ export function removeAttendanceByStudentId(studentId) {
   });
 }
 
+export function removeAttendanceByClassDateId(classDateId) {
+  return request({
+    url: API_BASE_URL + "/attendance/classDate/" + classDateId,
+    method: "DELETE",
+    body: JSON.stringify(classDateId),
+  });
+}
+
 export function removeUserPeepsByStudentId(studentId) {
   return request({
     url: API_BASE_URL + "/user_students/student/" + studentId,

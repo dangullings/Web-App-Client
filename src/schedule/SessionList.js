@@ -37,6 +37,7 @@ import {
   removeStudentSessionBySessionIdAndStudentId,
   removeSessionById,
   removeClassDateById,
+  removeAttendanceByClassDateId,
   getImage,
   createImage,
   removeImage,
@@ -973,6 +974,13 @@ class SessionList extends Component {
       this.getSessionList(this.state.page);
       this.props.history.push("/schedule/sessions");
     });
+
+    for (id of classDateIdsToDelete) {
+      let promise = removeAttendanceByClassDateId(id);
+      promises.push(promise);
+    }
+
+    Promise.all(promises).then((values) => {});
   }
 
   resetAllDates() {
