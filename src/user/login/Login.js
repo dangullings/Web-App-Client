@@ -24,8 +24,8 @@ class Login extends Component {
   }
   render() {
     return (
-      <div className="custom-style">
-        <div className="custom-style">
+      <div>
+        <div>
           <LoginForm onLogin={this.props.onLogin} />
         </div>
       </div>
