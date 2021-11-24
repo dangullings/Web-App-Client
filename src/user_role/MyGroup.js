@@ -761,10 +761,11 @@ class MyGroup extends Component {
 
     peepsClassDates.sort((a, b) => (a.date >= b.date ? 1 : -1));
 
-    let upcomingClassDates = peepsClassDates.slice(
-      0,
-      peepsClassDates.length / 5
-    );
+    let upcomingClassDates = peepsClassDates.filter(function(i) {
+      if (moment(i.date).isBefore(moment().add(6, "d"))) {
+        return i;
+      }
+    });
 
     return upcomingClassDates;
   }
@@ -899,10 +900,16 @@ class MyGroup extends Component {
 
     peepsClassDates.sort((a, b) => (a.date >= b.date ? 1 : -1));
 
-    let upcomingClassDates = peepsClassDates.slice(
-      0,
-      peepsClassDates.length / 5
-    );
+    let upcomingClassDates = peepsClassDates.filter(function(i) {
+      if (moment(i.date).isBefore(moment().add(2, "w"))) {
+        return i;
+      }
+    });
+
+    let i;
+    for (i of upcomingClassDates) {
+      console.log("upcomingClassDate " + i.date);
+    }
     var sessionsWithLocation = [];
     let s, loc, sAddress;
     for (s of peepsSessions) {
